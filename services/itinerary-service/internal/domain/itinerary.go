@@ -4,10 +4,20 @@ import "time"
 
 // PackingItem is one checklist row for what to bring on the trip.
 type PackingItem struct {
-	ID      string `json:"id"`
-	Label   string `json:"label"`
-	Packed  bool   `json:"packed"`
+	ID       string `json:"id"`
+	Label    string `json:"label"`
+	Packed   bool   `json:"packed"`
 	Category string `json:"category,omitempty"`
+}
+
+// PlanItem is an optional activity/theme the traveler wants to do at the destination.
+type PlanItem struct {
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description,omitempty"`
+	Category    string `json:"category,omitempty"`
+	Selected    bool   `json:"selected"`
+	Source      string `json:"source,omitempty"` // recommendation | custom
 }
 
 // Itinerary is the aggregate root for personal trip planning.
@@ -19,6 +29,7 @@ type Itinerary struct {
 	TravelDate           time.Time
 	DurationMinutes      int
 	PackingItems         []PackingItem
+	PlanItems            []PlanItem
 	CreatedAt            time.Time
 	UpdatedAt            time.Time
 }
@@ -31,6 +42,7 @@ type CreateItineraryCommand struct {
 	TravelDate           time.Time
 	DurationMinutes      int
 	PackingItems         []PackingItem
+	PlanItems            []PlanItem
 }
 
 // UpdateItineraryCommand updates mutable fields of an existing itinerary.
@@ -42,6 +54,7 @@ type UpdateItineraryCommand struct {
 	TravelDate           time.Time
 	DurationMinutes      int
 	PackingItems         []PackingItem
+	PlanItems            []PlanItem
 }
 
 // DefaultPackingList seeds a practical Colombia domestic-trip checklist.

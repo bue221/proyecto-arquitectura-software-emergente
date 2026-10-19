@@ -9,6 +9,12 @@ Each itinerary stores `packingItems` (JSONB): `{ id, label, packed, category? }`
 New itineraries seed a default domestic-trip list when the client sends none.
 Update via `PUT /api/v1/itineraries/{id}` including the full packing array.
 
+## Destination plans
+
+Each itinerary stores `planItems` (JSONB): `{ id, title, description?, category?, selected, source? }`.
+The web wizard step 2 sends selected recommendations / custom plans; empty array is valid (skip).
+Migration: `000003_plan_items`.
+
 ## Why
 
 Owns **Itinerary Planning**. Persists personal itineraries, validates airport references against Airport Service, and emits integration events through the Transactional Outbox.

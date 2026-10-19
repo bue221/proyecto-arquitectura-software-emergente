@@ -32,12 +32,16 @@ func (r *Repository) Create(ctx context.Context, itinerary domain.Itinerary, out
 	if err != nil {
 		return domain.Itinerary{}, fmt.Errorf("%w: marshal packing: %v", domain.ErrPersistenceFailed, err)
 	}
+	plansJSON, err := json.Marshal(itinerary.PlanItems)
+	if err != nil {
+		return domain.Itinerary{}, fmt.Errorf("%w: marshal plans: %v", domain.ErrPersistenceFailed, err)
+	}
 
 	_, err = tx.Exec(ctx, `
 		INSERT INTO itineraries (
 			id, user_name, origin_airport_id, destination_airport_id,
-			travel_date, duration_minutes, packing_items, created_at, updated_at
-		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+			travel_date, duration_minutes, packing_items, plan_items, created_at, updated_at
+		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
 		itinerary.ID,
 		itinerary.UserName,
 		itinerary.OriginAirportID,
@@ -45,6 +49,7 @@ func (r *Repository) Create(ctx context.Context, itinerary domain.Itinerary, out
 		itinerary.TravelDate,
 		itinerary.DurationMinutes,
 		packingJSON,
+		plansJSON,
 		itinerary.CreatedAt,
 		itinerary.UpdatedAt,
 	)
@@ -78,6 +83,10 @@ func (r *Repository) Update(ctx context.Context, itinerary domain.Itinerary) (do
 	if err != nil {
 		return domain.Itinerary{}, fmt.Errorf("%w: marshal packing: %v", domain.ErrPersistenceFailed, err)
 	}
+	plansJSON, err := json.Marshal(itinerary.PlanItems)
+	if err != nil {
+		return domain.Itinerary{}, fmt.Errorf("%w: marshal plans: %v", domain.ErrPersistenceFailed, err)
+	}
 	ct, err := r.pool.Exec(ctx, `
 		UPDATE itineraries SET
 			user_name=$2,
@@ -86,7 +95,8 @@ func (r *Repository) Update(ctx context.Context, itinerary domain.Itinerary) (do
 			travel_date=$5,
 			duration_minutes=$6,
 			packing_items=$7,
-			updated_at=$8
+			plan_items=$8,
+			updated_at=$9
 		WHERE id=$1`,
 		itinerary.ID,
 		itinerary.UserName,
@@ -95,6 +105,7 @@ func (r *Repository) Update(ctx context.Context, itinerary domain.Itinerary) (do
 		itinerary.TravelDate,
 		itinerary.DurationMinutes,
 		packingJSON,
+		plansJSON,
 		itinerary.UpdatedAt,
 	)
 	if err != nil {
@@ -120,7 +131,7 @@ func (r *Repository) Delete(ctx context.Context, id string) error {
 func (r *Repository) GetByID(ctx context.Context, id string) (domain.Itinerary, error) {
 	row := r.pool.QueryRow(ctx, `
 		SELECT id, user_name, origin_airport_id, destination_airport_id,
-		       travel_date, duration_minutes, packing_items, created_at, updated_at
+		       travel_date, duration_minutes, packing_items, plan_items, created_at, updated_at
 		FROM itineraries WHERE id=$1`, id)
 	item, err := scanItinerary(row)
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -132,7 +143,7 @@ func (r *Repository) GetByID(ctx context.Context, id string) (domain.Itinerary, 
 func (r *Repository) List(ctx context.Context) ([]domain.Itinerary, error) {
 	rows, err := r.pool.Query(ctx, `
 		SELECT id, user_name, origin_airport_id, destination_airport_id,
-		       travel_date, duration_minutes, packing_items, created_at, updated_at
+		       travel_date, duration_minutes, packing_items, plan_items, created_at, updated_at
 		FROM itineraries
 		ORDER BY created_at DESC`)
 	if err != nil {
@@ -159,6 +170,7 @@ func scanItinerary(row scannable) (domain.Itinerary, error) {
 	var item domain.Itinerary
 	var travelDate time.Time
 	var packingRaw []byte
+	var plansRaw []byte
 	err := row.Scan(
 		&item.ID,
 		&item.UserName,
@@ -167,6 +179,7 @@ func scanItinerary(row scannable) (domain.Itinerary, error) {
 		&travelDate,
 		&item.DurationMinutes,
 		&packingRaw,
+		&plansRaw,
 		&item.CreatedAt,
 		&item.UpdatedAt,
 	)
@@ -181,6 +194,14 @@ func scanItinerary(row scannable) (domain.Itinerary, error) {
 	}
 	if item.PackingItems == nil {
 		item.PackingItems = []domain.PackingItem{}
+	}
+	if len(plansRaw) > 0 {
+		if err := json.Unmarshal(plansRaw, &item.PlanItems); err != nil {
+			return domain.Itinerary{}, fmt.Errorf("%w: decode plans: %v", domain.ErrPersistenceFailed, err)
+		}
+	}
+	if item.PlanItems == nil {
+		item.PlanItems = []domain.PlanItem{}
 	}
 	return item, nil
 }

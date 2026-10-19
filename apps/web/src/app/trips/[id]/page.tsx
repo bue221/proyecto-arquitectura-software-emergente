@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Sparkles } from "lucide-react";
 
 import { AppShell } from "@/components/layout/AppShell";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -33,6 +33,8 @@ export default function TripDetailPage() {
       });
   }, [ready, isAuthenticated, params.id, profile?.subject, router]);
 
+  const selectedPlans = (item?.planItems || []).filter((p) => p.selected);
+
   return (
     <AppShell>
       <Link
@@ -49,23 +51,55 @@ export default function TripDetailPage() {
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       ) : !item ? (
-        <div className="h-48 animate-pulse rounded-3xl bg-muted" />
+        <div className="h-48 animate-pulse rounded-3xl bg-slate-200" />
       ) : (
         <div className="space-y-6">
-          <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-card">
-            <div className="h-36 bg-[linear-gradient(135deg,#fff0f4_0%,#eef2ff_50%,#f7f7f7_100%)]" />
+          <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+            <div className="h-36 bg-[linear-gradient(135deg,#ecfdf5_0%,#e0e7ff_50%,#f8fafc_100%)]" />
             <div className="space-y-2 p-6 sm:p-8">
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-emerald-600">
                 Itinerario
               </p>
-              <h1 className="font-display text-4xl tracking-tight">
+              <h1 className="text-4xl font-semibold tracking-tight text-slate-900">
                 {item.originAirportId} → {item.destinationAirportId}
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-slate-500">
                 {item.userName} · {item.travelDate} · {item.durationMinutes} min
               </p>
             </div>
           </div>
+
+          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+            <div className="mb-4 flex items-center gap-2">
+              <Sparkles className="size-5 text-emerald-600" />
+              <h2 className="text-xl font-semibold text-slate-900">Planes en destino</h2>
+            </div>
+            {selectedPlans.length === 0 ? (
+              <p className="text-sm text-slate-500">
+                No agregaste planes en la creación. Podés crear otro viaje e incluir
+                recomendaciones en el paso 2.
+              </p>
+            ) : (
+              <ul className="grid gap-3 sm:grid-cols-2">
+                {selectedPlans.map((plan) => (
+                  <li
+                    key={plan.id}
+                    className="rounded-2xl border border-emerald-100 bg-emerald-50/60 px-4 py-3"
+                  >
+                    <p className="text-sm font-semibold text-slate-900">{plan.title}</p>
+                    {plan.description ? (
+                      <p className="mt-1 text-xs text-slate-600">{plan.description}</p>
+                    ) : null}
+                    {plan.category ? (
+                      <p className="mt-2 text-[10px] font-semibold uppercase tracking-wide text-emerald-700">
+                        {plan.category}
+                      </p>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
 
           <PackingChecklist
             itinerary={item}

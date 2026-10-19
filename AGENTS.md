@@ -18,9 +18,11 @@ This is **not** related to the Parche product. Domain = Colombian airports + per
 
 | Layer | Choice | Why |
 |-------|--------|-----|
-| Frontend | Next.js (App Router) + Plotly.js | SSR-friendly UI; interactive airport map |
+| Frontend | Next.js 15 App Router + TypeScript | SSR metadata / SEO; App Router routes |
+| UI | Tailwind v4 + shadcn/ui + Framer Motion | Premium travel UX (slate / emerald / indigo) |
+| Map | React-Leaflet + **tile Adapter port** | Free basemaps (CARTO/OSM/OpenTopo/Esri); swap without keys |
 | Backend | Go | Low CPU/memory under concurrency |
-| Gateway | Go (Traefik or custom BFF) | Single entry; rate limit; JWT propagation; no business logic |
+| Gateway | Go (custom BFF) | Single entry; rate limit; JWT propagation; no business logic |
 | DB | PostgreSQL (one DB per service) | Relational + versioned migrations |
 | Cache | Redis | Airport API cache + resilience |
 | Broker | RabbitMQ | Async notifications; AsyncAPI contract |
@@ -28,15 +30,31 @@ This is **not** related to the Parche product. Domain = Colombian airports + per
 | Orchestration | Docker Compose (local); Kubernetes (Level 3) | Full-stack demos |
 | CI/CD | GitHub Actions | Build, test, SonarQube, deploy example |
 
-See ADRs under [`docs/01-architecture/adr/`](docs/01-architecture/adr/).
+See ADRs under [`docs/01-architecture/adr/`](docs/01-architecture/adr/).  
+Frontend UI details: [`docs/07-frontend/architecture.md`](docs/07-frontend/architecture.md).
+
+## Frontend UI architecture (agents must follow)
+
+Product brand in UI: **RutaCO**.
+
+| Surface | Pattern |
+|---------|---------|
+| `/` Studio | Full-bleed Leaflet map + floating glass panel; map click = origin → destination + curved route |
+| `/trips` | **Two-step wizard**: (1) route/date (2) optional destination **plans** + recommendations; varied trip cards |
+| `/trips/[id]` | Plans summary + packing checklist |
+| Auth | Demo login → Gateway `POST /auth/token`; profile in `localStorage` |
+| SEO | Root `metadata` / OG / Twitter, `sitemap.ts`, `robots.ts`, JSON-LD; `NEXT_PUBLIC_SITE_URL` |
+| Map tiles | Port `MapTileProvider` + adapters under `apps/web/src/features/studio/map/` — never hard-code a CDN in map logic |
+
+Do **not** reintroduce Plotly as the primary studio map. Do **not** call `api-colombia.com` from the browser.
 
 ## Monorepo layout
 
 ```text
-apps/web/                      # Next.js frontend (Plotly map)
+apps/web/                      # Next.js — Studio (Leaflet) + trips wizard + SEO
 services/api-gateway/          # BFF / edge routing
 services/airport-service/      # Adapter to API Colombia + Redis
-services/itinerary-service/    # CRUD + Outbox + HTTP/gRPC to Airport
+services/itinerary-service/    # CRUD + packing + planItems + Outbox
 services/notification-function/# FaaS consumers (LocalStack/OpenFaaS)
 packages/contracts/openapi/    # REST contracts
 packages/contracts/asyncapi/   # Event contracts
@@ -109,6 +127,7 @@ Full rules: [`docs/04-devops/branching.md`](docs/04-devops/branching.md).
 
 - **Hexagonal per Go service:** `domain` → `application` → `adapters/in` (HTTP/gRPC) / `adapters/out` (DB, HTTP, broker). Domain has zero infra imports.
 - **Adapter pattern** for external API Colombia: Port in domain; Adapter in infrastructure; frontend never calls the external API.
+- **Adapter pattern** for map tiles on the web: Port `MapTileProvider`; free adapters only unless an ADR adds a keyed provider.
 - **One database per service.** No shared DB schemas across services.
 - **Gateway has no business logic** — routing, auth propagation, rate limiting only.
 - **Double-write:** Itinerary persistence + event publish must use **Transactional Outbox** (Level 3), not dual writes.
@@ -141,9 +160,10 @@ Full rules: [`docs/04-devops/branching.md`](docs/04-devops/branching.md).
 
 - Phase 0 wiki/ADRs: done
 - Level 1 Airport + Itinerary + Compose + Next.js map/CRUD: done
-- Frontend design system (shadcn + Sonner + feature folders): done
+- Frontend Studio (Leaflet + tile adapters) + trips wizard / plans / packing: done
+- Frontend design system (shadcn + Sonner + SEO metadata): done
 - Level 2 API Gateway (JWT + rate limit): done
-- Level 2 Redis cache + circuit breaker + retry on Airport: done / in this PR
+- Level 2 Redis cache + circuit breaker + retry on Airport: done
 - Local stack: `make up` / `make down` / `make smoke`
 - Remaining Level 2+ (RabbitMQ notify, FaaS, Jaeger, Testcontainers): next
 

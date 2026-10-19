@@ -44,6 +44,7 @@ func (h Handlers) Create(w http.ResponseWriter, r *http.Request) {
 		TravelDate:           travelDate,
 		DurationMinutes:      req.DurationMinutes,
 		PackingItems:         toDomainPacking(req.PackingItems),
+		PlanItems:            toDomainPlans(req.PlanItems),
 	})
 	if err != nil {
 		h.writeDomainError(w, traceID, err)
@@ -75,6 +76,7 @@ func (h Handlers) Update(w http.ResponseWriter, r *http.Request) {
 		TravelDate:           travelDate,
 		DurationMinutes:      req.DurationMinutes,
 		PackingItems:         toDomainPacking(req.PackingItems),
+		PlanItems:            toDomainPlans(req.PlanItems),
 	})
 	if err != nil {
 		h.writeDomainError(w, traceID, err)
