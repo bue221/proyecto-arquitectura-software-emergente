@@ -11,6 +11,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/features/auth/AuthProvider";
+import { MapPreferencesForm } from "@/features/studio/map/MapPreferencesForm";
 import { initialsFromName } from "@/lib/auth/session";
 import { cn } from "@/lib/utils";
 
@@ -66,7 +67,7 @@ export default function ProfilePage() {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
-        <aside className="rounded-3xl border border-border bg-card p-6 shadow-card">
+        <aside className="rounded-3xl border border-border bg-card p-6 shadow-card lg:sticky lg:top-24 lg:self-start">
           <Avatar className="size-24">
             <AvatarFallback className="bg-foreground text-2xl text-background">
               {initialsFromName(profile.displayName)}
@@ -77,47 +78,68 @@ export default function ProfilePage() {
           <p className="mt-3 text-xs uppercase tracking-wide text-muted-foreground">
             Subject JWT · {profile.subject}
           </p>
+          <nav className="mt-6 space-y-1 text-sm">
+            <a href="#perfil" className="block rounded-lg px-2 py-1.5 text-slate-700 hover:bg-slate-50">
+              Datos personales
+            </a>
+            <a href="#mapa" className="block rounded-lg px-2 py-1.5 text-slate-700 hover:bg-slate-50">
+              Configuración de mapa
+            </a>
+          </nav>
         </aside>
 
-        <form
-          onSubmit={onSubmit}
-          className="space-y-5 rounded-3xl border border-border bg-card p-6 shadow-card sm:p-8"
-        >
-          <div className="space-y-2">
-            <Label htmlFor="displayName">Nombre público</Label>
-            <Input
-              id="displayName"
-              required
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              className="h-12 rounded-xl"
-            />
+        <div className="space-y-8">
+          <form
+            id="perfil"
+            onSubmit={onSubmit}
+            className="space-y-5 rounded-3xl border border-border bg-card p-6 shadow-card sm:p-8"
+          >
+            <div>
+              <h2 className="font-display text-2xl tracking-tight">Datos personales</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Nombre y ciudad visibles en tus itinerarios.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="displayName">Nombre público</Label>
+              <Input
+                id="displayName"
+                required
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                className="h-12 rounded-xl"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="homeCity">Ciudad base</Label>
+              <Input
+                id="homeCity"
+                value={homeCity}
+                onChange={(e) => setHomeCity(e.target.value)}
+                className="h-12 rounded-xl"
+                placeholder="Medellín"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="bio">Sobre vos</Label>
+              <textarea
+                id="bio"
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                rows={4}
+                className="w-full rounded-xl border border-input bg-transparent px-3 py-3 text-sm outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"
+                placeholder="Viajo por trabajo y me gusta llegar con la maleta lista."
+              />
+            </div>
+            <Button type="submit" className="h-12 rounded-xl px-8">
+              Guardar perfil
+            </Button>
+          </form>
+
+          <div id="mapa">
+            <MapPreferencesForm />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="homeCity">Ciudad base</Label>
-            <Input
-              id="homeCity"
-              value={homeCity}
-              onChange={(e) => setHomeCity(e.target.value)}
-              className="h-12 rounded-xl"
-              placeholder="Medellín"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="bio">Sobre vos</Label>
-            <textarea
-              id="bio"
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              rows={4}
-              className="w-full rounded-xl border border-input bg-transparent px-3 py-3 text-sm outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"
-              placeholder="Viajo por trabajo y me gusta llegar con la maleta lista."
-            />
-          </div>
-          <Button type="submit" className="h-12 rounded-xl px-8">
-            Guardar perfil
-          </Button>
-        </form>
+        </div>
       </div>
     </AppShell>
   );

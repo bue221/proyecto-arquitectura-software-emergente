@@ -18,6 +18,7 @@ Premium itinerary **studio** + trip management: interactive Colombia map, glassm
 | Typography | Inter | ExtraBold IATA codes, Medium city names |
 | Toasts | Sonner | mutations feedback |
 | Auth UX | Demo login → Gateway JWT | profile in `localStorage` |
+| Map prefs | `/profile` config | provider + optional API key; keyed without key → OSM |
 | SEO | `metadata`, OG, Twitter, `sitemap.ts`, `robots.ts`, JSON-LD | `NEXT_PUBLIC_SITE_URL` |
 
 ## Visual language
@@ -34,13 +35,16 @@ Port: `MapTileProvider` / `MapTileStyle` under `features/studio/map/`.
 
 | Adapter id | Provider | API key |
 |------------|----------|---------|
-| `carto-positron` | CARTO light (default) | none |
+| `carto-positron` | CARTO light (**product default**) | none |
 | `carto-dark` | CARTO dark | none |
-| `osm` | OpenStreetMap | none |
+| `osm` | OpenStreetMap (fallback when keyed provider has no key) | none |
 | `opentopo` | OpenTopoMap | none |
 | `esri-gray` | Esri Light Gray | none |
+| `mapbox-streets` | Mapbox Streets | user token in `/profile` |
 
-Runtime switcher on Studio + `NEXT_PUBLIC_MAP_TILE_PROVIDER`. Add Mapbox later as another adapter behind the same port.
+Preferences live in `localStorage` (`rutaco_map_preferences`) and are edited only under **Perfil → Configuración de mapa**. Studio does not show a basemap switcher. Env override: `NEXT_PUBLIC_MAP_TILE_PROVIDER`.
+
+Resolution: if `requiresApiKey` and the stored key is empty → effective style is **OSM**.
 
 `MapTileLayer` must **not** pass `subdomains={undefined}` into Leaflet — `_getSubdomain` always reads `.length`. Omit the prop (Leaflet default `"abc"`) or set it on every adapter.
 
@@ -52,7 +56,7 @@ Runtime switcher on Studio + `NEXT_PUBLIC_MAP_TILE_PROVIDER`. Add Mapbox later a
 | `/trips` | Two-step create + trip cards | `title: Mis viajes` |
 | `/trips/[id]` | Plans + packing checklist | client page (auth) |
 | `/login` | Demo JWT login | |
-| `/profile` | Traveler profile | |
+| `/profile` | Traveler profile + map preferences | |
 
 ## Trip creation UX (two steps)
 

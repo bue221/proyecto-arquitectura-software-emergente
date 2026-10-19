@@ -21,7 +21,7 @@ Detalle: [`AGENTS.md`](https://github.com/bue221/proyecto-arquitectura-software-
 | Área | Notas |
 |------|--------|
 | Level 1 | Airport + Itinerary hexagonales, Compose, Swagger, migraciones |
-| Frontend | Studio Leaflet + tile Adapter, trips wizard (planes), packing, SEO |
+| Frontend | Studio Leaflet + tile Adapter, trips wizard, packing, SEO; map prefs en `/profile` |
 | Level 2 (parcial) | Gateway JWT + rate limit; Redis + circuit breaker + retry |
 | Ops local | `make up` / `make down` / `make smoke` / `make wiki` |
 

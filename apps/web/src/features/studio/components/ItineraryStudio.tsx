@@ -1,7 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { fetchAirportsForMap } from "@/features/airports/api";
@@ -11,14 +12,12 @@ import {
   type StudioAirport,
 } from "@/features/studio/airports";
 import { ItineraryStudioPanel } from "@/features/studio/components/ItineraryStudioPanel";
-import type { MapTileProviderId } from "@/features/studio/map/port";
+import type { MapTileStyle } from "@/features/studio/map/port";
 import {
-  listMapTileStyles,
-  persistMapTileProviderId,
-  readStoredMapTileProviderId,
-  resolveMapTileStyle,
-} from "@/features/studio/map/registry";
-import { TileProviderSwitch } from "@/features/studio/map/TileProviderSwitch";
+  MAP_PREFERENCES_CHANGED_EVENT,
+  readMapPreferences,
+} from "@/features/studio/map/preferences";
+import { resolveMapTileStyle } from "@/features/studio/map/registry";
 
 const ColombiaMap = dynamic(
   () =>
@@ -38,13 +37,19 @@ export function ItineraryStudio() {
   const [origin, setOrigin] = useState<StudioAirport | null>(null);
   const [destination, setDestination] = useState<StudioAirport | null>(null);
   const [loading, setLoading] = useState(true);
-  const [tileProviderId, setTileProviderId] = useState<MapTileProviderId>("carto-positron");
-
-  const tileStyles = useMemo(() => listMapTileStyles(), []);
-  const tileStyle = useMemo(() => resolveMapTileStyle(tileProviderId), [tileProviderId]);
+  const [tileStyle, setTileStyle] = useState<MapTileStyle>(() =>
+    resolveMapTileStyle({ providerId: "carto-positron", apiKey: "" }),
+  );
 
   useEffect(() => {
-    setTileProviderId(readStoredMapTileProviderId());
+    const refresh = () => setTileStyle(resolveMapTileStyle(readMapPreferences()));
+    refresh();
+    window.addEventListener(MAP_PREFERENCES_CHANGED_EVENT, refresh);
+    window.addEventListener("storage", refresh);
+    return () => {
+      window.removeEventListener(MAP_PREFERENCES_CHANGED_EVENT, refresh);
+      window.removeEventListener("storage", refresh);
+    };
   }, []);
 
   useEffect(() => {
@@ -95,12 +100,6 @@ export function ItineraryStudio() {
     setDestination(null);
   }, []);
 
-  const onTileChange = useCallback((id: MapTileProviderId) => {
-    setTileProviderId(id);
-    persistMapTileProviderId(id);
-    toast.success(`Basemap: ${resolveMapTileStyle(id).label}`);
-  }, []);
-
   return (
     <div className="relative h-[calc(100dvh-4rem)] w-full overflow-hidden bg-slate-50">
       <ColombiaMap
@@ -111,17 +110,18 @@ export function ItineraryStudio() {
         tileStyle={tileStyle}
       />
 
-      <div className="absolute left-4 top-4 z-10 flex max-w-xs flex-col gap-2">
+      <div className="absolute left-4 top-4 z-10 max-w-xs">
         <div className="rounded-2xl border border-white/70 bg-white/80 px-3 py-2 text-xs text-slate-600 shadow-sm backdrop-blur">
           {loading
             ? "Sincronizando aeropuertos…"
-            : `${airports.length} aeropuertos · adapter ${tileStyle.id}`}
+            : `${airports.length} aeropuertos · ${tileStyle.label}`}
+          <span className="mt-1 block text-[10px] text-slate-500">
+            Basemap en{" "}
+            <Link href="/profile" className="font-medium text-indigo-600 underline-offset-2 hover:underline">
+              Perfil → Configuración de mapa
+            </Link>
+          </span>
         </div>
-        <TileProviderSwitch
-          styles={tileStyles}
-          activeId={tileProviderId}
-          onChange={onTileChange}
-        />
       </div>
 
       <ItineraryStudioPanel
