@@ -13,7 +13,8 @@ Owns the **Airport Catalog** bounded context. Isolates API Colombia behind an Ad
 - Cache adapted responses in Redis.
 - Expose REST for get-by-id / list-for-map and gRPC `EnsureExists` for Itinerary S2S.
 - Optional **mTLS** on gRPC when `GRPC_MTLS_ENABLED=true` (Compose default; ADR-0009).
-- Resilience: timeout, retry+backoff+jitter, circuit breaker.
+- Optional **CONFIG_FILE** / Vault KV overlay for Colombia URL and timeouts (`infra/vault/README.md`).
+- Resilience: timeout, retry+backoff+jitter, circuit breaker, bulkhead.
 
 ## Non-responsibilities
 

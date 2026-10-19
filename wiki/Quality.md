@@ -12,7 +12,9 @@
 
 ## Contract tests (Level 3)
 
-- Pact (or equivalent) between Itinerary (consumer) and Airport (provider).
+- Pact-compatible contract: `packages/contracts/pact/Airport-Itinerary.json`.
+- Consumer: `services/itinerary-service/.../airporthttp/pact_consumer_test.go`.
+- Provider: `services/airport-service/.../httpapi/pact_provider_test.go`.
 
 ## Swagger / OpenAPI
 

@@ -27,12 +27,14 @@ services:
       CB_COOLDOWN_MS: "30000"
       BULKHEAD_MAX_CONCURRENT: "8"
       OTEL_EXPORTER_OTLP_ENDPOINT: jaeger:4318
+      CONFIG_FILE: /config/airport.json
       GRPC_MTLS_ENABLED: "true"
       GRPC_TLS_CERT_FILE: /certs/server.crt
       GRPC_TLS_KEY_FILE: /certs/server.key
       GRPC_TLS_CA_FILE: /certs/ca.crt
     volumes:
       - ../certs/grpc:/certs:ro
+      - ../config/airport.example.json:/config/airport.json:ro
     depends_on:
       redis:
         condition: service_healthy
@@ -107,6 +109,17 @@ services:
     command: ["-host", "0.0.0.0", "-config", "/config/toxiproxy.json"]
     depends_on:
       - airport-service
+
+  vault:
+    image: hashicorp/vault:1.17.5
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: root
+      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+    cap_add:
+      - IPC_LOCK
+    command: server -dev
 
   itinerary-service:
     build:
