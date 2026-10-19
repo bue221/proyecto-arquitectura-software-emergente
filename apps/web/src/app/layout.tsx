@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/features/auth/AuthProvider";
@@ -7,19 +7,14 @@ import { cn } from "@/lib/utils";
 
 import "./globals.css";
 
-const display = Fraunces({
-  subsets: ["latin"],
-  variable: "--font-display",
-});
-
-const sans = Plus_Jakarta_Sans({
+const sans = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
 });
 
 export const metadata: Metadata = {
-  title: "RutaCO — Itinerarios personales",
-  description: "Explora aeropuertos de Colombia y arma tus viajes con checklist de maleta",
+  title: "RutaCO — Itinerary Studio",
+  description: "Mapa interactivo de aeropuertos colombianos e itinerarios personales",
 };
 
 export default function RootLayout({
@@ -28,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={cn("font-sans", sans.variable, display.variable)}>
+    <html lang="es" className={cn("font-sans", sans.variable)}>
       <body className="min-h-screen antialiased">
         <AuthProvider>
           {children}
