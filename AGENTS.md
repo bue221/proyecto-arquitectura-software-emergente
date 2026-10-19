@@ -50,7 +50,10 @@ docs/                          # Project wiki (source of truth)
 
 | Topic | Path |
 |-------|------|
-| Wiki home | [`docs/README.md`](docs/README.md) |
+| Wiki home (repo docs) | [`docs/README.md`](docs/README.md) |
+| GitHub Wiki (published) | https://github.com/bue221/proyecto-arquitectura-software-emergente/wiki |
+| Wiki seed pages | [`wiki/`](wiki/) |
+| Publish wiki script | [`scripts/publish-wiki.sh`](scripts/publish-wiki.sh) |
 | Frontend architecture | [`docs/07-frontend/architecture.md`](docs/07-frontend/architecture.md) |
 | Vision & scope | [`docs/00-vision.md`](docs/00-vision.md) |
 | Architecture overview | [`docs/01-architecture/overview.md`](docs/01-architecture/overview.md) |

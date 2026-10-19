@@ -46,6 +46,12 @@ Source of truth for architecture, diagrams, DevOps, and demos. Prefer updating t
 
 24. [Frontend architecture (shadcn)](07-frontend/architecture.md)
 
+### GitHub Wiki
+
+25. [GitHub Wiki publish guide](04-devops/github-wiki.md)  
+    Published UI: https://github.com/bue221/proyecto-arquitectura-software-emergente/wiki  
+    Seed content: [`../wiki/`](../wiki/)
+
 ## How to contribute to the wiki
 
 - One conceptual change per PR when possible.
