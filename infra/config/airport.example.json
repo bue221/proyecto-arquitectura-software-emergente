@@ -1,0 +1,6 @@
+{
+  "colombia_api_base_url": "https://api-colombia.com",
+  "upstream_timeout_ms": 8000,
+  "cache_ttl_ms": 300000,
+  "bulkhead_max_concurrent": 8
+}

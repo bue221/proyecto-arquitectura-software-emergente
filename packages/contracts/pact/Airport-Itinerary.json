@@ -1,0 +1,41 @@
+{
+  "consumer": { "name": "itinerary-service" },
+  "provider": { "name": "airport-service" },
+  "interactions": [
+    {
+      "description": "get existing airport by id",
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/airports/1",
+        "headers": { "X-Trace-Id": "pact-trace-1" }
+      },
+      "response": {
+        "status": 200,
+        "headers": { "Content-Type": "application/json" },
+        "body": {
+          "id": "1",
+          "name": "El Dorado International Airport",
+          "iataCode": "BOG"
+        }
+      }
+    },
+    {
+      "description": "get missing airport by id",
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/airports/99999"
+      },
+      "response": {
+        "status": 404,
+        "headers": { "Content-Type": "application/json" },
+        "body": {
+          "code": "airport_not_found"
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecification": { "version": "2.0.0" },
+    "note": "Lightweight Pact-compatible contract; verified by Go consumer/provider tests"
+  }
+}

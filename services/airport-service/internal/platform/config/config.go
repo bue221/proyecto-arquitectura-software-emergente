@@ -24,7 +24,7 @@ type Config struct {
 }
 
 func Load() Config {
-	return Config{
+	cfg := Config{
 		HTTPAddr:           getEnv("HTTP_ADDR", ":8081"),
 		GRPCAddr:           getEnv("GRPC_ADDR", ":9091"),
 		ColombiaAPIBaseURL: getEnv("COLOMBIA_API_BASE_URL", "https://api-colombia.com"),
@@ -40,6 +40,10 @@ func Load() Config {
 		GRPCTLSCAFile:      getEnv("GRPC_TLS_CA_FILE", ""),
 		BulkheadMax:        getInt("BULKHEAD_MAX_CONCURRENT", 8),
 	}
+	// Optional overlays: config file (rendered by Vault Agent / config server) then live Vault KV.
+	_ = ApplyConfigFile(&cfg, os.Getenv("CONFIG_FILE"))
+	_ = ApplyVaultKV(&cfg)
+	return cfg
 }
 
 func getBool(key string, fallback bool) bool {

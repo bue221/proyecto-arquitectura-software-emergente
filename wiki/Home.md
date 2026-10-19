@@ -16,23 +16,17 @@ Detalle: [`AGENTS.md`](https://github.com/bue221/proyecto-arquitectura-software-
 
 ## Estado de entrega
 
-### Hecho
+### Hecho (Levels 1–3)
 
 | Área | Notas |
 |------|--------|
 | Level 1 | Airport + Itinerary hexagonales, Compose, Swagger, migraciones |
 | Frontend | Studio Leaflet + tile Adapter, trips wizard, packing, SEO; map prefs en `/profile` |
-| Level 2 | Gateway + Redis/CB + RabbitMQ/notify + OTel/Jaeger + **Testcontainers** |
-| Level 3 (parcial) | gRPC `EnsureExists` + CI tests ≤3 min |
+| Level 2 | Gateway + Redis/CB + RabbitMQ/notify + OTel/Jaeger + Testcontainers |
+| Level 3 | gRPC mTLS, pagination, bulkhead, Prometheus, Toxiproxy, K8s probes, Pact, Vault/config, CI |
 | Ops local | `make up` / `make down` / `make smoke` / `make wiki` |
 
-### Siguiente (prioridad)
-
-1. mTLS / auth S2S en gRPC
-3. Kubernetes probes + ampliar CI/CD (imágenes / Sonar)
-4. Chaos / bulkhead / Prometheus / Pact / OpenFaaS packaging (según rúbrica)
-
-Tabla detallada: [Self-assessment](Self-assessment)
+Tabla detallada: [Self-assessment](Self-assessment) · [Kubernetes](Kubernetes)
 
 ## Quick links
 

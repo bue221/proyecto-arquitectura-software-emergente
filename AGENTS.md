@@ -188,15 +188,13 @@ Agents closing a PR must not mark work “done” until wiki pages are updated i
 - Level 2 API Gateway (JWT + rate limit) + Redis cache + CB + retry on Airport
 - Level 2 RabbitMQ + AsyncAPI + outbox relay + notification FaaS consumer
 - Level 2 OpenTelemetry + Jaeger + controlled failure demo (`/api/v1/demo/fail`)
-- Level 3 gRPC Airport `EnsureExists` + Itinerary client (`AIRPORT_GRPC_ADDR`)
-- Level 3 CI: GitHub Actions Go unit tests only (`timeout-minutes: 3`)
 - Level 2 E2E Testcontainers (Postgres) + nightly workflow
+- Level 3 gRPC `EnsureExists` + mTLS S2S + pagination/versioning
+- Level 3 bulkhead + Prometheus alerts + Toxiproxy chaos
+- Level 3 Kubernetes probes + Pact contracts + Vault/config overlays
+- Level 3 CI: GitHub Actions unit tests (`timeout-minutes: 3`) + e2e-nightly
 - Local stack: `make up` / `make down` / `make smoke` / `make wiki`
 
-**Next (priority order)**
+**Next**
 
-1. Level 3 — S2S auth (mTLS) for gRPC
-2. Level 3 — Kubernetes probes + expand CI/CD (images / Sonar)
-3. Level 3 — Chaos / bulkhead / Prometheus alerts / Pact / Vault (as needed for rubric)
-
-Remaining work continues **only** through branch → PR → merge → wiki publish.
+Levels 1–3 rubric criteria are marked **done** in `docs/06-self-assessment.md`. Further work is polish, Sonar baselines, or OpenFaaS packaging only if the course asks — still via branch → PR → merge → wiki publish.
