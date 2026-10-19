@@ -1,52 +1,52 @@
 > **Fuente de verdad:** esta página se publica desde `wiki/` / `docs/` del monorepo.
 > Edita vía Pull Request en el código; no edites solo en la Wiki sin sincronizar.
 
-# Vision & scope
+# Visión y alcance
 
-## Problem
+## Problema
 
-Travelers planning trips inside Colombia need a reliable way to:
+Quien planifica viajes dentro de Colombia necesita una forma confiable de:
 
-- Discover real airports (validated against a public data source).
-- Visualize them on a map.
-- Build personal itineraries (origin, destination, date, duration).
-- Receive asynchronous confirmation when an itinerary is created.
+- Descubrir aeropuertos reales (validados contra una fuente pública).
+- Verlos en un mapa.
+- Armar itinerarios personales (origen, destino, fecha, duración).
+- Recibir una confirmación asíncrona cuando se crea un itinerario.
 
-The system must behave like a **real distributed platform**: isolation, resilience, observability, and safe async integration.
+El sistema debe comportarse como una **plataforma distribuida real**: aislamiento, resiliencia, observabilidad e integración asíncrona segura.
 
-## Solution (one sentence)
+## Solución (una frase)
 
-A monorepo platform with a Next.js map UI and Go microservices that adapt external airport data, persist itineraries with hexagonal boundaries, and notify users through event-driven serverless functions.
+Un monorepo con UI de mapa en Next.js y microservicios Go que adaptan datos externos de aeropuertos, persisten itinerarios con límites hexagonales y notifican mediante funciones serverless orientadas a eventos.
 
-## In scope
+## Dentro del alcance
 
-| Area | Scope |
-|------|--------|
-| Airport catalog | Consume API Colombia via Adapter; Redis cache; Plotly map |
-| Itineraries | Full CRUD; validate airports over HTTP (L1) / optimized copy or gRPC (L2/L3) |
-| Async notify | `ItineraryCreated` → FaaS notification + history DB |
-| Edge | API Gateway: routing, rate limit, JWT propagation |
-| Ops | Docker Compose; structured logs; OTel/Jaeger; Prometheus (L2+) |
-| Level 3 | Transactional Outbox, gRPC, CI/CD, K8s probes, contract tests, chaos/alerting samples |
+| Área | Alcance |
+|------|---------|
+| Catálogo de aeropuertos | Consumir API Colombia vía Adapter; caché Redis; mapa |
+| Itinerarios | CRUD completo; validar aeropuertos por HTTP (N1) / copia optimizada o gRPC (N2/N3) |
+| Notificación async | `ItineraryCreated` → notificación FaaS + BD de historial |
+| Borde | API Gateway: enrutamiento, rate limit, propagación de JWT |
+| Ops | Docker Compose; logs estructurados; OTel/Jaeger; Prometheus (N2+) |
+| Nivel 3 | Transactional Outbox, gRPC, CI/CD, probes K8s, pruebas de contrato, muestras de caos/alertas |
 
-## Out of scope (YAGNI for now)
+## Fuera de alcance (YAGNI por ahora)
 
-- Real email provider production accounts (simulate + persist history).
-- Multi-region active-active.
-- Native mobile apps.
-- Flight prices / booking with airlines.
-- Shared database across services.
+- Cuentas reales de un proveedor de correo en producción (se simula y se persiste el historial).
+- Multi-región activo-activo.
+- Apps móviles nativas.
+- Precios de vuelos o reserva con aerolíneas.
+- Base de datos compartida entre servicios.
 
-## Success metrics (course)
+## Métricas de éxito (curso)
 
-- Levels 1–3 checklist green in [`06-self-assessment.md`](06-self-assessment.md).
-- Demo script runnable with screenshots/video evidence.
-- Wiki + ADRs explain Adapter, Outbox, and double-write resolution.
+- Checklist de Niveles 1–3 en verde en [Self-assessment](Self-assessment).
+- Guion de demo ejecutable, con capturas o video.
+- Wiki y ADRs explican Adapter, Outbox y la resolución del double-write.
 
 ## Personas
 
-| Persona | Need |
-|---------|------|
-| Traveler | Create and manage itineraries; see airports on a map |
-| Operator / SRE | Traces, metrics, alerts, safe deploys |
-| Reviewer (course) | Clear docs, PRs, Swagger, tests, architecture alignment |
+| Persona | Necesidad |
+|---------|-----------|
+| Viajero | Crear y gestionar itinerarios; ver aeropuertos en el mapa |
+| Operador / SRE | Trazas, métricas, alertas, despliegues seguros |
+| Revisor (curso) | Docs claros, PRs, Swagger, tests y arquitectura alineada |

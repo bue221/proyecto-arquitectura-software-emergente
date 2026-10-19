@@ -1,35 +1,36 @@
-# Pull Request checklist
+# Checklist de Pull Request
 
-Copy into the PR if the template is outdated.
+Cópialo en el PR si la plantilla quedó desactualizada.
 
-## Design
+## Diseño
 
-- [ ] Matches hexagonal boundaries (no infra imports in `domain`)
-- [ ] No business logic added to Gateway
-- [ ] Frontend does not call API Colombia
-- [ ] Map tiles use Adapter port (no hard-coded CDN in interaction code)
-- [ ] New/changed public behavior documented under `docs/`
+- [ ] Respeta los límites hexagonales (sin imports de infra en `domain`)
+- [ ] No se agregó lógica de negocio al Gateway
+- [ ] El frontend no llama a API Colombia
+- [ ] Las teselas usan el puerto Adapter (sin CDN fijo en el código de interacción)
+- [ ] El comportamiento público nuevo o cambiado está documentado en `docs/`
 
-## Wiki (mandatory)
+## Wiki (obligatorio)
 
-- [ ] Matching `wiki/` page(s) updated in **this same PR**
-- [ ] After merge to `main`: run `make wiki` / `./scripts/publish-wiki.sh`
+- [ ] Las páginas `wiki/` correspondientes se actualizaron en **este mismo PR**
+- [ ] La prosa nueva de `wiki/` está en español; los nombres de archivo no cambiaron
+- [ ] Tras el merge a `main`: ejecutar `make wiki` / `./scripts/publish-wiki.sh`
 
-## Quality
+## Calidad
 
-- [ ] Unit tests for changed use cases / ports
-- [ ] Error paths return consistent HTTP problem shape
-- [ ] Logs are JSON and include trace correlation when in request path
-- [ ] Migrations included if schema changed (per service)
+- [ ] Tests unitarios de los casos de uso o puertos tocados
+- [ ] Los caminos de error devuelven la forma HTTP problem de manera consistente
+- [ ] Los logs son JSON e incluyen correlación de traza en el camino de la petición
+- [ ] Hay migraciones si cambió el esquema (por servicio)
 
-## Level awareness
+## Conciencia de nivel
 
-- [ ] If touching events: AsyncAPI updated; outbox not bypassed
-- [ ] If touching external I/O: timeouts + retry/CB considered
-- [ ] If Level 3 surface: probes / contracts / CI notes updated
+- [ ] Si toca eventos: AsyncAPI actualizado; el outbox no se salta
+- [ ] Si toca I/O externo: se consideraron timeouts + retry/CB
+- [ ] Si es superficie de Nivel 3: probes / contratos / notas de CI actualizados
 
 ## Ops
 
-- [ ] Secrets not committed
-- [ ] Compose/K8s changes described in PR body
-- [ ] Demo impact noted for reviewers (`docs/05-runbooks/demo-script.md`)
+- [ ] No se commitearon secretos
+- [ ] Los cambios de Compose/K8s están descritos en el cuerpo del PR
+- [ ] El impacto en la demo está anotado para quien revisa ([Demo-script](Demo-script))

@@ -1,60 +1,60 @@
 # Airport Service
 
-**Status:** Level 1 + Redis/CB + **gRPC L3** — HTTP `:8081` (Swagger), gRPC `:9091` (`EnsureExists`).
+**Estado:** Nivel 1 + Redis/CB + **gRPC N3** — HTTP `:8081` (Swagger), gRPC `:9091` (`EnsureExists`).
 
-## Why
+## Por qué
 
-Owns the **Airport Catalog** bounded context. Isolates API Colombia behind an Adapter so the rest of the system (and Next.js) never depends on the external schema.
+Es dueño del contexto **Catálogo de aeropuertos**. Aísla API Colombia detrás de un Adapter para que el resto del sistema (y Next.js) no dependa del esquema externo.
 
-## Responsibilities
+## Responsabilidades
 
-- Fetch airports from API Colombia.
-- Map external DTO → domain `Airport` → API/Plotly DTO.
-- Cache adapted responses in Redis.
-- Expose REST for get-by-id / list-for-map and gRPC `EnsureExists` for Itinerary S2S.
-- Optional **mTLS** on gRPC when `GRPC_MTLS_ENABLED=true` (Compose default; ADR-0009).
-- Optional **CONFIG_FILE** / Vault KV overlay for Colombia URL and timeouts (`infra/vault/README.md`).
-- Resilience: timeout, retry+backoff+jitter, circuit breaker, bulkhead.
+- Obtener aeropuertos desde API Colombia.
+- Mapear DTO externo → `Airport` de dominio → DTO de API/mapa.
+- Cachear las respuestas adaptadas en Redis.
+- Exponer REST para consulta por ID y listado del mapa, y gRPC `EnsureExists` para S2S de Itinerary.
+- **mTLS** opcional en gRPC cuando `GRPC_MTLS_ENABLED=true` (default de Compose; ADR-0009).
+- Overlay opcional **CONFIG_FILE** / Vault KV para la URL de Colombia y los timeouts (`infra/vault/README.md`).
+- Resiliencia: timeout, retry + backoff + jitter, circuit breaker, bulkhead.
 
-## Non-responsibilities
+## Fuera de su responsabilidad
 
-- Itinerary CRUD
-- Sending notifications
-- JWT issuance (Gateway concern)
+- CRUD de itinerarios
+- Envío de notificaciones
+- Emisión de JWT (eso es del Gateway)
 
-## Hexagonal sketch
+## Esquema hexagonal
 
-| Layer | Contents |
-|-------|----------|
-| Domain | `Airport`, `AirportProvider` port, errors |
-| Application | `GetAirport`, `ListAirportsForMap` |
-| Adapters in | HTTP handlers, OpenAPI, gRPC server (L3) |
-| Adapters out | Colombia HTTP adapter, Redis cache (memory fallback), circuit breaker + retry |
+| Capa | Contenido |
+|------|-----------|
+| Dominio | `Airport`, puerto `AirportProvider`, errores |
+| Aplicación | `GetAirport`, `ListAirportsForMap` |
+| Adaptadores de entrada | Handlers HTTP, OpenAPI, servidor gRPC (N3) |
+| Adaptadores de salida | Adapter HTTP Colombia, caché Redis (fallback en memoria), circuit breaker + retry |
 
-## Resilience
+## Resiliencia
 
-- **Cache-aside:** Redis when `REDIS_ADDR` is set; falls back to in-process memory if Redis is unreachable.
-- **Timeout:** `UPSTREAM_TIMEOUT_MS` on Colombia HTTP client (default 8s).
-- **Retry:** 3 attempts, exponential backoff + full jitter (`200ms` → max `2s`).
-- **Circuit breaker:** opens after `CB_FAILURE_THRESHOLD` consecutive failures; cooldown `CB_COOLDOWN_MS`.
-- **Bulkhead:** semaphore limits concurrent Colombia calls (`BULKHEAD_MAX_CONCURRENT`, default 8).
-- **Inspect:** `GET /api/v1/resilience` returns cache backend + breaker + bulkhead snapshot.
-- **Metrics:** `GET /metrics` (Prometheus); Compose scrapes via `prometheus:9090` with alerts for CB open / bulkhead rejects.
+- **Cache-aside:** Redis si `REDIS_ADDR` está definido; si Redis no responde, cae a memoria del proceso.
+- **Timeout:** `UPSTREAM_TIMEOUT_MS` en el cliente HTTP de Colombia (default 8s).
+- **Retry:** 3 intentos, backoff exponencial + full jitter (`200ms` → máximo `2s`).
+- **Circuit breaker:** abre tras `CB_FAILURE_THRESHOLD` fallos consecutivos; enfriamiento `CB_COOLDOWN_MS`.
+- **Bulkhead:** un semáforo limita llamadas concurrentes a Colombia (`BULKHEAD_MAX_CONCURRENT`, default 8).
+- **Inspección:** `GET /api/v1/resilience` devuelve backend de caché + breaker + instantánea del bulkhead.
+- **Métricas:** `GET /metrics` (Prometheus); Compose hace scrape vía `prometheus:9090` con alertas de CB abierto y rechazos del bulkhead.
 
-## Error strategy
+## Estrategia de errores
 
-| Condition | HTTP | Notes |
+| Condición | HTTP | Notas |
 |-----------|------|-------|
-| Not found | 404 | Stable error code `airport_not_found` |
-| Upstream timeout/open CB | 503 | `upstream_unavailable`; log + metrics |
-| Validation | 400 | Bad path/query params |
-| Internal | 500 | Sanitized message; full detail in logs |
+| No encontrado | 404 | Código estable `airport_not_found` |
+| Timeout upstream o CB abierto | 503 | `upstream_unavailable`; log + métricas |
+| Validación | 400 | Path o query inválidos |
+| Interno | 500 | Mensaje saneado; el detalle completo queda en logs |
 
-## Observability
+## Observabilidad
 
-JSON logs with `trace_id`/`span_id`; spans around external call and cache hit/miss; Prometheus metrics for CB state and cache hit ratio.
+Logs JSON con `trace_id` / `span_id`; spans alrededor de la llamada externa y del hit/miss de caché; métricas Prometheus del estado del CB y del ratio de aciertos de caché.
 
-## Related diagrams
+## Diagramas relacionados
 
-- [`../03-diagrams/adapter.md`](../03-diagrams/adapter.md)
-- [`../03-diagrams/sequences.md`](../03-diagrams/sequences.md)
+- [Diagrams-adapter](Diagrams-adapter)
+- [Diagrams-sequences](Diagrams-sequences)

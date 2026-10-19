@@ -1,38 +1,38 @@
-# Quality gates
+# Compuertas de calidad
 
-## Unit tests
+## Tests unitarios
 
-- Go: table-driven tests for use cases with fake ports.
-- Next.js: component/hooks tests for map data mapping (not flaky browser tests in unit layer).
+- Go: tests table-driven de casos de uso con puertos falsos.
+- Next.js: tests de componentes/hooks del mapeo de datos del mapa (sin tests de navegador inestables en la capa unitaria).
 
-## Load tests
+## Tests de carga
 
-- Tooling candidate: `k6` or `vegeta` against Gateway create/list paths.
-- Goal: evidence for rubric (not production SLOs yet). Record scripts under `infra/` or `tests/load/` in a later PR.
+- Candidatos: `k6` o `vegeta` contra las rutas de crear/listar del Gateway.
+- Meta: evidencia para la rúbrica (todavía no SLOs de producción). Los scripts van en `infra/` o `tests/load/` en un PR posterior.
 
-## Contract tests (Level 3)
+## Tests de contrato (Nivel 3)
 
-- Pact-compatible contract: `packages/contracts/pact/Airport-Itinerary.json`.
-- Consumer: `services/itinerary-service/.../airporthttp/pact_consumer_test.go`.
-- Provider: `services/airport-service/.../httpapi/pact_provider_test.go`.
+- Contrato compatible con Pact: `packages/contracts/pact/Airport-Itinerary.json`.
+- Consumidor: `services/itinerary-service/.../airporthttp/pact_consumer_test.go`.
+- Proveedor: `services/airport-service/.../httpapi/pact_provider_test.go`.
 
 ## Swagger / OpenAPI
 
-- Each Go service serves OpenAPI UI.
-- Source-of-truth copies also in `packages/contracts/openapi/`.
+- Cada servicio Go sirve la UI de OpenAPI.
+- Las copias fuente también viven en `packages/contracts/openapi/`.
 
 ## SonarQube
 
-- CI scan on PRs; quality gate must not regress coverage/duplications once baseline is set.
+- Escaneo de CI en los PRs; la compuerta no debe empeorar cobertura ni duplicación una vez fijada la línea base.
 
-## Chaos / Toxiproxy (Level 3 sample)
+## Caos / Toxiproxy (muestra de Nivel 3)
 
-- Compose service `toxiproxy` (API `:8474`, toxic Airport HTTP `:18475`).
-- Runbook: `infra/toxiproxy/README.md` — inject latency toxic, observe timeouts/CB.
-- Capture CB open metrics + Prometheus alert screenshots in demo evidence.
+- Servicio Compose `toxiproxy` (API `:8474`, HTTP tóxico de Airport `:18475`).
+- Runbook: `infra/toxiproxy/README.md` — inyectar latencia, observar timeouts/CB.
+- Capturar métricas de CB abierto y capturas de la alerta de Prometheus como evidencia de la demo.
 
-## Prometheus alerts (Level 3)
+## Alertas de Prometheus (Nivel 3)
 
 - Config: `infra/prometheus/prometheus.yml` + `alerts.yml`.
-- Rules: `AirportCircuitBreakerOpen`, `AirportBulkheadSaturated`.
-- Scrape Airport `/metrics` from Compose service `prometheus` (`:9090`).
+- Reglas: `AirportCircuitBreakerOpen`, `AirportBulkheadSaturated`.
+- Scrape de `/metrics` de Airport desde el servicio Compose `prometheus` (`:9090`).

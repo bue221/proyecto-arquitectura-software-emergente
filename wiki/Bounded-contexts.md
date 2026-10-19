@@ -1,95 +1,95 @@
 > **Fuente de verdad:** esta página se publica desde `wiki/` / `docs/` del monorepo.
 > Edita vía Pull Request en el código; no edites solo en la Wiki sin sincronizar.
 
-# Bounded contexts & ubiquitous language (DDD)
+# Contextos delimitados y lenguaje ubicuo (DDD)
 
-## Context map
+## Mapa de contextos
 
 ```mermaid
 flowchart LR
-  subgraph AirportBC [Airport Catalog BC]
+  subgraph AirportBC [BC Catálogo de aeropuertos]
     AP[Airport]
     LOC[GeoLocation]
   end
 
-  subgraph ItineraryBC [Itinerary Planning BC]
+  subgraph ItineraryBC [BC Planificación de itinerarios]
     IT[Itinerary]
     REF[AirportRef]
   end
 
-  subgraph NotifyBC [Notification BC]
+  subgraph NotifyBC [BC Notificación]
     N[NotificationRecord]
   end
 
-  EXT[API Colombia - External]
+  EXT[API Colombia - externo]
 
-  EXT -.->|Anti-Corruption Layer / Adapter| AirportBC
-  ItineraryBC -->|sync query AirportRef by ID| AirportBC
-  ItineraryBC -->|integration event ItineraryCreated| NotifyBC
+  EXT -.->|Capa anticorrupción / Adapter| AirportBC
+  ItineraryBC -->|consulta sync de AirportRef por ID| AirportBC
+  ItineraryBC -->|evento de integración ItineraryCreated| NotifyBC
 ```
 
-## Contexts
+## Contextos
 
-### 1. Airport Catalog
+### 1. Catálogo de aeropuertos
 
-**Purpose:** Provide a trusted, internal representation of Colombian airports for maps and validation.
+**Propósito:** ofrecer una representación interna y confiable de los aeropuertos colombianos para el mapa y la validación.
 
-**Ubiquitous language**
+**Lenguaje ubicuo**
 
-| Term | Meaning |
-|------|---------|
-| Airport | Domain entity with stable internal ID, code, name, coordinates |
-| AirportProvider | Port to obtain airports from the outside world |
-| CatalogCache | Short-lived cached catalog snapshot |
-| PlotlyPoint | Read-model coordinates/name for the map UI |
+| Término | Significado |
+|---------|-------------|
+| Airport | Entidad de dominio con ID interno estable, código, nombre y coordenadas |
+| AirportProvider | Puerto para obtener aeropuertos del mundo exterior |
+| CatalogCache | Instantánea de corta vida del catálogo en caché |
+| PlotlyPoint | Modelo de lectura (coordenadas y nombre) para la UI del mapa |
 
-**Aggregate decision — Airport**
+**Decisión de agregado — Airport**
 
-We treat **Airport as a referenced value/identity from the itinerary’s point of view**, not as a full nested aggregate copied into every itinerary.
+Desde el itinerario, **Airport es una identidad/valor referenciado**, no un agregado completo copiado dentro de cada itinerario.
 
-- Itinerary stores **AirportRef** (ID + optional denormalized label for display).
-- Canonical airport data lives in Airport Catalog BC.
-- Avoids dual ownership and stale full copies (Level 1 sync validation; Level 2/3 may keep a local read-optimized copy explicitly documented).
+- El itinerario guarda **AirportRef** (ID + etiqueta desnormalizada opcional para mostrar).
+- Los datos canónicos viven en el BC Catálogo de aeropuertos.
+- Se evita la doble propiedad y las copias completas vencidas (validación síncrona en Nivel 1; en Nivel 2/3 puede existir una copia local de lectura, documentada de forma explícita).
 
-### 2. Itinerary Planning
+### 2. Planificación de itinerarios
 
-**Purpose:** Let a user create and manage personal trip itineraries between two airports.
+**Propósito:** permitir que una persona cree y gestione itinerarios personales entre dos aeropuertos.
 
-**Ubiquitous language**
+**Lenguaje ubicuo**
 
-| Term | Meaning |
-|------|---------|
-| Itinerary | Aggregate root: user name, origin, destination, travel date, duration minutes |
-| AirportRef | Identity reference to an airport in Catalog BC |
-| ItineraryCreated | Integration event after successful create |
-| OutboxMessage | Durable pending integration event |
+| Término | Significado |
+|---------|-------------|
+| Itinerary | Raíz de agregado: nombre, origen, destino, fecha de viaje, duración en minutos |
+| AirportRef | Referencia de identidad a un aeropuerto del BC Catálogo |
+| ItineraryCreated | Evento de integración tras una creación exitosa |
+| OutboxMessage | Evento de integración pendiente y durable |
 
-**Invariants**
+**Invariantes**
 
-- Origin and destination airport IDs must exist in Catalog at write time.
-- Duration minutes > 0.
-- Travel date required.
+- Los IDs de aeropuerto de origen y destino deben existir en el catálogo al momento de escribir.
+- La duración en minutos es mayor que 0.
+- La fecha de viaje es obligatoria.
 
-### 3. Notification
+### 3. Notificación
 
-**Purpose:** React to itinerary lifecycle integration events; record delivery/history.
+**Propósito:** reaccionar a eventos de integración del ciclo de vida del itinerario y registrar entrega e historial.
 
-**Ubiquitous language**
+**Lenguaje ubicuo**
 
-| Term | Meaning |
-|------|---------|
-| NotificationRecord | Persisted attempt/result of a notification |
-| ItineraryCreated (consumer) | Trigger payload; no ownership of itinerary aggregate |
+| Término | Significado |
+|---------|-------------|
+| NotificationRecord | Intento o resultado persistido de una notificación |
+| ItineraryCreated (consumidor) | Payload disparador; no es dueño del agregado itinerario |
 
-## Domain events vs integration events
+## Eventos de dominio frente a eventos de integración
 
-| Kind | Where | Example | Audience |
-|------|-------|---------|----------|
-| Domain event | Inside a BC, optional | `ItineraryValidated` | Same process / same BC |
-| Integration event | Across BCs via broker | `ItineraryCreated` | Notification FaaS, future consumers |
+| Tipo | Dónde | Ejemplo | Audiencia |
+|------|-------|---------|-----------|
+| Evento de dominio | Dentro de un BC, opcional | `ItineraryValidated` | El mismo proceso / el mismo BC |
+| Evento de integración | Entre BCs, vía bróker | `ItineraryCreated` | FaaS de notificación y consumidores futuros |
 
-Only **integration events** are documented in AsyncAPI and published through the outbox.
+Solo los **eventos de integración** se documentan en AsyncAPI y se publican por el outbox.
 
-## Anti-corruption layer
+## Capa anticorrupción
 
-API Colombia schemas never leak into Itinerary BC or the Next.js app. Translation happens only in Airport Service adapters.
+Los esquemas de API Colombia no se filtran al BC de itinerarios ni a la app Next.js. La traducción ocurre solo en los adaptadores de Airport Service.

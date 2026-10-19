@@ -1,88 +1,88 @@
-# Frontend architecture (`apps/web`)
+# Arquitectura del frontend (`apps/web`)
 
-## Why
+## Por qué
 
-Premium itinerary **studio** + trip management: interactive Colombia map, glassmorphic builder, multi-step trip creation with destination plans, packing checklist. The browser only talks to the API Gateway — never to API Colombia.
+**Studio** de itinerarios y gestión de viajes: mapa interactivo de Colombia, constructor en vidrio, creación en varios pasos con planes en el destino y checklist de equipaje. El navegador solo habla con el API Gateway — nunca con API Colombia.
 
-## Stack (locked UI / UX)
+## Stack (UI / UX cerrado)
 
-| Concern | Choice | Notes |
-|---------|--------|-------|
-| Framework | Next.js 15 App Router | SSR metadata / SEO |
-| Language | TypeScript + React 19 | |
-| Styling | Tailwind CSS v4 + CSS variables | slate / emerald / indigo |
-| Components | shadcn/ui (Base UI) | accessible primitives |
-| Map engine | React-Leaflet | no Mapbox token required |
-| Map tiles | **Adapter pattern** | free providers only by default |
-| Motion | Framer Motion | panel, cards, progress |
-| Typography | Inter | ExtraBold IATA codes, Medium city names |
-| Toasts | Sonner | mutations feedback |
-| Auth UX | Demo login → Gateway JWT | profile in `localStorage` |
-| Map prefs | `/profile` config | provider + optional API key; keyed without key → OSM |
-| SEO / brand | `icon.svg`, apple-icon, OG/Twitter images, `manifest.ts`, JSON-LD | emerald RutaCO mark |
-| SEO routes | `sitemap.ts`, `robots.ts` | `NEXT_PUBLIC_SITE_URL` |
+| Preocupación | Elección | Notas |
+|--------------|----------|-------|
+| Framework | Next.js 15 App Router | Metadatos SSR / SEO |
+| Lenguaje | TypeScript + React 19 | |
+| Estilos | Tailwind CSS v4 + variables CSS | slate / emerald / indigo |
+| Componentes | shadcn/ui (Base UI) | primitivas accesibles |
+| Motor de mapa | React-Leaflet | no exige token de Mapbox |
+| Teselas | **Patrón Adapter** | por defecto solo proveedores gratuitos |
+| Movimiento | Framer Motion | panel, tarjetas, progreso |
+| Tipografía | Inter | códigos IATA ExtraBold, ciudades Medium |
+| Toasts | Sonner | feedback de mutaciones |
+| Auth UX | Login demo → JWT del Gateway | perfil en `localStorage` |
+| Preferencias de mapa | Configuración en `/profile` | proveedor + API key opcional; con key vacía → OSM |
+| SEO / marca | `icon.svg`, apple-icon, imágenes OG/Twitter, `manifest.ts`, JSON-LD | marca esmeralda RutaCO |
+| Rutas SEO | `sitemap.ts`, `robots.ts` | `NEXT_PUBLIC_SITE_URL` |
 
-## Visual language
+## Lenguaje visual
 
-- **Base:** `slate-50` canvas; white / glass surfaces (`white/80` + blur).
-- **Primary actions:** `emerald-600` (nature / Colombia nod without cliché).
-- **Map routes / selection chrome:** `indigo-600`.
-- **Trip cards:** deterministic style variants (`emerald`, `indigo`, `sunset`, `ocean`, `forest`, `slate`) hashed from itinerary id — not identical clones.
-- **Studio layout:** full-bleed map + floating glass panel (desktop); bottom sheet panel (mobile).
-- **AppShell:** `min-h-dvh` flex column — `main` grows (`flex-1`) so the footer stays at the bottom of the viewport on short pages (`/trips`, `/login`, …).
+- **Base:** lienzo `slate-50`; superficies blancas / vidrio (`white/80` + blur).
+- **Acciones primarias:** `emerald-600` (naturaleza / guiño a Colombia, sin cliché).
+- **Rutas del mapa y cromo de selección:** `indigo-600`.
+- **Tarjetas de viaje:** variantes deterministas (`emerald`, `indigo`, `sunset`, `ocean`, `forest`, `slate`) hasheadas desde el id del itinerario — no son clones idénticos.
+- **Layout del Studio:** mapa a sangre + panel flotante de vidrio (desktop); panel en bottom sheet (mobile).
+- **AppShell:** columna flex `min-h-dvh` — `main` crece (`flex-1`) para que el footer quede al fondo del viewport en páginas cortas (`/trips`, `/login`, …).
 
-## Map tile adapters
+## Adaptadores de teselas
 
-Port: `MapTileProvider` / `MapTileStyle` under `features/studio/map/`.
+Puerto: `MapTileProvider` / `MapTileStyle` en `features/studio/map/`.
 
-| Adapter id | Provider | API key |
-|------------|----------|---------|
-| `carto-positron` | CARTO light (**product default**) | none |
-| `carto-dark` | CARTO dark | none |
-| `osm` | OpenStreetMap (fallback when keyed provider has no key) | none |
-| `opentopo` | OpenTopoMap | none |
-| `esri-gray` | Esri Light Gray | none |
-| `mapbox-streets` | Mapbox Streets | user token in `/profile` |
+| Id del adapter | Proveedor | API key |
+|----------------|-----------|---------|
+| `carto-positron` | CARTO claro (**default del producto**) | ninguna |
+| `carto-dark` | CARTO oscuro | ninguna |
+| `osm` | OpenStreetMap (fallback si un proveedor con key no tiene key) | ninguna |
+| `opentopo` | OpenTopoMap | ninguna |
+| `esri-gray` | Esri Light Gray | ninguna |
+| `mapbox-streets` | Mapbox Streets | token de la persona en `/profile` |
 
-Preferences live in `localStorage` (`rutaco_map_preferences`) and are edited only under **Perfil → Configuración de mapa**. Studio does not show a basemap switcher. Env override: `NEXT_PUBLIC_MAP_TILE_PROVIDER`.
+Las preferencias viven en `localStorage` (`rutaco_map_preferences`) y solo se editan en **Perfil → Configuración de mapa**. El Studio no muestra un selector de mapa base. Override por entorno: `NEXT_PUBLIC_MAP_TILE_PROVIDER`.
 
-Resolution: if `requiresApiKey` and the stored key is empty → effective style is **OSM**.
+Resolución: si `requiresApiKey` y la key guardada está vacía → el estilo efectivo es **OSM**.
 
-`MapTileLayer` must **not** pass `subdomains={undefined}` into Leaflet — `_getSubdomain` always reads `.length`. Omit the prop (Leaflet default `"abc"`) or set it on every adapter.
+`MapTileLayer` no debe pasar `subdomains={undefined}` a Leaflet: `_getSubdomain` siempre lee `.length`. Omite la prop (default de Leaflet `"abc"`) o defínela en cada adapter.
 
-## Product surfaces
+## Superficies del producto
 
-| Route | Purpose | SEO |
-|-------|---------|-----|
-| `/` | Itinerary Studio (map + panel) | default title / OG |
-| `/trips` | Two-step create + trip cards | `title: Mis viajes` |
-| `/trips/[id]` | Plans + packing checklist | client page (auth) |
-| `/login` | Demo JWT login | |
-| `/profile` | Traveler profile + map preferences | |
+| Ruta | Propósito | SEO |
+|------|-----------|-----|
+| `/` | Studio de itinerarios (mapa + panel) | título / OG por defecto |
+| `/trips` | Creación en dos pasos + tarjetas | `title: Mis viajes` |
+| `/trips/[id]` | Planes + checklist de equipaje | página cliente (auth) |
+| `/login` | Login JWT de demo | |
+| `/profile` | Perfil del viajero + preferencias de mapa | |
 
-## Trip creation UX (two steps)
+## UX de creación (dos pasos)
 
-1. **Ruta** — origin / destination (airport select from catalog), date, duration.
-2. **Planes** — optional destination recommendations (food, culture, nature, city-specific) + custom plans; user may skip.
+1. **Ruta** — origen / destino (select de aeropuertos del catálogo), fecha, duración.
+2. **Planes** — recomendaciones opcionales del destino (comida, cultura, naturaleza, específicas de la ciudad) + planes propios; se puede omitir.
 
-Persisted as `planItems` on the Itinerary aggregate (Itinerary Service JSONB).
+Se persisten como `planItems` en el agregado Itinerary (JSONB de Itinerary Service).
 
-## Folder layout
+## Carpetas
 
 ```text
 apps/web/src/
-  app/                 # routes, layout SEO, sitemap, robots
+  app/                 # rutas, SEO del layout, sitemap, robots
   components/layout/   # SiteHeader, AppShell
   features/
-    studio/            # map studio + tile adapters
-    itineraries/       # wizard, cards, packing, recommendations
+    studio/            # studio del mapa + adapters de teselas
+    itineraries/       # wizard, tarjetas, packing, recomendaciones
     auth/
     airports/api.ts
   lib/
 ```
 
-## Env
+## Entorno
 
 - `NEXT_PUBLIC_API_GATEWAY_URL`
 - `NEXT_PUBLIC_MAP_TILE_PROVIDER`
-- `NEXT_PUBLIC_SITE_URL` — canonical URL for sitemap / Open Graph
+- `NEXT_PUBLIC_SITE_URL` — URL canónica para sitemap / Open Graph

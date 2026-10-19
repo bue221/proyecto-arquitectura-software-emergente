@@ -1,13 +1,13 @@
 > **Fuente de verdad:** esta página se publica desde `wiki/` / `docs/` del monorepo.
 > Edita vía Pull Request en el código; no edites solo en la Wiki sin sincronizar.
 
-# Deployment views
+# Vistas de despliegue
 
-## Local (Docker Compose) — target
+## Local (Docker Compose) — objetivo
 
 ```mermaid
 flowchart TB
-  subgraph host [Developer host]
+  subgraph host [Máquina de desarrollo]
     WEB[web:3000]
     GW[gateway:8080]
     AIR[airport-service]
@@ -43,9 +43,9 @@ flowchart TB
   PROM --> GRAF
 ```
 
-Compose files will live under `infra/docker/` in implementation PRs.
+Los archivos de Compose viven en `infra/docker/`.
 
-## Kubernetes (Level 3 — target)
+## Kubernetes (Nivel 3 — objetivo)
 
 ```mermaid
 flowchart LR
@@ -56,10 +56,10 @@ flowchart LR
   AIR --> REDIS
   ITI --> PG2
   AIR --> PG1
-  FAAS[Job/Function notify] --> PG3
+  FAAS[Job/función notify] --> PG3
   RMQ[[RabbitMQ]]
   ITI --> RMQ
   RMQ --> FAAS
 ```
 
-Each Deployment exposes **readiness** and **liveness** probes. Details in `infra/k8s/` when implemented.
+Cada Deployment expone probes de **readiness** y **liveness**. El detalle está en `infra/k8s/`.

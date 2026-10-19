@@ -1,33 +1,33 @@
-## Personal Itineraries
-**[Home](Home)**
+## Itinerarios personales
+**[Inicio](Home)**
 
-### Architecture
-- [Vision](Vision)
-- [Overview](Architecture-overview)
-- [Document](Architecture-document)
-- [Bounded contexts](Bounded-contexts)
+### Arquitectura
+- [Visión](Vision)
+- [Resumen](Architecture-overview)
+- [Documento](Architecture-document)
+- [Contextos delimitados](Bounded-contexts)
 - [ADRs](ADRs)
 
-### Services
+### Servicios
 - [Gateway](API-gateway)
-- [Airport](Airport-service)
-- [Itinerary](Itinerary-service)
-- [Notifications](Notification-function)
+- [Aeropuertos](Airport-service)
+- [Itinerarios](Itinerary-service)
+- [Notificaciones](Notification-function)
 
-### Diagrams
-- [Index](Diagrams-index)
-- [Components](Diagrams-components)
-- [Sequences](Diagrams-sequences)
+### Diagramas
+- [Índice](Diagrams-index)
+- [Componentes](Diagrams-components)
+- [Secuencias](Diagrams-sequences)
 - [Adapter](Diagrams-adapter)
 - [Outbox](Diagrams-outbox)
 
 ### Frontend
-- [Architecture](Frontend-architecture)
+- [Arquitectura](Frontend-architecture)
 
 ### DevOps
-- [Branching](Branching)
-- [PR checklist](PR-checklist)
-- [Local setup](Local-setup)
-- [Observability](Observability)
-- [Self-assessment](Self-assessment)
-- [Demo script](Demo-script)
+- [Ramas](Branching)
+- [Checklist de PR](PR-checklist)
+- [Setup local](Local-setup)
+- [Observabilidad](Observability)
+- [Autoevaluación](Self-assessment)
+- [Guion de demo](Demo-script)

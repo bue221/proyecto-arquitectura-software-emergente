@@ -139,10 +139,26 @@ The GitHub Wiki is **not** edited only in the GitHub UI. Source of truth is the 
 **Every PR that changes product behavior, architecture, ops, or UI must:**
 
 1. Update the relevant page(s) under `docs/` in the **same PR**.
-2. Mirror those changes into `wiki/` (same PR) — keep filenames in sync with existing wiki pages.
+2. Mirror those changes into `wiki/` (same PR) — keep filenames in sync with existing wiki pages, and write the wiki page in **Spanish** (see language rule below).
 3. After the PR is **merged** to `main`, run `make wiki` (or `./scripts/publish-wiki.sh`) so https://github.com/bue221/proyecto-arquitectura-software-emergente/wiki stays current.
 
 Agents closing a PR must not mark work “done” until wiki pages are updated in the PR **and** publish has been run when `wiki/` changed.
+
+### Wiki language (HARD RULE)
+
+The published wiki (`wiki/**` → GitHub Wiki) is written in **Spanish**. `docs/**` stays the engineering source and may remain in English. Mirroring is a translation, not a paste of English prose.
+
+Write in Spanish:
+
+- Headings, paragraphs, table headers, checklists, callouts, and `_Sidebar.md` labels.
+
+Keep in English:
+
+- Code identifiers, file paths, commands, env vars, HTTP routes, protocol and product names (`JWT`, `gRPC`, `Outbox`, `RutaCO`).
+- Commit messages (Conventional Commits).
+- Wiki **filenames and link targets** (`Home`, `Vision`, `Airport-service`). Do not rename pages to Spanish slugs; GitHub Wiki URLs stay stable.
+
+When a PR changes `docs/`, update the matching `wiki/` page in Spanish in the same PR. Do not ship new English prose under `wiki/`.
 
 ## Architecture rules agents must not break
 
@@ -173,7 +189,7 @@ Agents closing a PR must not mark work “done” until wiki pages are updated i
 
 1. Read the relevant `docs/` page + ADR for the area you touch.
 2. **Always** create a branch from `main` before editing files.
-3. Implement → tests → update `docs/` **and** `wiki/` in the same PR.
+3. Implement → tests → update `docs/` **and** Spanish `wiki/` pages in the same PR.
 4. Push branch → open PR → **merge into `main`** (or leave the PR ready if the user must approve).
 5. After merge: `make wiki` when `wiki/` changed.
 6. Prefer completing one service vertical slice over scattering incomplete stubs.

@@ -51,7 +51,7 @@ docs(adr): accept rabbitmq broker decision
 
 1. One work unit per PR (reviewable).
 2. Fill [PR template](../../.github/PULL_REQUEST_TEMPLATE.md).
-3. Update `docs/` **and** matching `wiki/` pages in the **same** PR when architecture/behavior/UI/ops change.
+3. Update `docs/` **and** matching `wiki/` pages in the **same** PR when architecture/behavior/UI/ops change. Wiki prose is Spanish (`AGENTS.md`).
 4. After merge: publish wiki with `make wiki` (see `AGENTS.md` — mandatory wiki sync).
 5. Link backlog/Jira issue when available.
 6. Squash or merge as team prefers; keep history readable.

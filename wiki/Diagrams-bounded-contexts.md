@@ -1,28 +1,28 @@
 > **Fuente de verdad:** esta página se publica desde `wiki/` / `docs/` del monorepo.
 > Edita vía Pull Request en el código; no edites solo en la Wiki sin sincronizar.
 
-# Bounded contexts diagram
+# Diagrama de contextos delimitados
 
-See also the narrative in [`../01-architecture/bounded-contexts.md`](../01-architecture/bounded-contexts.md).
+La narración está en [Bounded-contexts](Bounded-contexts).
 
 ```mermaid
 flowchart TB
-  subgraph ACL [Anti-Corruption Layer]
-    ADP[Colombia Adapter]
+  subgraph ACL [Capa anticorrupción]
+    ADP[Adapter Colombia]
   end
 
-  subgraph CAT [Airport Catalog BC]
-    A1[Airport aggregate / entity]
-    P1[AirportProvider port]
+  subgraph CAT [BC Catálogo de aeropuertos]
+    A1[Agregado / entidad Airport]
+    P1[Puerto AirportProvider]
   end
 
-  subgraph PLAN [Itinerary Planning BC]
-    I1[Itinerary aggregate]
-    REF[AirportRef VO]
+  subgraph PLAN [BC Planificación de itinerarios]
+    I1[Agregado Itinerary]
+    REF[VO AirportRef]
     OB[Outbox]
   end
 
-  subgraph NOTIF [Notification BC]
+  subgraph NOTIF [BC Notificación]
     N1[NotificationRecord]
   end
 
@@ -30,7 +30,7 @@ flowchart TB
   ADP --> P1
   P1 --> A1
   I1 --> REF
-  REF -.->|identity only| A1
+  REF -.->|solo identidad| A1
   I1 --> OB
   OB -->|ItineraryCreated| N1
 ```

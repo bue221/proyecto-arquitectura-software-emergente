@@ -3,29 +3,29 @@
 
 # API Gateway
 
-**Status:** implemented (Level 2 start) — `services/api-gateway` on port `8080`.
+**Estado:** implementado (inicio del Nivel 2) — `services/api-gateway` en el puerto `8080`.
 
-## Why
+## Por qué
 
-Single edge entry for browsers and external clients. Keeps routing, rate limits, and JWT concerns out of domain services.
+Único punto de entrada para el navegador y los clientes externos. Deja el enrutamiento, los rate limits y el JWT fuera de los servicios de dominio.
 
-## Does
+## Qué hace
 
-| Concern | Behavior |
-|---------|----------|
-| Routing | `/api/v1/airports*` → Airport Service; `/api/v1/itineraries*` → Itinerary Service |
-| Auth | JWT required for itinerary routes; `POST /auth/token` issues demo tokens |
-| Propagation | Forwards `Authorization`, `X-Trace-Id`; sets `X-User-Sub` / `X-User-Role` |
-| Rate limit | Token bucket per client IP |
-| Health | `GET /health` |
+| Preocupación | Comportamiento |
+|--------------|----------------|
+| Enrutamiento | `/api/v1/airports*` → Airport Service; `/api/v1/itineraries*` → Itinerary Service |
+| Auth | JWT obligatorio en rutas de itinerario; `POST /auth/token` emite tokens de demo |
+| Propagación | Reenvía `Authorization` y `X-Trace-Id`; fija `X-User-Sub` y `X-User-Role` |
+| Rate limit | Token bucket por IP de cliente |
+| Salud | `GET /health` |
 
-## Does not
+## Qué no hace
 
-- Airport adapter / catalog rules
-- Itinerary invariants / outbox
-- Notification sending
+- Reglas del adapter o del catálogo de aeropuertos
+- Invariantes del itinerario ni outbox
+- Envío de notificaciones
 
-## Related
+## Relacionado
 
 - ADR-0007
-- Frontend uses `NEXT_PUBLIC_API_GATEWAY_URL` (defaults to `http://localhost:8080`)
+- El frontend usa `NEXT_PUBLIC_API_GATEWAY_URL` (por defecto `http://localhost:8080`)

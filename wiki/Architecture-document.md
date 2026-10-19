@@ -163,17 +163,17 @@ Excluye: booking real con aerolíneas, app móvil nativa, multi-región activo-a
 
 Las vistas detalladas viven como Mermaid versionado:
 
-- Lógica / componentes: [`../03-diagrams/components.md`](../03-diagrams/components.md)
-- Secuencias: [`../03-diagrams/sequences.md`](../03-diagrams/sequences.md)
-- Clases hexagonales: [`../03-diagrams/classes.md`](../03-diagrams/classes.md)
-- Datos: [`../03-diagrams/relational.md`](../03-diagrams/relational.md)
-- Despliegue: [`../03-diagrams/deployment.md`](../03-diagrams/deployment.md)
-- Integración Adapter: [`../03-diagrams/adapter.md`](../03-diagrams/adapter.md)
-- Outbox: [`../03-diagrams/outbox.md`](../03-diagrams/outbox.md)
+- Lógica / componentes: [Diagrams-components](Diagrams-components)
+- Secuencias: [Diagrams-sequences](Diagrams-sequences)
+- Clases hexagonales: [Diagrams-classes](Diagrams-classes)
+- Datos: [Diagrams-relational](Diagrams-relational)
+- Despliegue: [Diagrams-deployment](Diagrams-deployment)
+- Integración Adapter: [Diagrams-adapter](Diagrams-adapter)
+- Outbox: [Diagrams-outbox](Diagrams-outbox)
 
 ### 10.5 Procesos DevOps
 
-Ver [`../04-devops/ci-cd.md`](../04-devops/ci-cd.md) y [`../04-devops/branching.md`](../04-devops/branching.md).
+Ver [CI-CD](CI-CD) y [Branching](Branching).
 
 ### 10.6 Vista de amenazas (inicial)
 
@@ -186,6 +186,6 @@ Ver [`../04-devops/ci-cd.md`](../04-devops/ci-cd.md) y [`../04-devops/branching.
 
 ## Referencias internas
 
-- Overview: [`overview.md`](overview.md)
-- DDD: [`bounded-contexts.md`](bounded-contexts.md)
-- ADRs: [`adr/`](adr/)
+- Resumen: [Architecture-overview](Architecture-overview)
+- DDD: [Bounded-contexts](Bounded-contexts)
+- ADRs: [ADRs](ADRs)

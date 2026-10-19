@@ -12,7 +12,7 @@ Copy into the PR if the template is outdated.
 
 ## Wiki (mandatory)
 
-- [ ] Matching `wiki/` page(s) updated in **this same PR**
+- [ ] Matching `wiki/` page(s) updated in **this same PR**, prose in Spanish (filenames unchanged)
 - [ ] After merge to `main`: run `make wiki` / `./scripts/publish-wiki.sh`
 
 ## Quality

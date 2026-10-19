@@ -1,41 +1,41 @@
-# Notification Function (Serverless)
+# Función de notificación (serverless)
 
-**Status:** Level 2 implemented — Compose worker `notification-function` on `:8083` (FaaS-style local simulation per ADR-0006).
+**Estado:** Nivel 2 implementado — worker de Compose `notification-function` en `:8083` (simulación local estilo FaaS, ADR-0006).
 
-## Why
+## Por qué
 
-Demonstrates the **serverless** architecture axis: work runs when events arrive, without a permanent notification *business* microservice owning itinerary create.
+Muestra el eje **serverless**: el trabajo corre cuando llega un evento, sin un microservicio de negocio permanente que sea dueño de crear el itinerario.
 
-## Functions
+## Funciones
 
-| Function | Trigger | Behavior |
-|----------|---------|----------|
-| `SendNotificationFunction` | `itinerary.created` on RabbitMQ | Simulate email/log; persist `notification_records` |
-| `GenerateItineraryReportFunction` (optional) | On-demand HTTP/invoke | Aggregate metrics — pending |
+| Función | Disparador | Comportamiento |
+|---------|------------|----------------|
+| `SendNotificationFunction` | `itinerary.created` en RabbitMQ | Simula correo/log; persiste `notification_records` |
+| `GenerateItineraryReportFunction` (opcional) | HTTP o invoke bajo demanda | Agrega métricas — pendiente |
 
 ## Runtime (local)
 
-| Piece | Detail |
-|-------|--------|
-| Container | `services/notification-function` |
-| Health | `GET http://localhost:8083/health` |
-| Queue | `notification.itinerary-created` bound to exchange `itinerary.events` / key `itinerary.created` |
-| DB | `notification-db` Postgres host port `5435` (one DB per service) |
+| Pieza | Detalle |
+|-------|---------|
+| Contenedor | `services/notification-function` |
+| Salud | `GET http://localhost:8083/health` |
+| Cola | `notification.itinerary-created` unida al exchange `itinerary.events` / key `itinerary.created` |
+| BD | Postgres `notification-db`, puerto de host `5435` (una BD por servicio) |
 
-OpenFaaS packaging can wrap the same application handler later; the domain use case stays unchanged.
+El empaquetado OpenFaaS puede envolver el mismo handler más adelante; el caso de uso de dominio no cambia.
 
-## Data
+## Datos
 
 `notification_records (id, event_id UNIQUE, itinerary_id, channel, status, payload, created_at)`.
 
-## Error strategy
+## Estrategia de errores
 
-- At-least-once delivery → **idempotent** handlers (dedupe by `event_id`).
-- Handler failure → Nack + requeue; poison / DLQ later (L3).
-- User-facing errors are **not** returned on the sync create itinerary path.
+- Entrega at-least-once → handlers **idempotentes** (deduplicar por `event_id`).
+- Fallo del handler → Nack + requeue; poison / DLQ más adelante (N3).
+- Los errores de cara al usuario **no** vuelven por la ruta síncrona de crear itinerario.
 
-## Related
+## Relacionado
 
 - ADR-0006, ADR-0003
 - AsyncAPI: `packages/contracts/asyncapi/itinerary-events.yaml`
-- [`../03-diagrams/outbox.md`](../03-diagrams/outbox.md)
+- [Diagrams-outbox](Diagrams-outbox)

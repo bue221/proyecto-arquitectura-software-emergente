@@ -1,41 +1,41 @@
-# Local setup
+# Setup local
 
-## Prerequisites
+## Requisitos
 
 - Go 1.22+
 - Node.js 20+
 - Docker + Docker Compose
 - Make
 
-## Recommended — Makefile
+## Recomendado — Makefile
 
-From the repo root:
+Desde la raíz del repo:
 
 ```bash
-make up      # build + start Compose stack
-make smoke   # health checks via Gateway
-make down    # stop stack
-make wiki    # publish wiki/ → GitHub Wiki (after merge)
+make up      # build + levantar el stack de Compose
+make smoke   # health checks vía Gateway
+make down    # detener el stack
+make wiki    # publicar wiki/ → GitHub Wiki (después del merge)
 ```
 
-| Service | URL |
-|---------|-----|
-| Web | http://localhost:3001 (Compose maps `3001→3000`; host `:3000` is often another Next app) |
+| Servicio | URL |
+|----------|-----|
+| Web | http://localhost:3001 (Compose mapea `3001→3000`; el `:3000` del host suele ser otra app Next) |
 | **API Gateway** | http://localhost:8080 |
-| Airport (direct) | http://localhost:8081/swagger |
-| Itinerary (direct) | http://localhost:8082/swagger |
-| Itinerary Postgres | localhost:5434 |
+| Airport (directo) | http://localhost:8081/swagger |
+| Itinerary (directo) | http://localhost:8082/swagger |
+| Postgres de Itinerary | localhost:5434 |
 | Redis | localhost:6379 |
 | RabbitMQ AMQP | localhost:5672 |
-| RabbitMQ UI | http://localhost:15672 (guest/guest) |
-| Notification FaaS | http://localhost:8083/health |
-| Notification Postgres | localhost:5435 |
-| Jaeger UI | http://localhost:16686 |
-| Airport gRPC | localhost:9091 |
+| UI de RabbitMQ | http://localhost:15672 (guest/guest) |
+| FaaS de notificación | http://localhost:8083/health |
+| Postgres de notificación | localhost:5435 |
+| UI de Jaeger | http://localhost:16686 |
+| gRPC de Airport | localhost:9091 |
 
-The browser should call **only the Gateway** (`:8080`).
+El navegador debe llamar **solo al Gateway** (`:8080`).
 
-Demo JWT (local):
+JWT de demo (local):
 
 ```bash
 curl -s -X POST http://localhost:8080/auth/token \
@@ -43,16 +43,16 @@ curl -s -X POST http://localhost:8080/auth/token \
   -d '{"sub":"demo","name":"Demo User"}'
 ```
 
-Use the returned Bearer token for itinerary routes.
+Usa el Bearer devuelto en las rutas de itinerario.
 
-## Option B — Compose directly
+## Opción B — Compose directo
 
 ```bash
 cd infra/docker
 docker compose up --build
 ```
 
-## Option C — native processes
+## Opción C — procesos nativos
 
 ```bash
 # Postgres
@@ -76,12 +76,12 @@ cd services/api-gateway && go run ./cmd/server
 cd apps/web && npm run dev
 ```
 
-## Wiki publish
+## Publicar la wiki
 
-After merging a PR that changed `wiki/`:
+Después de fusionar un PR que cambió `wiki/`:
 
 ```bash
 make wiki
 ```
 
-See `AGENTS.md` — mandatory wiki sync on every product/architecture PR.
+Ver `AGENTS.md`: la sincronización de la wiki es obligatoria en cada PR de producto o arquitectura. La prosa de `wiki/` va en español.

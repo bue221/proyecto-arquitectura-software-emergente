@@ -1,43 +1,45 @@
-# Personal Itineraries Platform — Wiki
+# Plataforma de itinerarios personales — Wiki
 
-Bienvenido a la **GitHub Wiki** del monorepo **RutaCO** (itinerarios personales + aeropuertos Colombia).
+Bienvenido a la **GitHub Wiki** del monorepo **RutaCO** (itinerarios personales + aeropuertos de Colombia).
+
+**Idioma:** esta wiki se escribe en **español**. Los nombres de página, rutas, comandos e identificadores de código se mantienen en inglés para no romper enlaces.
 
 La documentación se versiona en el repositorio (`docs/` + `wiki/`) mediante **branch → PR → merge → `make wiki`**. No editar solo en la UI de GitHub.
 
-## Hard rule — cada PR actualiza la wiki
+## Regla dura — cada PR actualiza la wiki
 
 Todo PR que cambie comportamiento, arquitectura, UI u ops debe:
 
-1. Actualizar `docs/**` en el mismo PR
-2. Espejar en `wiki/**` en el mismo PR
-3. Tras merge a `main`: `make wiki` (o `./scripts/publish-wiki.sh`)
+1. Actualizar `docs/**` en el mismo PR (puede seguir en inglés).
+2. Espejar en `wiki/**` en el mismo PR, con la prosa en **español** y los nombres de archivo sin cambiar.
+3. Tras el merge a `main`: `make wiki` (o `./scripts/publish-wiki.sh`).
 
 Detalle: [`AGENTS.md`](https://github.com/bue221/proyecto-arquitectura-software-emergente/blob/main/AGENTS.md) · [Branching](Branching) · [PR-checklist](PR-checklist)
 
 ## Estado de entrega
 
-### Hecho (Levels 1–3)
+### Hecho (Niveles 1–3)
 
 | Área | Notas |
 |------|--------|
-| Level 1 | Airport + Itinerary hexagonales, Compose, Swagger, migraciones |
-| Frontend | Studio Leaflet + tile Adapter, trips wizard, packing, SEO; map prefs en `/profile` |
-| Level 2 | Gateway + Redis/CB + RabbitMQ/notify + OTel/Jaeger + Testcontainers |
-| Level 3 | gRPC mTLS, pagination, bulkhead, Prometheus, Toxiproxy, K8s probes, Pact, Vault/config, CI |
+| Nivel 1 | Airport + Itinerary hexagonales, Compose, Swagger, migraciones |
+| Frontend | Studio Leaflet + tile Adapter, wizard de viajes, packing, SEO; preferencias de mapa en `/profile` |
+| Nivel 2 | Gateway + Redis/CB + RabbitMQ/notify + OTel/Jaeger + Testcontainers |
+| Nivel 3 | gRPC mTLS, paginación, bulkhead, Prometheus, Toxiproxy, probes K8s, Pact, Vault/config, CI |
 | Ops local | `make up` / `make down` / `make smoke` / `make wiki` |
 
 Tabla detallada: [Self-assessment](Self-assessment) · [Kubernetes](Kubernetes)
 
-## Quick links
+## Enlaces rápidos
 
-| Recurso | Link |
-|---------|------|
+| Recurso | Enlace |
+|---------|--------|
 | Código | [Repositorio](https://github.com/bue221/proyecto-arquitectura-software-emergente) |
-| Docs en repo | [`docs/`](https://github.com/bue221/proyecto-arquitectura-software-emergente/tree/main/docs) |
-| Agents | [`AGENTS.md`](https://github.com/bue221/proyecto-arquitectura-software-emergente/blob/main/AGENTS.md) |
+| Docs en el repo | [`docs/`](https://github.com/bue221/proyecto-arquitectura-software-emergente/tree/main/docs) |
+| Agentes | [`AGENTS.md`](https://github.com/bue221/proyecto-arquitectura-software-emergente/blob/main/AGENTS.md) |
 | Setup local | [Local-setup](Local-setup) |
 
-## Architecture
+## Arquitectura
 
 - [Vision](Vision)
 - [Architecture-overview](Architecture-overview)
@@ -45,14 +47,14 @@ Tabla detallada: [Self-assessment](Self-assessment) · [Kubernetes](Kubernetes)
 - [Bounded-contexts](Bounded-contexts)
 - [ADRs](ADRs)
 
-## Services
+## Servicios
 
-- [API-gateway](API-gateway) — Level 2 edge (`:8080`)
-- [Airport-service](Airport-service) — Level 1 done (`:8081`)
-- [Itinerary-service](Itinerary-service) — Level 1 done (`:8082`, Postgres `:5434`)
-- [Notification-function](Notification-function) — Level 2 done (`:8083`)
+- [API-gateway](API-gateway) — borde Nivel 2 (`:8080`)
+- [Airport-service](Airport-service) — Nivel 1 listo (`:8081`)
+- [Itinerary-service](Itinerary-service) — Nivel 1 listo (`:8082`, Postgres `:5434`)
+- [Notification-function](Notification-function) — Nivel 2 listo (`:8083`)
 
-## Diagrams
+## Diagramas
 
 - [Diagrams-index](Diagrams-index)
 - [Diagrams-components](Diagrams-components)
@@ -63,7 +65,7 @@ Tabla detallada: [Self-assessment](Self-assessment) · [Kubernetes](Kubernetes)
 
 ## Frontend
 
-- [Frontend-architecture](Frontend-architecture) — Leaflet Studio + trips + SEO
+- [Frontend-architecture](Frontend-architecture) — Studio Leaflet + viajes + SEO
 
 ## DevOps
 
@@ -72,7 +74,7 @@ Tabla detallada: [Self-assessment](Self-assessment) · [Kubernetes](Kubernetes)
 - [CI-CD](CI-CD)
 - [Quality](Quality)
 
-## Ops & grading
+## Ops y calificación
 
 - [Local-setup](Local-setup)
 - [Observability](Observability)

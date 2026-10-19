@@ -1,11 +1,11 @@
 > **Fuente de verdad:** esta página se publica desde `wiki/` / `docs/` del monorepo.
 > Edita vía Pull Request en el código; no edites solo en la Wiki sin sincronizar.
 
-# Relational model (per service)
+# Modelo relacional (por servicio)
 
-Databases are **not shared**. Diagrams below are logical schemas per service.
+Las bases **no se comparten**. Los diagramas de abajo son esquemas lógicos de cada servicio.
 
-## Itinerary Service DB
+## BD de Itinerary Service
 
 ```mermaid
 erDiagram
@@ -31,10 +31,10 @@ erDiagram
     int attempts
   }
 
-  ITINERARIES ||--o{ OUTBOX : "creates events for"
+  ITINERARIES ||--o{ OUTBOX : "crea eventos para"
 ```
 
-## Airport Service DB (optional persistence / mirror)
+## BD de Airport Service (persistencia o espejo opcional)
 
 ```mermaid
 erDiagram
@@ -49,9 +49,9 @@ erDiagram
   }
 ```
 
-Level 1 may rely on Redis + live adapter without a full airport table; if introduced, migrations are versioned inside this service only.
+El Nivel 1 puede apoyarse en Redis + el adapter en vivo, sin una tabla completa de aeropuertos. Si se introduce, las migraciones se versionan solo dentro de este servicio.
 
-## Notification DB
+## BD de notificaciones
 
 ```mermaid
 erDiagram

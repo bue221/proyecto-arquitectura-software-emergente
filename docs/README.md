@@ -59,7 +59,7 @@ Source of truth for architecture, diagrams, DevOps, and demos. Prefer updating t
 ## How to contribute to the wiki
 
 - One conceptual change per PR when possible.
-- Mirror `docs/` changes into `wiki/` in the **same** PR; publish with `make wiki` after merge.
+- Mirror `docs/` changes into `wiki/` in the **same** PR (wiki prose in Spanish); publish with `make wiki` after merge.
 - Keep Mermaid diagrams in sync with code and ADRs.
 - Link new ADRs from [`01-architecture/adr/README.md`](01-architecture/adr/README.md).
 - Track done vs remaining in [`06-self-assessment.md`](06-self-assessment.md) and [`wiki/Home.md`](../wiki/Home.md).

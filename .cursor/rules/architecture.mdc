@@ -16,7 +16,7 @@ Read `AGENTS.md` and `docs/README.md` before large changes.
 - Hexagonal per Go service; Adapter for API Colombia; Gateway has no business logic.
 - Transactional Outbox for integration events (no unsafe dual write).
 - HARD RULE: every change → branch from `main` → Pull Request → merge into `main`. Never commit/push directly to `main` (includes docs and agent edits). See `AGENTS.md`.
-- Update `docs/` in the same PR when architecture or behavior changes.
+- Update `docs/` in the same PR when architecture or behavior changes. Wiki pages (`wiki/`) are Spanish prose; keep filenames and code identifiers in English.
 - Conventional Commits in English.
 
 ## Phase awareness
