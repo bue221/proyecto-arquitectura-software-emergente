@@ -125,13 +125,24 @@ func buildAirportValidator(cfg config.Config, log interface {
 	Error(string, ...any)
 }) (domain.AirportValidator, string, func()) {
 	if cfg.AirportGRPCAddr != "" {
-		client, err := airportgrpc.Dial(cfg.AirportGRPCAddr, cfg.AirportHTTPTimeout)
+		client, err := airportgrpc.DialWith(cfg.AirportGRPCAddr, airportgrpc.DialOptions{
+			Timeout:    cfg.AirportHTTPTimeout,
+			MTLS:       cfg.AirportGRPCmTLS,
+			CertFile:   cfg.AirportGRPCTLSCert,
+			KeyFile:    cfg.AirportGRPCTLSKey,
+			CAFile:     cfg.AirportGRPCTLSCA,
+			ServerName: cfg.AirportGRPCServerName,
+		})
 		if err != nil {
 			log.Warn("airport_grpc_unavailable_falling_back_http", "addr", cfg.AirportGRPCAddr, "error", err.Error())
 			return airporthttp.New(cfg.AirportServiceURL, cfg.AirportHTTPTimeout), "http", func() {}
 		}
-		log.Info("airport_validator_selected", "transport", "grpc", "addr", cfg.AirportGRPCAddr)
-		return client, "grpc", func() { _ = client.Close() }
+		mode := "grpc"
+		if cfg.AirportGRPCmTLS {
+			mode = "grpc-mtls"
+		}
+		log.Info("airport_validator_selected", "transport", mode, "addr", cfg.AirportGRPCAddr)
+		return client, mode, func() { _ = client.Close() }
 	}
 	log.Info("airport_validator_selected", "transport", "http", "url", cfg.AirportServiceURL)
 	return airporthttp.New(cfg.AirportServiceURL, cfg.AirportHTTPTimeout), "http", func() {}

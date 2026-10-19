@@ -26,6 +26,12 @@ services:
       CB_FAILURE_THRESHOLD: "5"
       CB_COOLDOWN_MS: "30000"
       OTEL_EXPORTER_OTLP_ENDPOINT: jaeger:4318
+      GRPC_MTLS_ENABLED: "true"
+      GRPC_TLS_CERT_FILE: /certs/server.crt
+      GRPC_TLS_KEY_FILE: /certs/server.key
+      GRPC_TLS_CA_FILE: /certs/ca.crt
+    volumes:
+      - ../certs/grpc:/certs:ro
     depends_on:
       redis:
         condition: service_healthy
@@ -92,10 +98,17 @@ services:
       AIRPORT_SERVICE_URL: http://airport-service:8081
       AIRPORT_GRPC_ADDR: airport-service:9091
       AIRPORT_HTTP_TIMEOUT_MS: "5000"
+      AIRPORT_GRPC_MTLS_ENABLED: "true"
+      AIRPORT_GRPC_TLS_CERT_FILE: /certs/client.crt
+      AIRPORT_GRPC_TLS_KEY_FILE: /certs/client.key
+      AIRPORT_GRPC_TLS_CA_FILE: /certs/ca.crt
+      AIRPORT_GRPC_SERVER_NAME: airport-service
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
       OUTBOX_RELAY_ENABLED: "true"
       OUTBOX_POLL_INTERVAL_MS: "2000"
       OTEL_EXPORTER_OTLP_ENDPOINT: jaeger:4318
+    volumes:
+      - ../certs/grpc:/certs:ro
     depends_on:
       airport-service:
         condition: service_started

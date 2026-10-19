@@ -42,7 +42,7 @@ Update this table in PRs as criteria are met. Status: `pending` | `partial` | `d
 | Transactional Outbox | done | Create + outbox same TX; relay publishes then marks `published_at` |
 | Double-write resolution documented | done (docs) | `docs/03-diagrams/outbox.md` |
 | gRPC Airport ↔ Itinerary | done | `EnsureExists` RPC; Itinerary prefers `AIRPORT_GRPC_ADDR` |
-| S2S security (mTLS or OAuth2 CC) | partial | local insecure gRPC; mTLS later |
+| S2S security (mTLS or OAuth2 CC) | done | Compose mTLS on gRPC; certs in `infra/certs/grpc` (ADR-0009) |
 | Vault / config server | pending | |
 | Chaos (Toxiproxy/Chaos Mesh) | pending | |
 | Bulkhead | pending | |
