@@ -26,7 +26,7 @@ Use this script for recordings/screenshots. Mark items as you complete implement
 1. Outbox table + relay publishing explanation (double-write slide).
 2. gRPC call Itinerary → Airport (grpcurl or trace).
 3. GitHub Actions green + Sonar gate.
-4. K8s manifests with readiness/liveness.
-5. Alert example (CB open or DLQ) and/or Toxiproxy chaos snippet.
+4. K8s manifests with readiness/liveness (`infra/k8s/`, probes `/ready` `/live`).
+5. Alert example (Prometheus `:9090`) and/or Toxiproxy latency (`infra/toxiproxy/README.md`).
 6. Pact contract test output.
 7. Self-assessment table filled in [`../06-self-assessment.md`](../06-self-assessment.md).

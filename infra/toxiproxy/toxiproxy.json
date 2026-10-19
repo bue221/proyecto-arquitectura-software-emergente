@@ -1,0 +1,8 @@
+[
+  {
+    "name": "airport_http",
+    "listen": "0.0.0.0:8475",
+    "upstream": "airport-service:8081",
+    "enabled": true
+  }
+]

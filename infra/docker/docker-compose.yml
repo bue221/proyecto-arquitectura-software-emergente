@@ -97,6 +97,17 @@ services:
     depends_on:
       - airport-service
 
+  toxiproxy:
+    image: ghcr.io/shopify/toxiproxy:2.9.0
+    ports:
+      - "8474:8474"
+      - "18475:8475"
+    volumes:
+      - ../toxiproxy/toxiproxy.json:/config/toxiproxy.json:ro
+    command: ["-host", "0.0.0.0", "-config", "/config/toxiproxy.json"]
+    depends_on:
+      - airport-service
+
   itinerary-service:
     build:
       context: ../..

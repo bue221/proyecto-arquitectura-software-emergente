@@ -25,8 +25,9 @@
 
 ## Chaos / Toxiproxy (Level 3 sample)
 
-- Inject latency/timeouts toward API Colombia mock.
-- Capture CB open metrics + Grafana/Prometheus alert screenshots in demo evidence.
+- Compose service `toxiproxy` (API `:8474`, toxic Airport HTTP `:18475`).
+- Runbook: `infra/toxiproxy/README.md` — inject latency toxic, observe timeouts/CB.
+- Capture CB open metrics + Prometheus alert screenshots in demo evidence.
 
 ## Prometheus alerts (Level 3)
 

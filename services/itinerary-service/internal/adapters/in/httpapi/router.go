@@ -9,6 +9,8 @@ import (
 func NewRouter(h Handlers, openAPI []byte) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", h.Health)
+	mux.HandleFunc("GET /ready", h.Health)
+	mux.HandleFunc("GET /live", h.Health)
 	mux.HandleFunc("GET /api/v1/itineraries", h.List)
 	mux.HandleFunc("POST /api/v1/itineraries", h.Create)
 	mux.HandleFunc("GET /api/v1/itineraries/{id}", h.Get)

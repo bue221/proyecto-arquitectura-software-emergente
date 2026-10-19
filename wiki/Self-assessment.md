@@ -44,11 +44,11 @@ Update this table in PRs as criteria are met. Status: `pending` | `partial` | `d
 | gRPC Airport ↔ Itinerary | done | `EnsureExists` RPC; Itinerary prefers `AIRPORT_GRPC_ADDR` |
 | S2S security (mTLS or OAuth2 CC) | done | Compose mTLS on gRPC; certs in `infra/certs/grpc` (ADR-0009) |
 | Vault / config server | pending | |
-| Chaos (Toxiproxy/Chaos Mesh) | pending | |
+| Chaos (Toxiproxy/Chaos Mesh) | done | Compose `toxiproxy` + `infra/toxiproxy/` latency demo |
 | Bulkhead | done | `resilience.Bulkhead` on Colombia adapter; `BULKHEAD_MAX_CONCURRENT` |
 | Prometheus alerting | done | `/metrics` + `infra/prometheus/alerts.yml` (CB open, bulkhead) |
 | CI/CD GitHub Actions | partial | `.github/workflows/ci.yml` — Go unit tests only, ≤3 min |
-| Kubernetes + probes | pending | |
+| Kubernetes + probes | done | `infra/k8s/*` Deployments with `/ready` `/live` probes |
 | Contract testing (Pact) | pending | |
 | API versioning + pagination | done | `/api/v1` + `API-Version` header; itinerary list `page`/`pageSize` (ADR-0008) |
 
