@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: itinerary-service
+  namespace: rutaco
+  labels:
+    app: itinerary-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: itinerary-service
+  template:
+    metadata:
+      labels:
+        app: itinerary-service
+    spec:
+      containers:
+        - name: itinerary-service
+          image: rutaco/itinerary-service:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8082
+          env:
+            - name: HTTP_ADDR
+              value: ":8082"
+            - name: AIRPORT_SERVICE_URL
+              value: http://airport-service:8081
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: itinerary-service
+  namespace: rutaco
+spec:
+  selector:
+    app: itinerary-service
+  ports:
+    - name: http
+      port: 8082
+      targetPort: http

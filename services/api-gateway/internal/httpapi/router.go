@@ -17,6 +17,8 @@ type Upstream struct {
 func NewRouter(h Handlers, tokens *auth.TokenService, up Upstream, rateRPS float64, rateBurst int) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", h.Health)
+	mux.HandleFunc("GET /ready", h.Health)
+	mux.HandleFunc("GET /live", h.Health)
 	mux.HandleFunc("POST /auth/token", h.IssueToken)
 
 	// Public catalog reads through the gateway (no business logic here).
