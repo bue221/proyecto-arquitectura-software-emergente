@@ -2,74 +2,79 @@
 
 ## Why
 
-Premium itinerary **studio**: interactive Colombia map + glassmorphic builder panel. The browser only talks to internal services via the API Gateway — never to API Colombia.
+Premium itinerary **studio** + trip management: interactive Colombia map, glassmorphic builder, multi-step trip creation with destination plans, packing checklist. The browser only talks to the API Gateway — never to API Colombia.
 
-## Stack
+## Stack (locked UI / UX)
 
-| Concern | Choice |
-|---------|--------|
-| Framework | Next.js 15 App Router |
-| Styling | Tailwind CSS v4 + CSS variables (slate / emerald / indigo) |
-| Design system | shadcn/ui + glass panels |
-| Map engine | **React-Leaflet** |
-| Map tiles | **Adapter pattern** — free providers, no API key |
-| Motion | Framer Motion |
-| Typography | Inter |
-| Auth | Demo login → Gateway JWT + profile in `localStorage` |
+| Concern | Choice | Notes |
+|---------|--------|-------|
+| Framework | Next.js 15 App Router | SSR metadata / SEO |
+| Language | TypeScript + React 19 | |
+| Styling | Tailwind CSS v4 + CSS variables | slate / emerald / indigo |
+| Components | shadcn/ui (Base UI) | accessible primitives |
+| Map engine | React-Leaflet | no Mapbox token required |
+| Map tiles | **Adapter pattern** | free providers only by default |
+| Motion | Framer Motion | panel, cards, progress |
+| Typography | Inter | ExtraBold IATA codes, Medium city names |
+| Toasts | Sonner | mutations feedback |
+| Auth UX | Demo login → Gateway JWT | profile in `localStorage` |
+| SEO | `metadata`, OG, Twitter, `sitemap.ts`, `robots.ts`, JSON-LD | `NEXT_PUBLIC_SITE_URL` |
 
-## Map tile adapters (hexagonal)
+## Visual language
 
-The studio depends on a **port** (`MapTileStyle` / `MapTileProvider`), not on a CDN brand.
+- **Base:** `slate-50` canvas; white / glass surfaces (`white/80` + blur).
+- **Primary actions:** `emerald-600` (nature / Colombia nod without cliché).
+- **Map routes / selection chrome:** `indigo-600`.
+- **Trip cards:** deterministic style variants (`emerald`, `indigo`, `sunset`, `ocean`, `forest`, `slate`) hashed from itinerary id — not identical clones.
+- **Studio layout:** full-bleed map + floating glass panel (desktop); bottom sheet panel (mobile).
 
-```text
-features/studio/map/
-  port.ts                 # contract (no infra)
-  registry.ts             # factory + env/localStorage resolution
-  MapTileLayer.tsx        # Leaflet consumer of the port
-  TileProviderSwitch.tsx  # runtime swap UI
-  adapters/
-    carto-positron.ts     # default light minimal
-    carto-dark.ts
-    osm.ts
-    opentopo.ts
-    esri-gray.ts
-```
+## Map tile adapters
 
-| Adapter id | Source | API key |
-|------------|--------|---------|
-| `carto-positron` | CARTO light | none |
+Port: `MapTileProvider` / `MapTileStyle` under `features/studio/map/`.
+
+| Adapter id | Provider | API key |
+|------------|----------|---------|
+| `carto-positron` | CARTO light (default) | none |
 | `carto-dark` | CARTO dark | none |
 | `osm` | OpenStreetMap | none |
 | `opentopo` | OpenTopoMap | none |
-| `esri-gray` | Esri Light Gray canvas | none |
+| `esri-gray` | Esri Light Gray | none |
 
-Default: `NEXT_PUBLIC_MAP_TILE_PROVIDER=carto-positron` (override in `.env.local`).  
-Runtime: tile switcher on the studio (persists to `localStorage`).
-
-To add Mapbox later: implement `MapTileProvider` with `requiresApiKey: true` behind the same port — map interaction code stays untouched.
+Runtime switcher on Studio + `NEXT_PUBLIC_MAP_TILE_PROVIDER`. Add Mapbox later as another adapter behind the same port.
 
 ## Product surfaces
 
-| Route | Purpose |
-|-------|---------|
-| `/` | **Itinerary Studio** — full-bleed map + floating panel |
-| `/login` | Traveler login |
-| `/profile` | Profile editor |
-| `/trips` | Saved itineraries |
-| `/trips/[id]` | Detail + packing checklist |
+| Route | Purpose | SEO |
+|-------|---------|-----|
+| `/` | Itinerary Studio (map + panel) | default title / OG |
+| `/trips` | Two-step create + trip cards | `title: Mis viajes` |
+| `/trips/[id]` | Plans + packing checklist | client page (auth) |
+| `/login` | Demo JWT login | |
+| `/profile` | Traveler profile | |
 
-Brand: **RutaCO**.
+## Trip creation UX (two steps)
 
-## Studio interaction model
+1. **Ruta** — origin / destination (airport select from catalog), date, duration.
+2. **Planes** — optional destination recommendations (food, culture, nature, city-specific) + custom plans; user may skip.
 
-1. Click map airport → sets **origin** (emerald).
-2. Second click → sets **destination** (emerald) and draws indigo dashed curve.
-3. Combobox search stays in sync with map selection.
-4. Logged-in users can save via Itinerary Service (`POST /api/v1/itineraries`).
+Persisted as `planItems` on the Itinerary aggregate (Itinerary Service JSONB).
 
-Hubs emphasized: BOG, MDE, CTG, CLO, BAQ, PEI (plus other catalog points as secondary nodes).
+## Folder layout
+
+```text
+apps/web/src/
+  app/                 # routes, layout SEO, sitemap, robots
+  components/layout/   # SiteHeader, AppShell
+  features/
+    studio/            # map studio + tile adapters
+    itineraries/       # wizard, cards, packing, recommendations
+    auth/
+    airports/api.ts
+  lib/
+```
 
 ## Env
 
-- `NEXT_PUBLIC_API_GATEWAY_URL` (default `http://localhost:8080`)
-- `NEXT_PUBLIC_MAP_TILE_PROVIDER` (`carto-positron` \| `carto-dark` \| `osm` \| `opentopo` \| `esri-gray`)
+- `NEXT_PUBLIC_API_GATEWAY_URL`
+- `NEXT_PUBLIC_MAP_TILE_PROVIDER`
+- `NEXT_PUBLIC_SITE_URL` — canonical URL for sitemap / Open Graph

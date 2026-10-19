@@ -42,6 +42,10 @@ func (uc UpdateItinerary) Execute(ctx context.Context, cmd domain.UpdateItinerar
 	if err != nil {
 		return domain.Itinerary{}, err
 	}
+	plans, err := normalizePlans(cmd.PlanItems)
+	if err != nil {
+		return domain.Itinerary{}, err
+	}
 
 	existing.UserName = cmd.UserName
 	existing.OriginAirportID = cmd.OriginAirportID
@@ -49,6 +53,7 @@ func (uc UpdateItinerary) Execute(ctx context.Context, cmd domain.UpdateItinerar
 	existing.TravelDate = cmd.TravelDate.UTC().Truncate(24 * time.Hour)
 	existing.DurationMinutes = cmd.DurationMinutes
 	existing.PackingItems = packing
+	existing.PlanItems = plans
 	existing.UpdatedAt = now
 
 	return uc.Repo.Update(ctx, existing)

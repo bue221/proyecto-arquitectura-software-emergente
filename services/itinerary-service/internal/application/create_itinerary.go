@@ -45,6 +45,10 @@ func (uc CreateItinerary) Execute(ctx context.Context, cmd domain.CreateItinerar
 	if len(packing) == 0 {
 		packing = domain.DefaultPackingList()
 	}
+	plans, err := normalizePlans(cmd.PlanItems)
+	if err != nil {
+		return domain.Itinerary{}, err
+	}
 
 	now := uc.now()
 	id := uc.newID()
@@ -56,6 +60,7 @@ func (uc CreateItinerary) Execute(ctx context.Context, cmd domain.CreateItinerar
 		TravelDate:           cmd.TravelDate.UTC().Truncate(24 * time.Hour),
 		DurationMinutes:      cmd.DurationMinutes,
 		PackingItems:         packing,
+		PlanItems:            plans,
 		CreatedAt:            now,
 		UpdatedAt:            now,
 	}

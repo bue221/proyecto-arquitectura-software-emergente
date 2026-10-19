@@ -36,6 +36,7 @@ export function PackingChecklist({ itinerary, subjectHint, onUpdated }: PackingC
           travelDate: itinerary.travelDate,
           durationMinutes: itinerary.durationMinutes,
           packingItems: next,
+          planItems: itinerary.planItems || [],
         },
         subjectHint,
       );
