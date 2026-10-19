@@ -26,5 +26,7 @@
 
 ### DevOps
 - [Branching](Branching)
+- [PR checklist](PR-checklist)
 - [Local setup](Local-setup)
 - [Self-assessment](Self-assessment)
+- [Demo script](Demo-script)

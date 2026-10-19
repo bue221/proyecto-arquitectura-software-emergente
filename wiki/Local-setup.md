@@ -1,6 +1,3 @@
-> **Fuente de verdad:** esta página se publica desde `wiki/` / `docs/` del monorepo.
-> Edita vía Pull Request en el código; no edites solo en la Wiki sin sincronizar.
-
 # Local setup
 
 ## Prerequisites
@@ -8,73 +5,77 @@
 - Go 1.22+
 - Node.js 20+
 - Docker + Docker Compose
+- Make
 
-## Option A — one command (recommended)
+## Recommended — Makefile
 
 From the repo root:
 
 ```bash
-make up      # build + start full stack
-make smoke  # health + airport + JWT itinerary
-make logs   # follow containers
-make down   # stop
+make up      # build + start Compose stack
+make smoke   # health checks via Gateway
+make down    # stop stack
+make wiki    # publish wiki/ → GitHub Wiki (after merge)
 ```
-
-Or without Make:
-
-```bash
-./scripts/dev-up.sh
-./scripts/dev-smoke.sh
-./scripts/dev-down.sh
-```
-
-Services:
 
 | Service | URL |
 |---------|-----|
-| Web | http://localhost:3000 |
-| API Gateway | http://localhost:8080/health |
-| Airport API / Swagger | http://localhost:8081/swagger |
-| Airport resilience | http://localhost:8081/api/v1/resilience |
-| Itinerary API / Swagger | http://localhost:8082/swagger |
-| Redis | localhost:6379 |
+| Web | http://localhost:3000 (or `:3001` if 3000 is busy — see Compose ports) |
+| **API Gateway** | http://localhost:8080 |
+| Airport (direct) | http://localhost:8081/swagger |
+| Itinerary (direct) | http://localhost:8082/swagger |
 | Itinerary Postgres | localhost:5434 |
+| Redis | localhost:6379 |
 
-## Option B — native processes
+The browser should call **only the Gateway** (`:8080`).
+
+Demo JWT (local):
 
 ```bash
-# 1) Infra
-docker run --rm --name pi-redis -p 6379:6379 redis:7-alpine
+curl -s -X POST http://localhost:8080/auth/token \
+  -H 'Content-Type: application/json' \
+  -d '{"sub":"demo","name":"Demo User"}'
+```
+
+Use the returned Bearer token for itinerary routes.
+
+## Option B — Compose directly
+
+```bash
+cd infra/docker
+docker compose up --build
+```
+
+## Option C — native processes
+
+```bash
+# Postgres
 docker run --rm --name itinerary-db \
   -e POSTGRES_USER=itinerary -e POSTGRES_PASSWORD=itinerary -e POSTGRES_DB=itinerary \
   -p 5434:5432 postgres:16-alpine
 
-# 2) Airport Service
-cd services/airport-service
-export REDIS_ADDR=localhost:6379
-go run ./cmd/server
+# Airport
+cd services/airport-service && go run ./cmd/server
 
-# 3) Itinerary Service
+# Itinerary
 cd services/itinerary-service
 export DATABASE_URL='postgres://itinerary:itinerary@localhost:5434/itinerary?sslmode=disable'
 export AIRPORT_SERVICE_URL='http://localhost:8081'
 go run ./cmd/server
 
-# 4) Gateway
+# Gateway
 cd services/api-gateway && go run ./cmd/server
 
-# 5) Web
-cd apps/web
-cp .env.local.example .env.local
-npm install && npm run dev
+# Web
+cd apps/web && npm run dev
 ```
 
-## Smoke checks
+## Wiki publish
 
-1. `make smoke` (preferred)
-2. `GET http://localhost:8081/api/v1/resilience` → `cache_backend: redis`, breaker `closed`
-3. Map + itinerary form on http://localhost:3000 (browser talks only to Gateway `:8080`)
+After merging a PR that changed `wiki/`:
 
-## Not available yet
+```bash
+make wiki
+```
 
-RabbitMQ relay / notification FaaS, Jaeger, Testcontainers — remaining Level 2/3 PRs.
+See `AGENTS.md` — mandatory wiki sync on every product/architecture PR.

@@ -1,6 +1,3 @@
-> **Fuente de verdad:** esta página se publica desde `wiki/` / `docs/` del monorepo.
-> Edita vía Pull Request en el código; no edites solo en la Wiki sin sincronizar.
-
 # Self-assessment — Levels 1 / 2 / 3
 
 Update this table in PRs as criteria are met. Status: `pending` | `partial` | `done`.
@@ -18,7 +15,7 @@ Update this table in PRs as criteria are met. Status: `pending` | `partial` | `d
 | Swagger per service | done | Airport + Itinerary `/swagger` + OpenAPI contracts |
 | Proper HTTP errors | done | Problem JSON on both services |
 | Structured logs + correlation | done | JSON logs + `X-Trace-Id` on both services |
-| Frontend Plotly map | done | `apps/web` map + itinerary form |
+| Frontend interactive map | done | Leaflet Studio + trips wizard (`apps/web`) |
 | Docker Compose | done | airport + itinerary-db + itinerary + web |
 | README + diagrams | done (docs) | `docs/03-diagrams/*` |
 
@@ -29,7 +26,7 @@ Update this table in PRs as criteria are met. Status: `pending` | `partial` | `d
 | Circuit breaker | done | `adapters/out/resilience` + Colombia adapter; `GET /api/v1/resilience` |
 | Retry + backoff | done | exponential + full jitter in `resilience/retry.go` |
 | Redis cache | done | `adapters/out/rediscache` + Compose `redis`; memory fallback |
-| API Gateway + rate limit + JWT | done | `services/api-gateway` `:8080` |
+| API Gateway + rate limit + JWT | done | `services/api-gateway` `:8080`; itineraries require Bearer |
 | Notification consumer | pending | |
 | Broker RabbitMQ | pending | |
 | AsyncAPI | pending | draft in `packages/contracts/asyncapi` |

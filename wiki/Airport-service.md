@@ -35,8 +35,10 @@ Owns the **Airport Catalog** bounded context. Isolates API Colombia behind an Ad
 ## Resilience
 
 - **Cache-aside:** Redis when `REDIS_ADDR` is set; falls back to in-process memory if Redis is unreachable.
-- **Timeout / retry / CB:** see Compose env `UPSTREAM_TIMEOUT_MS`, `CB_*`.
-- **Inspect:** `GET /api/v1/resilience`.
+- **Timeout:** `UPSTREAM_TIMEOUT_MS` on Colombia HTTP client (default 8s).
+- **Retry:** 3 attempts, exponential backoff + full jitter (`200ms` → max `2s`).
+- **Circuit breaker:** opens after `CB_FAILURE_THRESHOLD` consecutive failures; cooldown `CB_COOLDOWN_MS`.
+- **Inspect:** `GET /api/v1/resilience` returns cache backend + breaker snapshot.
 
 ## Error strategy
 

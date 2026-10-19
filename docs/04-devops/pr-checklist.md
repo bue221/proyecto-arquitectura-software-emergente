@@ -7,7 +7,13 @@ Copy into the PR if the template is outdated.
 - [ ] Matches hexagonal boundaries (no infra imports in `domain`)
 - [ ] No business logic added to Gateway
 - [ ] Frontend does not call API Colombia
+- [ ] Map tiles use Adapter port (no hard-coded CDN in interaction code)
 - [ ] New/changed public behavior documented under `docs/`
+
+## Wiki (mandatory)
+
+- [ ] Matching `wiki/` page(s) updated in **this same PR**
+- [ ] After merge to `main`: run `make wiki` / `./scripts/publish-wiki.sh`
 
 ## Quality
 

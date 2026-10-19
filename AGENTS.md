@@ -94,7 +94,7 @@ docs/                          # Project wiki (source of truth)
 **Every change must follow this loop. No direct commits or pushes to `main`.**
 
 ```text
-update main → create branch → commit on branch → open PR → review → merge PR into main
+update main → create branch → commit on branch → open PR → review → merge PR into main → publish wiki
 ```
 
 This applies to **everything**: features, fixes, docs (`AGENTS.md` included), chores, refactors, CI, and agent-driven edits.
@@ -113,6 +113,7 @@ This applies to **everything**: features, fixes, docs (`AGENTS.md` included), ch
 5. The work is done only when the **PR is merged** into `main` (not when the branch exists locally).
 6. PR must link related docs / ADR / issue when architecture or public behavior changes.
 7. After merge, delete the feature branch when appropriate and continue from `main`.
+8. **Publish the GitHub Wiki** after merge when `wiki/` changed (see below).
 
 **Forbidden**
 
@@ -120,8 +121,27 @@ This applies to **everything**: features, fixes, docs (`AGENTS.md` included), ch
 - Pushing to `main` without a PR
 - Opening a branch and leaving changes unmerged without a PR
 - Squashing unrelated work into `main` outside a PR
+- Merging a behavior/architecture PR without updating `docs/` **and** `wiki/`
 
 Full rules: [`docs/04-devops/branching.md`](docs/04-devops/branching.md).
+
+## Mandatory Wiki sync (HARD RULE — every PR)
+
+The GitHub Wiki is **not** edited only in the GitHub UI. Source of truth is the monorepo:
+
+| Layer | Path |
+|-------|------|
+| Repo docs | `docs/**` |
+| Wiki seed (published) | `wiki/**` |
+| Publish script | `./scripts/publish-wiki.sh` or `make wiki` |
+
+**Every PR that changes product behavior, architecture, ops, or UI must:**
+
+1. Update the relevant page(s) under `docs/` in the **same PR**.
+2. Mirror those changes into `wiki/` (same PR) — keep filenames in sync with existing wiki pages.
+3. After the PR is **merged** to `main`, run `make wiki` (or `./scripts/publish-wiki.sh`) so https://github.com/bue221/proyecto-arquitectura-software-emergente/wiki stays current.
+
+Agents closing a PR must not mark work “done” until wiki pages are updated in the PR **and** publish has been run when `wiki/` changed.
 
 ## Architecture rules agents must not break
 
@@ -132,7 +152,7 @@ Full rules: [`docs/04-devops/branching.md`](docs/04-devops/branching.md).
 - **Gateway has no business logic** — routing, auth propagation, rate limiting only.
 - **Double-write:** Itinerary persistence + event publish must use **Transactional Outbox** (Level 3), not dual writes.
 - Prefer **small PRs**. Do not mix Level 3 infrastructure with unrelated feature work.
-- Update `docs/` in the **same PR** when behavior or architecture changes.
+- Update `docs/` **and** matching `wiki/` pages in the **same PR** when behavior or architecture changes.
 - Do not invent new services without an ADR.
 
 ## Error handling & observability (non-negotiables)
@@ -152,19 +172,29 @@ Full rules: [`docs/04-devops/branching.md`](docs/04-devops/branching.md).
 
 1. Read the relevant `docs/` page + ADR for the area you touch.
 2. **Always** create a branch from `main` before editing files.
-3. Implement → tests → update docs if needed.
+3. Implement → tests → update `docs/` **and** `wiki/` in the same PR.
 4. Push branch → open PR → **merge into `main`** (or leave the PR ready if the user must approve).
-5. Prefer completing one service vertical slice over scattering incomplete stubs.
+5. After merge: `make wiki` when `wiki/` changed.
+6. Prefer completing one service vertical slice over scattering incomplete stubs.
 
 ## Delivery status
 
-- Phase 0 wiki/ADRs: done
-- Level 1 Airport + Itinerary + Compose + Next.js map/CRUD: done
-- Frontend Studio (Leaflet + tile adapters) + trips wizard / plans / packing: done
-- Frontend design system (shadcn + Sonner + SEO metadata): done
-- Level 2 API Gateway (JWT + rate limit): done
-- Level 2 Redis cache + circuit breaker + retry on Airport: done
-- Local stack: `make up` / `make down` / `make smoke`
-- Remaining Level 2+ (RabbitMQ notify, FaaS, Jaeger, Testcontainers): next
+**Done**
 
-Remaining work continues **only** through branch → PR → merge.
+- Phase 0 wiki/ADRs
+- Level 1 Airport + Itinerary + Compose + Next.js Studio/CRUD
+- Frontend Studio (Leaflet + tile adapters) + trips wizard / plans / packing / SEO
+- Level 2 API Gateway (JWT + rate limit) + Redis cache + CB + retry on Airport
+- Local stack: `make up` / `make down` / `make smoke` / `make wiki`
+
+**Next (priority order)**
+
+1. Level 2 — RabbitMQ + AsyncAPI + notification FaaS consumer
+2. Level 2 — OpenTelemetry + Jaeger (+ controlled failure demo)
+3. Level 2 — E2E Testcontainers
+4. Level 3 — Outbox relay → broker (complete transactional outbox)
+5. Level 3 — gRPC Airport ↔ Itinerary + S2S auth
+6. Level 3 — CI/CD (GitHub Actions) + Kubernetes probes
+7. Level 3 — Chaos / bulkhead / Prometheus alerts / Pact (as needed for rubric)
+
+Remaining work continues **only** through branch → PR → merge → wiki publish.

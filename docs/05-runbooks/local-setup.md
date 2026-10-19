@@ -5,25 +5,48 @@
 - Go 1.22+
 - Node.js 20+
 - Docker + Docker Compose
+- Make
 
-## Option A — Docker Compose (recommended)
+## Recommended — Makefile
+
+From the repo root:
+
+```bash
+make up      # build + start Compose stack
+make smoke   # health checks via Gateway
+make down    # stop stack
+make wiki    # publish wiki/ → GitHub Wiki (after merge)
+```
+
+| Service | URL |
+|---------|-----|
+| Web | http://localhost:3000 (or `:3001` if 3000 is busy — see Compose ports) |
+| **API Gateway** | http://localhost:8080 |
+| Airport (direct) | http://localhost:8081/swagger |
+| Itinerary (direct) | http://localhost:8082/swagger |
+| Itinerary Postgres | localhost:5434 |
+| Redis | localhost:6379 |
+
+The browser should call **only the Gateway** (`:8080`).
+
+Demo JWT (local):
+
+```bash
+curl -s -X POST http://localhost:8080/auth/token \
+  -H 'Content-Type: application/json' \
+  -d '{"sub":"demo","name":"Demo User"}'
+```
+
+Use the returned Bearer token for itinerary routes.
+
+## Option B — Compose directly
 
 ```bash
 cd infra/docker
 docker compose up --build
 ```
 
-| Service | URL |
-|---------|-----|
-| Web | http://localhost:3000 |
-| **API Gateway** | http://localhost:8080 |
-| Airport (direct) | http://localhost:8081/swagger |
-| Itinerary (direct) | http://localhost:8082/swagger |
-| Itinerary Postgres | localhost:5434 |
-
-The browser should call **only the Gateway** (`:8080`).
-
-## Option B — native processes
+## Option C — native processes
 
 ```bash
 # Postgres
@@ -41,35 +64,18 @@ export AIRPORT_SERVICE_URL='http://localhost:8081'
 go run ./cmd/server
 
 # Gateway
-cd services/api-gateway
-export AIRPORT_SERVICE_URL=http://localhost:8081
-export ITINERARY_SERVICE_URL=http://localhost:8082
-export JWT_SIGNING_KEY=dev-only-change-me
-go run ./cmd/server
+cd services/api-gateway && go run ./cmd/server
 
 # Web
-cd apps/web
-cp .env.local.example .env.local
-npm install && npm run dev
+cd apps/web && npm run dev
 ```
 
-## Smoke checks
+## Wiki publish
+
+After merging a PR that changed `wiki/`:
 
 ```bash
-curl -sS http://localhost:8080/health
-
-# Public airports via gateway
-curl -sS http://localhost:8080/api/v1/airports/1
-
-# Token + protected itinerary create
-TOKEN=$(curl -sS -X POST http://localhost:8080/auth/token \
-  -H 'Content-Type: application/json' \
-  -d '{"subject":"ana","role":"traveler"}' | python3 -c 'import sys,json; print(json.load(sys.stdin)["accessToken"])')
-
-curl -sS -X POST http://localhost:8080/api/v1/itineraries \
-  -H "Authorization: Bearer $TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{"userName":"Ana","originAirportId":"1","destinationAirportId":"2","travelDate":"2026-11-01","durationMinutes":95}'
+make wiki
 ```
 
-Without `Authorization`, itinerary routes must return **401**.
+See `AGENTS.md` — mandatory wiki sync on every product/architecture PR.
