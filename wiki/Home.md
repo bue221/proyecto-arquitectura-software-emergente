@@ -23,6 +23,8 @@ La documentación se versiona en el repositorio (`docs/` + `wiki/`) mediante **b
 
 ## Services
 
+- [API-gateway](API-gateway) — Level 2 edge (`:8080`)
+
 - [Airport-service](Airport-service) — Level 1 done (`:8081`)
 - [Itinerary-service](Itinerary-service) — Level 1 done (`:8082`, Postgres `:5434`)
 - [Notification-function](Notification-function) — planned Level 2

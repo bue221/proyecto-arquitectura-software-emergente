@@ -9,6 +9,7 @@
 - [ADRs](ADRs)
 
 ### Services
+- [Gateway](API-gateway)
 - [Airport](Airport-service)
 - [Itinerary](Itinerary-service)
 - [Notifications](Notification-function)

@@ -26,12 +26,12 @@ Update this table in PRs as criteria are met. Status: `pending` | `partial` | `d
 | Circuit breaker | pending | |
 | Retry + backoff | pending | |
 | Redis cache | pending | |
-| API Gateway + rate limit + JWT | pending | |
+| API Gateway + rate limit + JWT | done | `services/api-gateway` `:8080`; itineraries require Bearer |
 | Notification consumer | pending | |
 | Broker RabbitMQ | pending | |
-| AsyncAPI | pending | |
+| AsyncAPI | pending | draft in `packages/contracts/asyncapi` |
 | OTel + Jaeger | pending | |
-| JWT propagation | pending | |
+| JWT propagation | done | Gateway validates JWT and forwards `Authorization` + `X-User-*` |
 | E2E Testcontainers | pending | |
 | Controlled failure demo | pending | |
 

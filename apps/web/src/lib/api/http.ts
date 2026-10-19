@@ -23,13 +23,19 @@ export async function readApiError(res: Response): Promise<ApiError> {
   }
 }
 
+function mergeHeaders(init?: RequestInit, extra?: HeadersInit): Headers {
+  const headers = new Headers(init?.headers || {});
+  if (extra) {
+    new Headers(extra).forEach((value, key) => headers.set(key, value));
+  }
+  if (!headers.has("Accept")) headers.set("Accept", "application/json");
+  return headers;
+}
+
 export async function getJson<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, {
     ...init,
-    headers: {
-      Accept: "application/json",
-      ...(init?.headers || {}),
-    },
+    headers: mergeHeaders(init),
     cache: "no-store",
   });
   if (!res.ok) throw await readApiError(res);
@@ -40,10 +46,13 @@ export async function sendJson<T>(
   url: string,
   method: "POST" | "PUT" | "PATCH" | "DELETE",
   body?: unknown,
+  init?: RequestInit,
 ): Promise<T | void> {
+  const headers = mergeHeaders(init, body ? { "Content-Type": "application/json" } : undefined);
   const res = await fetch(url, {
+    ...init,
     method,
-    headers: body ? { "Content-Type": "application/json", Accept: "application/json" } : { Accept: "application/json" },
+    headers,
     body: body ? JSON.stringify(body) : undefined,
   });
   if (!res.ok) throw await readApiError(res);

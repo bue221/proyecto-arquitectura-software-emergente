@@ -55,5 +55,7 @@ npx shadcn@latest add <component>
 
 See `.env.local.example`:
 
-- `NEXT_PUBLIC_AIRPORT_API_URL`
-- `NEXT_PUBLIC_ITINERARY_API_URL`
+- `NEXT_PUBLIC_API_GATEWAY_URL` (preferred; default `http://localhost:8080`)
+- `NEXT_PUBLIC_AIRPORT_API_URL` / `NEXT_PUBLIC_ITINERARY_API_URL` (should also point at the gateway)
+
+Itinerary calls obtain a demo JWT via `POST /auth/token` and send `Authorization: Bearer …`.

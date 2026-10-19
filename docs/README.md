@@ -17,6 +17,7 @@ Source of truth for architecture, diagrams, DevOps, and demos. Prefer updating t
 6. [Airport Service](02-services/airport-service.md)
 7. [Itinerary Service](02-services/itinerary-service.md)
 8. [Notification Function (Serverless)](02-services/notification-function.md)
+8b. [API Gateway](02-services/api-gateway.md)
 
 ### Diagrams (Mermaid)
 
