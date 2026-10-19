@@ -42,6 +42,8 @@ Port: `MapTileProvider` / `MapTileStyle` under `features/studio/map/`.
 
 Runtime switcher on Studio + `NEXT_PUBLIC_MAP_TILE_PROVIDER`. Add Mapbox later as another adapter behind the same port.
 
+`MapTileLayer` must **not** pass `subdomains={undefined}` into Leaflet — `_getSubdomain` always reads `.length`. Omit the prop (Leaflet default `"abc"`) or set it on every adapter.
+
 ## Product surfaces
 
 | Route | Purpose | SEO |
