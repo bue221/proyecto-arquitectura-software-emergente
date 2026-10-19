@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "leaflet/dist/leaflet.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -36,71 +37,74 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-interactive: var(--interactive);
+  --color-interactive-foreground: var(--interactive-foreground);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
   --font-sans: var(--font-sans);
-  --font-heading: var(--font-display);
+  --font-heading: var(--font-sans);
 }
 
-/* Travel marketplace feel: warm white, ink text, rose CTA — not purple/cream kitsch */
 :root {
-  --radius: 0.875rem;
-  --background: #f7f7f7;
-  --foreground: #222222;
+  --radius: 1rem;
+  --background: #f8fafc; /* slate-50 */
+  --foreground: #0f172a; /* slate-900 */
   --card: #ffffff;
-  --card-foreground: #222222;
+  --card-foreground: #0f172a;
   --popover: #ffffff;
-  --popover-foreground: #222222;
-  --primary: #e31c5f;
-  --primary-foreground: #ffffff;
-  --secondary: #f0f0f0;
-  --secondary-foreground: #222222;
-  --muted: #ebebeb;
-  --muted-foreground: #6a6a6a;
-  --accent: #fff0f4;
-  --accent-foreground: #9b123f;
-  --destructive: #c13515;
-  --border: #dddddd;
-  --input: #dddddd;
-  --ring: #e31c5f;
-  --chart-1: #e31c5f;
-  --chart-2: #222222;
-  --chart-3: #6a6a6a;
-  --chart-4: #b0b0b0;
-  --chart-5: #dddddd;
+  --popover-foreground: #0f172a;
+  --primary: #059669; /* emerald-600 */
+  --primary-foreground: #ecfdf5;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #e2e8f0;
+  --muted-foreground: #64748b;
+  --accent: #ecfdf5;
+  --accent-foreground: #047857;
+  --destructive: #dc2626;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #059669;
+  --interactive: #4f46e5; /* indigo-600 */
+  --interactive-foreground: #eef2ff;
+  --chart-1: #059669;
+  --chart-2: #4f46e5;
+  --chart-3: #0f172a;
+  --chart-4: #94a3b8;
+  --chart-5: #cbd5e1;
   --sidebar: #ffffff;
-  --sidebar-foreground: #222222;
-  --sidebar-primary: #e31c5f;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f7f7f7;
-  --sidebar-accent-foreground: #222222;
-  --sidebar-border: #dddddd;
-  --sidebar-ring: #e31c5f;
-  --shadow-card: 0 6px 16px rgba(0, 0, 0, 0.08);
-  --shadow-search: 0 4px 18px rgba(0, 0, 0, 0.12);
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #059669;
+  --sidebar-primary-foreground: #ecfdf5;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #059669;
 }
 
 .dark {
-  --background: #0f0f0f;
-  --foreground: #f7f7f7;
-  --card: #1a1a1a;
-  --card-foreground: #f7f7f7;
-  --popover: #1a1a1a;
-  --popover-foreground: #f7f7f7;
-  --primary: #ff5a87;
-  --primary-foreground: #1a1a1a;
-  --secondary: #2a2a2a;
-  --secondary-foreground: #f7f7f7;
-  --muted: #2a2a2a;
-  --muted-foreground: #b0b0b0;
-  --accent: #3a1a24;
-  --accent-foreground: #ffc0d0;
-  --destructive: #ff6b4a;
-  --border: #333333;
-  --input: #333333;
-  --ring: #ff5a87;
+  --background: #020617;
+  --foreground: #f8fafc;
+  --card: #0f172a;
+  --card-foreground: #f8fafc;
+  --popover: #0f172a;
+  --popover-foreground: #f8fafc;
+  --primary: #34d399;
+  --primary-foreground: #022c22;
+  --secondary: #1e293b;
+  --secondary-foreground: #f8fafc;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: #064e3b;
+  --accent-foreground: #a7f3d0;
+  --destructive: #f87171;
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #34d399;
+  --interactive: #818cf8;
+  --interactive-foreground: #1e1b4b;
 }
 
 @layer base {
@@ -110,22 +114,56 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: var(--font-sans), "Plus Jakarta Sans", system-ui, sans-serif;
-  }
-
-  html {
-    @apply font-sans;
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   }
 }
 
-.font-display {
-  font-family: var(--font-display), "Fraunces", Georgia, serif;
+/* Leaflet overrides for premium minimalist map */
+.leaflet-container {
+  font: inherit;
+  background: #e8eef5;
 }
 
-.shadow-card {
-  box-shadow: var(--shadow-card);
+.leaflet-control-attribution {
+  font-size: 10px !important;
+  background: rgba(255, 255, 255, 0.7) !important;
 }
 
-.shadow-search {
-  box-shadow: var(--shadow-search);
+.airport-marker {
+  background: transparent;
+  border: none;
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+    0 10px 40px rgba(15, 23, 42, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.6) inset;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.75);
+    opacity: 0.7;
+  }
+  70% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+.ruta-dash-animate {
+  animation: dash-travel 1.4s linear infinite;
+}
+
+@keyframes dash-travel {
+  to {
+    stroke-dashoffset: -44;
+  }
 }
