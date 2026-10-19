@@ -1,0 +1,59 @@
+openapi: 3.0.3
+info:
+  title: Itinerary Service API
+  version: 1.0.0
+  description: Canonical OpenAPI copy for Itinerary Service.
+servers:
+  - url: http://localhost:8082
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+  /api/v1/itineraries:
+    get:
+      summary: List itineraries
+      responses:
+        "200":
+          description: List
+    post:
+      summary: Create itinerary
+      responses:
+        "201":
+          description: Created
+  /api/v1/itineraries/{id}:
+    get:
+      summary: Get itinerary
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+    put:
+      summary: Update itinerary
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Updated
+    delete:
+      summary: Delete itinerary
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted

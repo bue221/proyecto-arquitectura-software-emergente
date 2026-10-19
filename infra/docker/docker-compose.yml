@@ -10,14 +10,47 @@ services:
       UPSTREAM_TIMEOUT_MS: "8000"
       CACHE_TTL_MS: "300000"
 
+  itinerary-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: itinerary
+      POSTGRES_PASSWORD: itinerary
+      POSTGRES_DB: itinerary
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U itinerary -d itinerary"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  itinerary-service:
+    build:
+      context: ../../services/itinerary-service
+    ports:
+      - "8082:8082"
+    environment:
+      HTTP_ADDR: ":8082"
+      DATABASE_URL: postgres://itinerary:itinerary@itinerary-db:5432/itinerary?sslmode=disable
+      AIRPORT_SERVICE_URL: http://airport-service:8081
+      AIRPORT_HTTP_TIMEOUT_MS: "5000"
+    depends_on:
+      airport-service:
+        condition: service_started
+      itinerary-db:
+        condition: service_healthy
+
   web:
     build:
       context: ../../apps/web
       args:
         NEXT_PUBLIC_AIRPORT_API_URL: http://localhost:8081
+        NEXT_PUBLIC_ITINERARY_API_URL: http://localhost:8082
     ports:
       - "3000:3000"
     environment:
       NEXT_PUBLIC_AIRPORT_API_URL: http://localhost:8081
+      NEXT_PUBLIC_ITINERARY_API_URL: http://localhost:8082
     depends_on:
       - airport-service
+      - itinerary-service

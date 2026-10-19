@@ -1,16 +1,16 @@
 # Docker Compose
 
-Level 1 stack: Airport Service + Next.js web.
+Level 1 stack: Airport Service + Itinerary Service (Postgres) + Next.js web.
 
 ```bash
 docker compose -f infra/docker/docker-compose.yml up --build
 ```
 
-From this directory:
+| Service | Port |
+|---------|------|
+| Web | 3000 |
+| Airport | 8081 |
+| Itinerary | 8082 |
+| Itinerary Postgres | 5434 |
 
-```bash
-docker compose up --build
-```
-
-- Web: http://localhost:3000
-- Airport: http://localhost:8081/swagger
+Note: host port **5434** avoids clashes with other local Postgres instances on 5433.

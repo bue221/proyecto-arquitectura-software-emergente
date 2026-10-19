@@ -6,17 +6,17 @@ Update this table in PRs as criteria are met. Status: `pending` | `partial` | `d
 
 | Criterion | Status | Evidence |
 |-----------|--------|----------|
-| Adapter pattern | partial | `services/airport-service/internal/adapters/out/colombia` |
-| Hexagonal layers | partial | Airport Service packages (`domain`/`application`/`adapters`) |
+| Adapter pattern | done | `services/airport-service/internal/adapters/out/colombia` |
+| Hexagonal layers | done | Airport + Itinerary `domain`/`application`/`adapters` |
 | DDD BCs + ubiquitous language | done (docs) | `docs/01-architecture/bounded-contexts.md` |
-| Itinerary CRUD + HTTP airport validation | pending | |
-| Relational DB | pending | |
-| Versioned migrations | pending | |
-| Swagger per service | partial | Airport `/swagger` + `packages/contracts/openapi/airport.v1.yaml` |
-| Proper HTTP errors | partial | Airport Problem JSON (`code`/`message`/`trace_id`) |
-| Structured logs + correlation | partial | Airport JSON logs + `X-Trace-Id` |
-| Frontend Plotly map | partial | `apps/web` map consumes Airport Service |
-| Docker Compose | partial | `infra/docker/docker-compose.yml` (airport + web) |
+| Itinerary CRUD + HTTP airport validation | done | `services/itinerary-service` + UI panel |
+| Relational DB | done | Postgres `itinerary-db` (one DB for itinerary service) |
+| Versioned migrations | done | `services/itinerary-service/migrations` applied on boot |
+| Swagger per service | done | Airport + Itinerary `/swagger` + OpenAPI contracts |
+| Proper HTTP errors | done | Problem JSON on both services |
+| Structured logs + correlation | done | JSON logs + `X-Trace-Id` on both services |
+| Frontend Plotly map | done | `apps/web` map + itinerary form |
+| Docker Compose | done | airport + itinerary-db + itinerary + web |
 | README + diagrams | done (docs) | `docs/03-diagrams/*` |
 
 ## Level 2 — Advanced
@@ -39,7 +39,7 @@ Update this table in PRs as criteria are met. Status: `pending` | `partial` | `d
 
 | Criterion | Status | Evidence |
 |-----------|--------|----------|
-| Transactional Outbox | pending | ADR-0005 + diagram |
+| Transactional Outbox | partial | Create writes outbox row in same TX; relay/broker pending |
 | Double-write resolution documented | done (docs) | `docs/03-diagrams/outbox.md` |
 | gRPC Airport ↔ Itinerary | pending | |
 | S2S security (mTLS or OAuth2 CC) | pending | |
