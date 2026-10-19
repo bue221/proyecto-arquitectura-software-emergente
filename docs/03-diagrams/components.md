@@ -2,33 +2,36 @@
 
 ```mermaid
 flowchart TB
-  WEB[apps/web - Next.js + Plotly]
+  WEB[apps/web Next.js + shadcn + Plotly :3000]
 
-  GW[services/api-gateway]
+  GW[services/api-gateway planned L2]
+  AIR[services/airport-service :8081]
+  ITI[services/itinerary-service :8082]
+  NF[services/notification-function planned L2]
 
-  AIR[services/airport-service]
-  ITI[services/itinerary-service]
-  NF[services/notification-function]
-
-  PG1[(Postgres Airport)]
-  PG2[(Postgres Itinerary + Outbox)]
-  PG3[(Postgres Notifications)]
-  REDIS[(Redis)]
-  RMQ[[RabbitMQ]]
+  PG2[(Postgres Itinerary :5434)]
+  REDIS[(Redis planned L2)]
+  RMQ[[RabbitMQ planned L2]]
   COL[API Colombia]
 
-  WEB --> GW
-  GW --> AIR
-  GW --> ITI
+  WEB --> AIR
+  WEB --> ITI
+  WEB -.-> GW
+  GW -.-> AIR
+  GW -.-> ITI
   ITI --> AIR
-  AIR --> REDIS
   AIR --> COL
-  AIR --> PG1
+  AIR -.-> REDIS
   ITI --> PG2
-  ITI --> RMQ
-  RMQ --> NF
-  NF --> PG3
+  ITI -.-> RMQ
+  RMQ -.-> NF
 ```
+
+## Current Level 1 wiring
+
+- Web calls Airport and Itinerary **directly** (Gateway arrives in Level 2).
+- Airport uses in-memory cache today; Redis is Level 2.
+- Itinerary writes outbox rows; broker relay is Level 2/3.
 
 ## Notes
 
