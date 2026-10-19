@@ -1,0 +1,107 @@
+openapi: 3.0.3
+info:
+  title: Itinerary Service API
+  version: 1.0.0
+  description: CRUD for personal itineraries with airport validation via Airport Service.
+servers:
+  - url: http://localhost:8082
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+  /api/v1/itineraries:
+    get:
+      summary: List itineraries
+      responses:
+        "200":
+          description: List
+    post:
+      summary: Create itinerary
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItineraryRequest"
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Invalid input
+        "422":
+          description: Airport invalid
+        "503":
+          description: Airport unavailable
+  /api/v1/itineraries/{id}:
+    get:
+      summary: Get itinerary
+      parameters:
+        - $ref: "#/components/parameters/ItineraryId"
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not found
+    put:
+      summary: Update itinerary
+      parameters:
+        - $ref: "#/components/parameters/ItineraryId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItineraryRequest"
+      responses:
+        "200":
+          description: Updated
+        "404":
+          description: Not found
+    delete:
+      summary: Delete itinerary
+      parameters:
+        - $ref: "#/components/parameters/ItineraryId"
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+components:
+  parameters:
+    ItineraryId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    ItineraryRequest:
+      type: object
+      required: [userName, originAirportId, destinationAirportId, travelDate, durationMinutes]
+      properties:
+        userName: { type: string }
+        originAirportId: { type: string }
+        destinationAirportId: { type: string }
+        travelDate: { type: string, format: date }
+        durationMinutes: { type: integer, minimum: 1 }
+    Itinerary:
+      type: object
+      properties:
+        id: { type: string }
+        userName: { type: string }
+        originAirportId: { type: string }
+        destinationAirportId: { type: string }
+        travelDate: { type: string, format: date }
+        durationMinutes: { type: integer }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    Problem:
+      type: object
+      properties:
+        code: { type: string }
+        message: { type: string }
+        trace_id: { type: string }

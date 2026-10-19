@@ -1,4 +1,5 @@
 import { AirportMap } from "@/components/AirportMap";
+import { ItineraryPanel } from "@/components/ItineraryPanel";
 
 export default function HomePage() {
   return (
@@ -16,12 +17,12 @@ export default function HomePage() {
             Plan trips on a trusted Colombian airport map
           </h1>
           <p className="text-base text-[#4a5d73] md:text-lg">
-            Level 1 UI shell: Next.js consumes the hexagonal Airport Service and renders
-            Plotly markers from the adapted internal DTO.
+            Next.js talks to Airport and Itinerary services only — never to API Colombia.
           </p>
         </header>
 
         <AirportMap />
+        <ItineraryPanel />
       </div>
     </main>
   );
