@@ -20,7 +20,7 @@ make wiki    # publish wiki/ → GitHub Wiki (after merge)
 
 | Service | URL |
 |---------|-----|
-| Web | http://localhost:3000 (or `:3001` if 3000 is busy — see Compose ports) |
+| Web | http://localhost:3001 (Compose maps `3001→3000`; host `:3000` is often another Next app) |
 | **API Gateway** | http://localhost:8080 |
 | Airport (direct) | http://localhost:8081/swagger |
 | Itinerary (direct) | http://localhost:8082/swagger |
