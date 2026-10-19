@@ -51,6 +51,7 @@ docs/                          # Project wiki (source of truth)
 | Topic | Path |
 |-------|------|
 | Wiki home | [`docs/README.md`](docs/README.md) |
+| Frontend architecture | [`docs/07-frontend/architecture.md`](docs/07-frontend/architecture.md) |
 | Vision & scope | [`docs/00-vision.md`](docs/00-vision.md) |
 | Architecture overview | [`docs/01-architecture/overview.md`](docs/01-architecture/overview.md) |
 | Formal architecture doc | [`docs/01-architecture/document.md`](docs/01-architecture/document.md) |
@@ -135,4 +136,9 @@ Full rules: [`docs/04-devops/branching.md`](docs/04-devops/branching.md).
 
 ## Delivery status
 
-Phase 0 docs and Level 1 Airport Service + Next.js map are on `main` via merged PRs. Remaining Level 1–3 work continues **only** through branch → PR → merge.
+- Phase 0 wiki/ADRs: done
+- Level 1 Airport + Itinerary + Compose + Next.js map/CRUD: done
+- Frontend design system (shadcn + Sonner + feature folders): done
+- Level 2+ (Gateway, Redis CB, RabbitMQ notify, Jaeger): next
+
+Remaining work continues **only** through branch → PR → merge.

@@ -1,5 +1,7 @@
 # Airport Service
 
+**Status:** implemented (Level 1) — `services/airport-service` on ports `8081`, Swagger at `/swagger`.
+
 ## Why
 
 Owns the **Airport Catalog** bounded context. Isolates API Colombia behind an Adapter so the rest of the system (and Next.js) never depends on the external schema.

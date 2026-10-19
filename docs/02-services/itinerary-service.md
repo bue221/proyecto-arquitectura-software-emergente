@@ -1,5 +1,8 @@
 # Itinerary Service
 
+**Status:** implemented (Level 1) — `services/itinerary-service` on port `8082`, Postgres host port `5434`, Swagger at `/swagger`.  
+Outbox rows are written on create; RabbitMQ relay remains Level 2/3.
+
 ## Why
 
 Owns **Itinerary Planning**. Persists personal itineraries, validates airport references against Airport Service, and emits integration events through the Transactional Outbox.
