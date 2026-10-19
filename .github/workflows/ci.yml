@@ -38,7 +38,8 @@ jobs:
         working-directory: services/airport-service
 
       - name: Test itinerary-service
-        run: go test ./... -count=1 -timeout 45s
+        # -short skips Testcontainers so PR CI stays under 3 minutes.
+        run: go test ./... -count=1 -short -timeout 45s
         working-directory: services/itinerary-service
 
       - name: Test api-gateway

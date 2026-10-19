@@ -32,7 +32,7 @@ Update this table in PRs as criteria are met. Status: `pending` | `partial` | `d
 | AsyncAPI | done | `packages/contracts/asyncapi/itinerary-events.yaml` v0.2.0 |
 | OTel + Jaeger | done | Compose `jaeger`; OTLP from Gateway/Airport/Itinerary; UI `:16686` |
 | JWT propagation | done | Gateway validates JWT and forwards `Authorization` + `X-User-*` |
-| E2E Testcontainers | pending | |
+| E2E Testcontainers | done | `repository_integration_test.go` + `.github/workflows/e2e-nightly.yml` |
 | Controlled failure demo | done | `GET /api/v1/demo/fail` → 503 + error span (`docs/05-runbooks/observability.md`) |
 
 ## Level 3 — Expert
