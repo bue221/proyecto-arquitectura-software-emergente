@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { fetchAirportsForMap } from "@/features/airports/api";
@@ -11,6 +11,14 @@ import {
   type StudioAirport,
 } from "@/features/studio/airports";
 import { ItineraryStudioPanel } from "@/features/studio/components/ItineraryStudioPanel";
+import type { MapTileProviderId } from "@/features/studio/map/port";
+import {
+  listMapTileStyles,
+  persistMapTileProviderId,
+  readStoredMapTileProviderId,
+  resolveMapTileStyle,
+} from "@/features/studio/map/registry";
+import { TileProviderSwitch } from "@/features/studio/map/TileProviderSwitch";
 
 const ColombiaMap = dynamic(
   () =>
@@ -30,6 +38,14 @@ export function ItineraryStudio() {
   const [origin, setOrigin] = useState<StudioAirport | null>(null);
   const [destination, setDestination] = useState<StudioAirport | null>(null);
   const [loading, setLoading] = useState(true);
+  const [tileProviderId, setTileProviderId] = useState<MapTileProviderId>("carto-positron");
+
+  const tileStyles = useMemo(() => listMapTileStyles(), []);
+  const tileStyle = useMemo(() => resolveMapTileStyle(tileProviderId), [tileProviderId]);
+
+  useEffect(() => {
+    setTileProviderId(readStoredMapTileProviderId());
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -79,17 +95,33 @@ export function ItineraryStudio() {
     setDestination(null);
   }, []);
 
+  const onTileChange = useCallback((id: MapTileProviderId) => {
+    setTileProviderId(id);
+    persistMapTileProviderId(id);
+    toast.success(`Basemap: ${resolveMapTileStyle(id).label}`);
+  }, []);
+
   return (
-    <div className="relative h-[calc(100dvh-4rem)] w-full overflow-hidden bg-slate-50 md:h-[calc(100dvh-4rem)]">
+    <div className="relative h-[calc(100dvh-4rem)] w-full overflow-hidden bg-slate-50">
       <ColombiaMap
         airports={airports}
         origin={origin}
         destination={destination}
         onSelectAirport={onSelectAirport}
+        tileStyle={tileStyle}
       />
 
-      <div className="pointer-events-none absolute left-4 top-4 z-10 hidden rounded-2xl border border-white/70 bg-white/80 px-3 py-2 text-xs text-slate-600 shadow-sm backdrop-blur md:block">
-        {loading ? "Sincronizando aeropuertos…" : `${airports.length} aeropuertos · click mapa`}
+      <div className="absolute left-4 top-4 z-10 flex max-w-xs flex-col gap-2">
+        <div className="rounded-2xl border border-white/70 bg-white/80 px-3 py-2 text-xs text-slate-600 shadow-sm backdrop-blur">
+          {loading
+            ? "Sincronizando aeropuertos…"
+            : `${airports.length} aeropuertos · adapter ${tileStyle.id}`}
+        </div>
+        <TileProviderSwitch
+          styles={tileStyles}
+          activeId={tileProviderId}
+          onChange={onTileChange}
+        />
       </div>
 
       <ItineraryStudioPanel

@@ -1,17 +1,20 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
-import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import { MapContainer, useMap } from "react-leaflet";
 
 import type { StudioAirport } from "@/features/studio/airports";
 import { AirportMarker, markerRole } from "@/features/studio/components/AirportMarker";
 import { RouteArc } from "@/features/studio/components/RouteArc";
+import { MapTileLayer } from "@/features/studio/map/MapTileLayer";
+import type { MapTileStyle } from "@/features/studio/map/port";
 
 type ColombiaMapProps = {
   airports: StudioAirport[];
   origin: StudioAirport | null;
   destination: StudioAirport | null;
   onSelectAirport: (airport: StudioAirport) => void;
+  tileStyle: MapTileStyle;
 };
 
 function FitRoute({
@@ -43,6 +46,7 @@ export function ColombiaMap({
   origin,
   destination,
   onSelectAirport,
+  tileStyle,
 }: ColombiaMapProps) {
   const hubsAndOthers = useMemo(() => {
     const hubs = airports.filter((a) => a.isHub);
@@ -59,10 +63,7 @@ export function ColombiaMap({
       attributionControl
       scrollWheelZoom
     >
-      <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
-      />
+      <MapTileLayer style={tileStyle} />
       <FitRoute origin={origin} destination={destination} />
       {origin && destination ? <RouteArc origin={origin} destination={destination} /> : null}
       {hubsAndOthers.map((airport) => (
