@@ -26,6 +26,10 @@ func (uc ListItineraries) Execute(ctx context.Context) ([]domain.Itinerary, erro
 	return uc.Repo.List(ctx)
 }
 
+func (uc ListItineraries) ExecutePage(ctx context.Context, q domain.PageQuery) (domain.PageResult, error) {
+	return uc.Repo.ListPage(ctx, q.Normalize())
+}
+
 type DeleteItinerary struct {
 	Repo domain.ItineraryRepository
 }

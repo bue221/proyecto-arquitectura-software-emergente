@@ -2,7 +2,10 @@ openapi: 3.0.3
 info:
   title: Itinerary Service API
   version: 1.0.0
-  description: Canonical OpenAPI copy for Itinerary Service.
+  description: |
+    Canonical OpenAPI copy for Itinerary Service.
+    URI versioning under `/api/v1`; responses include `API-Version: 1`.
+    List supports offset pagination via `page` / `pageSize`.
 servers:
   - url: http://localhost:8082
 paths:
@@ -14,10 +17,17 @@ paths:
           description: OK
   /api/v1/itineraries:
     get:
-      summary: List itineraries
+      summary: List itineraries (paginated)
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
       responses:
         "200":
-          description: List
+          description: Paginated list
     post:
       summary: Create itinerary
       responses:

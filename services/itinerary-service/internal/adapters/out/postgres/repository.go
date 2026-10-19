@@ -198,25 +198,48 @@ func (r *Repository) BumpAttempts(ctx context.Context, id string) error {
 }
 
 func (r *Repository) List(ctx context.Context) ([]domain.Itinerary, error) {
+	page, err := r.ListPage(ctx, domain.PageQuery{Page: 1, PageSize: 100})
+	if err != nil {
+		return nil, err
+	}
+	return page.Items, nil
+}
+
+func (r *Repository) ListPage(ctx context.Context, q domain.PageQuery) (domain.PageResult, error) {
+	q = q.Normalize()
+	var total int
+	if err := r.pool.QueryRow(ctx, `SELECT COUNT(*) FROM itineraries`).Scan(&total); err != nil {
+		return domain.PageResult{}, fmt.Errorf("%w: count: %v", domain.ErrPersistenceFailed, err)
+	}
+
 	rows, err := r.pool.Query(ctx, `
 		SELECT id, user_name, origin_airport_id, destination_airport_id,
 		       travel_date, duration_minutes, packing_items, plan_items, created_at, updated_at
 		FROM itineraries
-		ORDER BY created_at DESC`)
+		ORDER BY created_at DESC
+		LIMIT $1 OFFSET $2`, q.PageSize, q.Offset())
 	if err != nil {
-		return nil, fmt.Errorf("%w: %v", domain.ErrPersistenceFailed, err)
+		return domain.PageResult{}, fmt.Errorf("%w: %v", domain.ErrPersistenceFailed, err)
 	}
 	defer rows.Close()
 
-	var items []domain.Itinerary
+	items := make([]domain.Itinerary, 0, q.PageSize)
 	for rows.Next() {
 		item, err := scanItinerary(rows)
 		if err != nil {
-			return nil, err
+			return domain.PageResult{}, err
 		}
 		items = append(items, item)
 	}
-	return items, rows.Err()
+	if err := rows.Err(); err != nil {
+		return domain.PageResult{}, err
+	}
+	return domain.PageResult{
+		Items:    items,
+		Total:    total,
+		Page:     q.Page,
+		PageSize: q.PageSize,
+	}, nil
 }
 
 type scannable interface {

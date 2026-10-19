@@ -50,7 +50,7 @@ Update this table in PRs as criteria are met. Status: `pending` | `partial` | `d
 | CI/CD GitHub Actions | partial | `.github/workflows/ci.yml` — Go unit tests only, ≤3 min |
 | Kubernetes + probes | pending | |
 | Contract testing (Pact) | pending | |
-| API versioning + pagination | pending | |
+| API versioning + pagination | done | `/api/v1` + `API-Version` header; itinerary list `page`/`pageSize` (ADR-0008) |
 
 ## Planning backlog (Jira)
 
