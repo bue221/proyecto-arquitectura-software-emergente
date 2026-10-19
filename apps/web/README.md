@@ -1,9 +1,24 @@
 # apps/web
 
-Next.js + Plotly.js frontend for the Personal Itineraries Platform.
+Next.js (App Router) + Plotly.js frontend for Personal Itineraries.
 
-**Status:** placeholder (Phase 0). Implementation starts in `feat/web-*` PRs after Gateway/Airport contracts exist.
+## Run locally
 
-Must consume **only** Gateway/internal DTOs — never API Colombia directly.
+```bash
+# terminal 1 — Airport Service
+cd ../../services/airport-service && go run ./cmd/server
 
-See: [`../../docs/00-vision.md`](../../docs/00-vision.md), [`../../AGENTS.md`](../../AGENTS.md).
+# terminal 2 — Web
+cp .env.local.example .env.local
+npm install
+npm run dev
+```
+
+Open http://localhost:3000
+
+The browser calls **only** `NEXT_PUBLIC_AIRPORT_API_URL` (Airport Service). It never calls API Colombia.
+
+## Docs
+
+- [`../../docs/02-services/airport-service.md`](../../docs/02-services/airport-service.md)
+- [`../../AGENTS.md`](../../AGENTS.md)

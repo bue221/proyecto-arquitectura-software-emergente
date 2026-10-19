@@ -1,0 +1,23 @@
+services:
+  airport-service:
+    build:
+      context: ../../services/airport-service
+    ports:
+      - "8081:8081"
+    environment:
+      HTTP_ADDR: ":8081"
+      COLOMBIA_API_BASE_URL: "https://api-colombia.com"
+      UPSTREAM_TIMEOUT_MS: "8000"
+      CACHE_TTL_MS: "300000"
+
+  web:
+    build:
+      context: ../../apps/web
+      args:
+        NEXT_PUBLIC_AIRPORT_API_URL: http://localhost:8081
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_AIRPORT_API_URL: http://localhost:8081
+    depends_on:
+      - airport-service
