@@ -1,0 +1,20 @@
+groups:
+  - name: airport-resilience
+    rules:
+      - alert: AirportCircuitBreakerOpen
+        expr: airport_circuit_breaker_open == 1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: Airport circuit breaker is open
+          description: Colombia upstream is isolated; check /api/v1/resilience and Jaeger.
+
+      - alert: AirportBulkheadSaturated
+        expr: increase(airport_bulkhead_rejected_total[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Airport bulkhead rejecting calls
+          description: Concurrent Colombia calls exceeded BULKHEAD_MAX_CONCURRENT.

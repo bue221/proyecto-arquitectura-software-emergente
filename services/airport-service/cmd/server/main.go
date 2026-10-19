@@ -25,6 +25,7 @@ import (
 	"github.com/bue221/personal-itineraries/services/airport-service/internal/platform/config"
 	"github.com/bue221/personal-itineraries/services/airport-service/internal/platform/grpctls"
 	"github.com/bue221/personal-itineraries/services/airport-service/internal/platform/logging"
+	"github.com/bue221/personal-itineraries/services/airport-service/internal/platform/metrics"
 	"github.com/bue221/personal-itineraries/services/airport-service/internal/platform/otelx"
 )
 
@@ -48,16 +49,25 @@ func main() {
 
 	cache, cacheBackend := buildCache(cfg, log)
 	breaker := resilience.NewBreaker(cfg.CBFailureThreshold, cfg.CBCooldown)
-	provider := colombia.NewAdapter(cfg.ColombiaAPIBaseURL, cfg.UpstreamTimeout, cache, breaker)
+	bulkhead := resilience.NewBulkhead(cfg.BulkheadMax)
+	provider := colombia.NewAdapterWithBulkhead(cfg.ColombiaAPIBaseURL, cfg.UpstreamTimeout, cache, breaker, bulkhead)
 	getAirport := application.GetAirport{Provider: provider}
 
 	handlers := httpapi.Handlers{
 		GetAirport: getAirport,
 		ListMap:    application.ListAirportsForMap{Provider: provider},
+		MetricsH:   metrics.Handler(),
 		Resilience: func() map[string]any {
+			cb := provider.BreakerSnapshot()
+			if state, _ := cb["state"].(string); state == "open" {
+				metrics.SetBreakerOpen(true)
+			} else {
+				metrics.SetBreakerOpen(false)
+			}
 			return map[string]any{
-				"cache_backend": cacheBackend,
-				"circuit_breaker": provider.BreakerSnapshot(),
+				"cache_backend":   cacheBackend,
+				"circuit_breaker": cb,
+				"bulkhead":        provider.BulkheadSnapshot(),
 				"retry": map[string]any{
 					"max_attempts":  3,
 					"base_delay_ms": 200,

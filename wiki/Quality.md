@@ -1,6 +1,3 @@
-> **Fuente de verdad:** esta página se publica desde `wiki/` / `docs/` del monorepo.
-> Edita vía Pull Request en el código; no edites solo en la Wiki sin sincronizar.
-
 # Quality gates
 
 ## Unit tests
@@ -30,3 +27,9 @@
 
 - Inject latency/timeouts toward API Colombia mock.
 - Capture CB open metrics + Grafana/Prometheus alert screenshots in demo evidence.
+
+## Prometheus alerts (Level 3)
+
+- Config: `infra/prometheus/prometheus.yml` + `alerts.yml`.
+- Rules: `AirportCircuitBreakerOpen`, `AirportBulkheadSaturated`.
+- Scrape Airport `/metrics` from Compose service `prometheus` (`:9090`).

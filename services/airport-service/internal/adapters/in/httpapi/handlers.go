@@ -18,11 +18,20 @@ type Handlers struct {
 	GetAirport application.GetAirport
 	ListMap    application.ListAirportsForMap
 	Resilience func() map[string]any
+	MetricsH   http.Handler
 	Log        *slog.Logger
 }
 
 func (h Handlers) Health(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
+}
+
+func (h Handlers) Metrics(w http.ResponseWriter, r *http.Request) {
+	if h.MetricsH == nil {
+		http.NotFound(w, r)
+		return
+	}
+	h.MetricsH.ServeHTTP(w, r)
 }
 
 func (h Handlers) ResilienceStatus(w http.ResponseWriter, r *http.Request) {

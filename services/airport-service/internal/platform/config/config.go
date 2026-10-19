@@ -20,6 +20,7 @@ type Config struct {
 	GRPCTLSCertFile    string
 	GRPCTLSKeyFile     string
 	GRPCTLSCAFile      string
+	BulkheadMax        int
 }
 
 func Load() Config {
@@ -37,6 +38,7 @@ func Load() Config {
 		GRPCTLSCertFile:    getEnv("GRPC_TLS_CERT_FILE", ""),
 		GRPCTLSKeyFile:     getEnv("GRPC_TLS_KEY_FILE", ""),
 		GRPCTLSCAFile:      getEnv("GRPC_TLS_CA_FILE", ""),
+		BulkheadMax:        getInt("BULKHEAD_MAX_CONCURRENT", 8),
 	}
 }
 
