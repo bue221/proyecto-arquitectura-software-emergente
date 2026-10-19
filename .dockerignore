@@ -1,0 +1,14 @@
+**/.git
+**/node_modules
+**/.next
+**/dist
+**/tmp
+apps/web
+docs
+wiki
+infra
+scripts
+**/*_test.go
+**/.env*
+**/*.md
+!packages/proto/README.md

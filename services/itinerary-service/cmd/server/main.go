@@ -13,10 +13,12 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/adapters/in/httpapi"
+	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/adapters/out/airportgrpc"
 	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/adapters/out/airporthttp"
 	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/adapters/out/postgres"
 	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/adapters/out/rabbitmq"
 	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/application"
+	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/domain"
 	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/platform/config"
 	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/platform/dbmigrate"
 	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/platform/logging"
@@ -54,7 +56,8 @@ func main() {
 	}
 
 	repo := postgres.NewRepository(pool)
-	airports := airporthttp.New(cfg.AirportServiceURL, cfg.AirportHTTPTimeout)
+	airports, airportMode, cleanupAirports := buildAirportValidator(cfg, log)
+	defer cleanupAirports()
 
 	handlers := httpapi.Handlers{
 		CreateUC: application.CreateItinerary{Repo: repo, Airports: airports},
@@ -98,7 +101,7 @@ func main() {
 	}
 
 	go func() {
-		log.Info("itinerary_service_listening", "addr", cfg.HTTPAddr)
+		log.Info("itinerary_service_listening", "addr", cfg.HTTPAddr, "airport_transport", airportMode)
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Error("server_failed", "error", err.Error())
 			os.Exit(1)
@@ -114,4 +117,22 @@ func main() {
 	defer cancel()
 	_ = server.Shutdown(shutdownCtx)
 	log.Info("itinerary_service_stopped")
+}
+
+func buildAirportValidator(cfg config.Config, log interface {
+	Info(string, ...any)
+	Warn(string, ...any)
+	Error(string, ...any)
+}) (domain.AirportValidator, string, func()) {
+	if cfg.AirportGRPCAddr != "" {
+		client, err := airportgrpc.Dial(cfg.AirportGRPCAddr, cfg.AirportHTTPTimeout)
+		if err != nil {
+			log.Warn("airport_grpc_unavailable_falling_back_http", "addr", cfg.AirportGRPCAddr, "error", err.Error())
+			return airporthttp.New(cfg.AirportServiceURL, cfg.AirportHTTPTimeout), "http", func() {}
+		}
+		log.Info("airport_validator_selected", "transport", "grpc", "addr", cfg.AirportGRPCAddr)
+		return client, "grpc", func() { _ = client.Close() }
+	}
+	log.Info("airport_validator_selected", "transport", "http", "url", cfg.AirportServiceURL)
+	return airporthttp.New(cfg.AirportServiceURL, cfg.AirportHTTPTimeout), "http", func() {}
 }

@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package airport.v1;
+
+option go_package = "github.com/bue221/personal-itineraries/packages/proto/gen/go/airport/v1;airportv1";
+
+// AirportService is the internal gRPC surface for Airport Catalog (Level 3).
+service AirportService {
+  // EnsureExists validates an airport id against the catalog (used by Itinerary).
+  rpc EnsureExists(EnsureExistsRequest) returns (EnsureExistsResponse);
+}
+
+message EnsureExistsRequest {
+  string airport_id = 1;
+}
+
+message EnsureExistsResponse {
+  bool exists = 1;
+  string id = 2;
+  string name = 3;
+  string iata_code = 4;
+}
