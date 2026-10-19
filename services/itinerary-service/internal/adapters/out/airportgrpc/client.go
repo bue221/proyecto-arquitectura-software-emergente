@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 
 	airportv1 "github.com/bue221/personal-itineraries/packages/proto/gen/go/airport/v1"
 	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/domain"
+	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/platform/grpctls"
 )
 
 // Client validates airports via Airport Service gRPC (Level 3).
@@ -18,15 +18,31 @@ type Client struct {
 	client airportv1.AirportServiceClient
 }
 
-func Dial(target string, timeout time.Duration) (*Client, error) {
-	if timeout <= 0 {
-		timeout = 5 * time.Second
-	}
-	_ = timeout // reserved for future dial deadline / keepalive tuning
+// DialOptions configure optional mTLS for S2S calls.
+type DialOptions struct {
+	Timeout    time.Duration
+	MTLS       bool
+	CertFile   string
+	KeyFile    string
+	CAFile     string
+	ServerName string
+}
 
-	conn, err := grpc.NewClient(target,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
+func Dial(target string, timeout time.Duration) (*Client, error) {
+	return DialWith(target, DialOptions{Timeout: timeout})
+}
+
+func DialWith(target string, opts DialOptions) (*Client, error) {
+	if opts.Timeout <= 0 {
+		opts.Timeout = 5 * time.Second
+	}
+	_ = opts.Timeout // reserved for future dial deadline / keepalive tuning
+
+	creds, err := grpctls.ClientCredentials(opts.MTLS, opts.CertFile, opts.KeyFile, opts.CAFile, opts.ServerName)
+	if err != nil {
+		return nil, err
+	}
+	conn, err := grpc.NewClient(target, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		return nil, fmt.Errorf("airport grpc dial: %w", err)
 	}

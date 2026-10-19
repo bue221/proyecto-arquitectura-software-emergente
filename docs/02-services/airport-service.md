@@ -12,6 +12,7 @@ Owns the **Airport Catalog** bounded context. Isolates API Colombia behind an Ad
 - Map external DTO → domain `Airport` → API/Plotly DTO.
 - Cache adapted responses in Redis.
 - Expose REST for get-by-id / list-for-map and gRPC `EnsureExists` for Itinerary S2S.
+- Optional **mTLS** on gRPC when `GRPC_MTLS_ENABLED=true` (Compose default; ADR-0009).
 - Resilience: timeout, retry+backoff+jitter, circuit breaker.
 
 ## Non-responsibilities

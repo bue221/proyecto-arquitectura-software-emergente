@@ -23,6 +23,7 @@ import (
 	"github.com/bue221/personal-itineraries/services/airport-service/internal/application"
 	"github.com/bue221/personal-itineraries/services/airport-service/internal/domain"
 	"github.com/bue221/personal-itineraries/services/airport-service/internal/platform/config"
+	"github.com/bue221/personal-itineraries/services/airport-service/internal/platform/grpctls"
 	"github.com/bue221/personal-itineraries/services/airport-service/internal/platform/logging"
 	"github.com/bue221/personal-itineraries/services/airport-service/internal/platform/otelx"
 )
@@ -74,7 +75,12 @@ func main() {
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
-	grpcServer := grpc.NewServer()
+	grpcOpts, err := grpctls.ServerOptions(cfg.GRPCmTLS, cfg.GRPCTLSCertFile, cfg.GRPCTLSKeyFile, cfg.GRPCTLSCAFile)
+	if err != nil {
+		log.Error("grpc_mtls_config_failed", "error", err.Error())
+		os.Exit(1)
+	}
+	grpcServer := grpc.NewServer(grpcOpts...)
 	airportv1.RegisterAirportServiceServer(grpcServer, &grpcapi.Server{
 		GetAirport: getAirport,
 		Log:        log,
@@ -94,7 +100,7 @@ func main() {
 			log.Error("grpc_listen_failed", "addr", cfg.GRPCAddr, "error", err.Error())
 			os.Exit(1)
 		}
-		log.Info("airport_grpc_listening", "addr", cfg.GRPCAddr)
+		log.Info("airport_grpc_listening", "addr", cfg.GRPCAddr, "mtls", cfg.GRPCmTLS)
 		if err := grpcServer.Serve(lis); err != nil {
 			log.Error("grpc_server_failed", "error", err.Error())
 			os.Exit(1)

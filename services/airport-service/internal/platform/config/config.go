@@ -16,6 +16,10 @@ type Config struct {
 	CBFailureThreshold int
 	CBCooldown         time.Duration
 	OTelEndpoint       string
+	GRPCmTLS           bool
+	GRPCTLSCertFile    string
+	GRPCTLSKeyFile     string
+	GRPCTLSCAFile      string
 }
 
 func Load() Config {
@@ -29,7 +33,23 @@ func Load() Config {
 		CBFailureThreshold: getInt("CB_FAILURE_THRESHOLD", 5),
 		CBCooldown:         getDurationMS("CB_COOLDOWN_MS", 30000),
 		OTelEndpoint:       getEnv("OTEL_EXPORTER_OTLP_ENDPOINT", ""),
+		GRPCmTLS:           getBool("GRPC_MTLS_ENABLED", false),
+		GRPCTLSCertFile:    getEnv("GRPC_TLS_CERT_FILE", ""),
+		GRPCTLSKeyFile:     getEnv("GRPC_TLS_KEY_FILE", ""),
+		GRPCTLSCAFile:      getEnv("GRPC_TLS_CA_FILE", ""),
 	}
+}
+
+func getBool(key string, fallback bool) bool {
+	raw := os.Getenv(key)
+	if raw == "" {
+		return fallback
+	}
+	v, err := strconv.ParseBool(raw)
+	if err != nil {
+		return fallback
+	}
+	return v
 }
 
 func getEnv(key, fallback string) string {
