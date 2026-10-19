@@ -20,6 +20,7 @@ import (
 	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/platform/config"
 	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/platform/dbmigrate"
 	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/platform/logging"
+	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/platform/otelx"
 )
 
 //go:embed openapi.yaml
@@ -30,6 +31,16 @@ func main() {
 	log := logging.NewJSONLogger()
 
 	ctx := context.Background()
+	shutdownTracing, err := otelx.Init(ctx, "itinerary-service", cfg.OTelEndpoint)
+	if err != nil {
+		log.Error("otel_init_failed", "error", err.Error())
+		os.Exit(1)
+	}
+	defer func() { _ = shutdownTracing(context.Background()) }()
+	if cfg.OTelEndpoint != "" {
+		log.Info("otel_enabled", "endpoint", cfg.OTelEndpoint)
+	}
+
 	pool, err := pgxpool.New(ctx, cfg.DatabaseURL)
 	if err != nil {
 		log.Error("db_connect_failed", "error", err.Error())

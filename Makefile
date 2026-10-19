@@ -20,6 +20,7 @@ help:
 	@echo "  Itinerary   http://localhost:8082/swagger"
 	@echo "  Notify FaaS http://localhost:8083/health"
 	@echo "  RabbitMQ UI http://localhost:15672 (guest/guest)"
+	@echo "  Jaeger UI   http://localhost:16686"
 
 up:
 	@./scripts/dev-up.sh

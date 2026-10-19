@@ -22,16 +22,15 @@ Detalle: [`AGENTS.md`](https://github.com/bue221/proyecto-arquitectura-software-
 |------|--------|
 | Level 1 | Airport + Itinerary hexagonales, Compose, Swagger, migraciones |
 | Frontend | Studio Leaflet + tile Adapter, trips wizard, packing, SEO; map prefs en `/profile` |
-| Level 2 | Gateway JWT + rate limit; Redis + CB + retry; **RabbitMQ + outbox relay + notification FaaS** |
+| Level 2 | Gateway + Redis/CB + RabbitMQ/notify + **OTel/Jaeger** (`:16686`) |
 | Ops local | `make up` / `make down` / `make smoke` / `make wiki` |
 
 ### Siguiente (prioridad)
 
-1. OpenTelemetry + Jaeger (+ demo de fallo controlado)
-2. E2E Testcontainers
-3. gRPC Airport ↔ Itinerary + S2S auth
-4. CI/CD GitHub Actions + Kubernetes probes
-5. Chaos / bulkhead / Prometheus / Pact / OpenFaaS packaging (según rúbrica)
+1. E2E Testcontainers
+2. gRPC Airport ↔ Itinerary + S2S auth
+3. CI/CD GitHub Actions + Kubernetes probes
+4. Chaos / bulkhead / Prometheus / Pact / OpenFaaS packaging (según rúbrica)
 
 Tabla detallada: [Self-assessment](Self-assessment)
 
@@ -82,5 +81,6 @@ Tabla detallada: [Self-assessment](Self-assessment)
 ## Ops & grading
 
 - [Local-setup](Local-setup)
+- [Observability](Observability)
 - [Demo-script](Demo-script)
 - [Self-assessment](Self-assessment)

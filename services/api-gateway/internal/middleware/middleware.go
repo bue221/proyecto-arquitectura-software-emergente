@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/time/rate"
 
 	"github.com/bue221/personal-itineraries/services/api-gateway/internal/auth"
@@ -25,6 +26,9 @@ func Trace(next http.Handler) http.Handler {
 		traceID := r.Header.Get("X-Trace-Id")
 		if traceID == "" {
 			traceID = r.Header.Get("X-Request-Id")
+		}
+		if sc := trace.SpanFromContext(r.Context()).SpanContext(); sc.IsValid() {
+			traceID = sc.TraceID().String()
 		}
 		if traceID == "" {
 			traceID = uuid.NewString()

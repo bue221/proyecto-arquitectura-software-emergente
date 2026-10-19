@@ -16,6 +16,7 @@ type Config struct {
 	RateLimitRPS        float64
 	RateLimitBurst      int
 	ProxyTimeout        time.Duration
+	OTelEndpoint        string
 }
 
 func Load() Config {
@@ -29,6 +30,7 @@ func Load() Config {
 		RateLimitRPS:        getFloat("RATE_LIMIT_RPS", 20),
 		RateLimitBurst:      getInt("RATE_LIMIT_BURST", 40),
 		ProxyTimeout:        getDurationMS("PROXY_TIMEOUT_MS", 15000),
+		OTelEndpoint:        getEnv("OTEL_EXPORTER_OTLP_ENDPOINT", ""),
 	}
 }
 

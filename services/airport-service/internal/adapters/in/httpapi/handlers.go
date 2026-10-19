@@ -6,6 +6,9 @@ import (
 	"log/slog"
 	"net/http"
 
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/codes"
+
 	"github.com/bue221/personal-itineraries/services/airport-service/internal/application"
 	"github.com/bue221/personal-itineraries/services/airport-service/internal/domain"
 	"github.com/bue221/personal-itineraries/services/airport-service/internal/platform/logging"
@@ -28,6 +31,20 @@ func (h Handlers) ResilienceStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, h.Resilience())
+}
+
+// DemoFail is a controlled failure for Jaeger / rubric demos (always 503 + error span).
+func (h Handlers) DemoFail(w http.ResponseWriter, r *http.Request) {
+	ctx, span := otel.Tracer("airport-service").Start(r.Context(), "demo.controlled_failure")
+	defer span.End()
+
+	err := errors.New("controlled failure for observability demo")
+	span.RecordError(err)
+	span.SetStatus(codes.Error, err.Error())
+
+	traceID := logging.TraceIDFromContext(ctx)
+	h.Log.Error("demo_controlled_failure", "trace_id", traceID)
+	writeProblem(w, http.StatusServiceUnavailable, "demo_failure", "Controlled failure for Jaeger demo", traceID)
 }
 
 func (h Handlers) GetByID(w http.ResponseWriter, r *http.Request) {

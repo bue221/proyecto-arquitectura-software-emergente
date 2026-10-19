@@ -1,6 +1,10 @@
 package httpapi
 
-import "net/http"
+import (
+	"net/http"
+
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+)
 
 func NewRouter(h Handlers, openAPI []byte) http.Handler {
 	mux := http.NewServeMux()
@@ -23,7 +27,7 @@ func NewRouter(h Handlers, openAPI []byte) http.Handler {
 	var handler http.Handler = mux
 	handler = TraceMiddleware(handler)
 	handler = CORSMiddleware(handler)
-	return handler
+	return otelhttp.NewHandler(handler, "itinerary-service")
 }
 
 const swaggerHTML = `<!DOCTYPE html>

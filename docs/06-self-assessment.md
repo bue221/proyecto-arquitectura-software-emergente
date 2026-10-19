@@ -30,10 +30,10 @@ Update this table in PRs as criteria are met. Status: `pending` | `partial` | `d
 | Notification consumer | done | `services/notification-function` queue consumer + idempotent persist |
 | Broker RabbitMQ | done | Compose `rabbitmq` + exchange `itinerary.events` |
 | AsyncAPI | done | `packages/contracts/asyncapi/itinerary-events.yaml` v0.2.0 |
-| OTel + Jaeger | pending | |
+| OTel + Jaeger | done | Compose `jaeger`; OTLP from Gateway/Airport/Itinerary; UI `:16686` |
 | JWT propagation | done | Gateway validates JWT and forwards `Authorization` + `X-User-*` |
 | E2E Testcontainers | pending | |
-| Controlled failure demo | pending | |
+| Controlled failure demo | done | `GET /api/v1/demo/fail` → 503 + error span (`docs/05-runbooks/observability.md`) |
 
 ## Level 3 — Expert
 

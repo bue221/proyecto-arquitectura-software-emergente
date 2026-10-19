@@ -28,5 +28,6 @@
 - [Branching](Branching)
 - [PR checklist](PR-checklist)
 - [Local setup](Local-setup)
+- [Observability](Observability)
 - [Self-assessment](Self-assessment)
 - [Demo script](Demo-script)

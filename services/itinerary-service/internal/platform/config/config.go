@@ -15,6 +15,7 @@ type Config struct {
 	OutboxRelayEnabled   bool
 	OutboxPollInterval   time.Duration
 	OutboxBatchSize      int
+	OTelEndpoint         string
 }
 
 func Load() Config {
@@ -27,6 +28,7 @@ func Load() Config {
 		OutboxRelayEnabled: getBool("OUTBOX_RELAY_ENABLED", true),
 		OutboxPollInterval: getDurationMS("OUTBOX_POLL_INTERVAL_MS", 2000),
 		OutboxBatchSize:    getInt("OUTBOX_BATCH_SIZE", 20),
+		OTelEndpoint:       getEnv("OTEL_EXPORTER_OTLP_ENDPOINT", ""),
 	}
 }
 

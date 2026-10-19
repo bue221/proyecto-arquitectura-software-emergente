@@ -187,14 +187,14 @@ Agents closing a PR must not mark work “done” until wiki pages are updated i
 - Frontend Studio (Leaflet + tile adapters) + trips wizard / plans / packing / SEO
 - Level 2 API Gateway (JWT + rate limit) + Redis cache + CB + retry on Airport
 - Level 2 RabbitMQ + AsyncAPI + outbox relay + notification FaaS consumer
+- Level 2 OpenTelemetry + Jaeger + controlled failure demo (`/api/v1/demo/fail`)
 - Local stack: `make up` / `make down` / `make smoke` / `make wiki`
 
 **Next (priority order)**
 
-1. Level 2 — OpenTelemetry + Jaeger (+ controlled failure demo)
-2. Level 2 — E2E Testcontainers
-3. Level 3 — gRPC Airport ↔ Itinerary + S2S auth
-4. Level 3 — CI/CD (GitHub Actions) + Kubernetes probes
-5. Level 3 — Chaos / bulkhead / Prometheus alerts / Pact / OpenFaaS packaging (as needed for rubric)
+1. Level 2 — E2E Testcontainers
+2. Level 3 — gRPC Airport ↔ Itinerary + S2S auth
+3. Level 3 — CI/CD (GitHub Actions) + Kubernetes probes
+4. Level 3 — Chaos / bulkhead / Prometheus alerts / Pact / OpenFaaS packaging (as needed for rubric)
 
 Remaining work continues **only** through branch → PR → merge → wiki publish.
