@@ -140,6 +140,63 @@ func (r *Repository) GetByID(ctx context.Context, id string) (domain.Itinerary, 
 	return item, err
 }
 
+func (r *Repository) ListUnpublished(ctx context.Context, limit int) ([]domain.OutboxMessage, error) {
+	if limit <= 0 {
+		limit = 20
+	}
+	rows, err := r.pool.Query(ctx, `
+		SELECT id, aggregate_type, aggregate_id, event_type, payload, occurred_at, attempts
+		FROM outbox
+		WHERE published_at IS NULL
+		ORDER BY occurred_at ASC
+		LIMIT $1`, limit)
+	if err != nil {
+		return nil, fmt.Errorf("%w: list outbox: %v", domain.ErrPersistenceFailed, err)
+	}
+	defer rows.Close()
+
+	var items []domain.OutboxMessage
+	for rows.Next() {
+		var msg domain.OutboxMessage
+		var aggregateID string
+		if err := rows.Scan(
+			&msg.ID,
+			&msg.AggregateType,
+			&aggregateID,
+			&msg.EventType,
+			&msg.Payload,
+			&msg.OccurredAt,
+			&msg.Attempts,
+		); err != nil {
+			return nil, fmt.Errorf("%w: scan outbox: %v", domain.ErrPersistenceFailed, err)
+		}
+		msg.AggregateID = aggregateID
+		items = append(items, msg)
+	}
+	return items, rows.Err()
+}
+
+func (r *Repository) MarkPublished(ctx context.Context, id string, publishedAt time.Time) error {
+	ct, err := r.pool.Exec(ctx, `
+		UPDATE outbox SET published_at=$2 WHERE id=$1 AND published_at IS NULL`,
+		id, publishedAt)
+	if err != nil {
+		return fmt.Errorf("%w: mark published: %v", domain.ErrPersistenceFailed, err)
+	}
+	if ct.RowsAffected() == 0 {
+		return nil
+	}
+	return nil
+}
+
+func (r *Repository) BumpAttempts(ctx context.Context, id string) error {
+	_, err := r.pool.Exec(ctx, `UPDATE outbox SET attempts = attempts + 1 WHERE id=$1`, id)
+	if err != nil {
+		return fmt.Errorf("%w: bump attempts: %v", domain.ErrPersistenceFailed, err)
+	}
+	return nil
+}
+
 func (r *Repository) List(ctx context.Context) ([]domain.Itinerary, error) {
 	rows, err := r.pool.Query(ctx, `
 		SELECT id, user_name, origin_airport_id, destination_airport_id,

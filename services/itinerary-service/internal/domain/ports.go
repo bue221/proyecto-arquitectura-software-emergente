@@ -27,4 +27,18 @@ type OutboxMessage struct {
 	EventType     string
 	Payload       []byte
 	OccurredAt    time.Time
+	Attempts      int
+}
+
+// OutboxStore reads/updates unpublished outbox rows for the relay worker.
+type OutboxStore interface {
+	ListUnpublished(ctx context.Context, limit int) ([]OutboxMessage, error)
+	MarkPublished(ctx context.Context, id string, publishedAt time.Time) error
+	BumpAttempts(ctx context.Context, id string) error
+}
+
+// EventPublisher publishes integration events to the broker (RabbitMQ).
+type EventPublisher interface {
+	Publish(ctx context.Context, routingKey string, messageID string, body []byte) error
+	Close() error
 }

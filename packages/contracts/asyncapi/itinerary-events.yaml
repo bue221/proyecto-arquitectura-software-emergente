@@ -1,33 +1,49 @@
 asyncapi: 3.0.0
 info:
   title: Itinerary Integration Events
-  version: 0.1.0
+  version: 0.2.0
   description: >
-    Draft contract for itinerary integration events.
-    Payload fields will be finalized when Itinerary Service lands.
+    Integration events emitted by Itinerary Service via Transactional Outbox → RabbitMQ.
+    Consumers (notification-function) must be idempotent on eventId.
 defaultContentType: application/json
+
+servers:
+  localRabbit:
+    host: localhost:5672
+    protocol: amqp
+    description: Docker Compose RabbitMQ (guest/guest)
+
 channels:
   itinerary.created:
     address: itinerary.created
+    description: Topic routing key on exchange itinerary.events
     messages:
       ItineraryCreated:
         $ref: '#/components/messages/ItineraryCreated'
+
 operations:
   publishItineraryCreated:
     action: send
     channel:
       $ref: '#/channels/itinerary.created'
+    summary: Outbox relay publishes after itinerary commit
   consumeItineraryCreated:
     action: receive
     channel:
       $ref: '#/channels/itinerary.created'
+    summary: notification-function SendNotificationFunction
+
 components:
   messages:
     ItineraryCreated:
       name: ItineraryCreated
+      contentType: application/json
       payload:
         type: object
-        required: [eventId, itineraryId, occurredAt]
+        required:
+          - eventId
+          - itineraryId
+          - occurredAt
         properties:
           eventId:
             type: string

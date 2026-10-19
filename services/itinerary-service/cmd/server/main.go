@@ -15,6 +15,7 @@ import (
 	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/adapters/in/httpapi"
 	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/adapters/out/airporthttp"
 	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/adapters/out/postgres"
+	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/adapters/out/rabbitmq"
 	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/application"
 	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/platform/config"
 	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/platform/dbmigrate"
@@ -53,6 +54,32 @@ func main() {
 		Log:      log,
 	}
 
+	relayCtx, relayCancel := context.WithCancel(context.Background())
+	defer relayCancel()
+
+	var publisher *rabbitmq.Publisher
+	if cfg.OutboxRelayEnabled {
+		publisher, err = rabbitmq.Dial(cfg.RabbitMQURL)
+		if err != nil {
+			log.Error("rabbitmq_connect_failed", "error", err.Error())
+			os.Exit(1)
+		}
+		defer func() { _ = publisher.Close() }()
+
+		relay := application.OutboxRelay{
+			Store:     repo,
+			Publisher: publisher,
+			Log:       log,
+			BatchSize: cfg.OutboxBatchSize,
+			Interval:  cfg.OutboxPollInterval,
+		}
+		go relay.Run(relayCtx)
+		log.Info("outbox_relay_started",
+			"interval_ms", cfg.OutboxPollInterval.Milliseconds(),
+			"batch_size", cfg.OutboxBatchSize,
+		)
+	}
+
 	server := &http.Server{
 		Addr:              cfg.HTTPAddr,
 		Handler:           httpapi.NewRouter(handlers, openAPI),
@@ -71,6 +98,7 @@ func main() {
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 	<-stop
 
+	relayCancel()
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	_ = server.Shutdown(shutdownCtx)

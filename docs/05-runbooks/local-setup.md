@@ -26,6 +26,10 @@ make wiki    # publish wiki/ → GitHub Wiki (after merge)
 | Itinerary (direct) | http://localhost:8082/swagger |
 | Itinerary Postgres | localhost:5434 |
 | Redis | localhost:6379 |
+| RabbitMQ AMQP | localhost:5672 |
+| RabbitMQ UI | http://localhost:15672 (guest/guest) |
+| Notification FaaS | http://localhost:8083/health |
+| Notification Postgres | localhost:5435 |
 
 The browser should call **only the Gateway** (`:8080`).
 
