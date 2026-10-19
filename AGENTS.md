@@ -43,8 +43,9 @@ Product brand in UI: **RutaCO**.
 | `/trips` | **Two-step wizard**: (1) route/date (2) optional destination **plans** + recommendations; varied trip cards |
 | `/trips/[id]` | Plans summary + packing checklist |
 | Auth | Demo login → Gateway `POST /auth/token`; profile in `localStorage` |
+| Profile config | `/profile` — traveler data + **map preferences** (provider + optional API key) |
 | SEO | Root `metadata` / OG / Twitter, `sitemap.ts`, `robots.ts`, JSON-LD; `NEXT_PUBLIC_SITE_URL` |
-| Map tiles | Port `MapTileProvider` + adapters under `apps/web/src/features/studio/map/` — never hard-code a CDN in map logic |
+| Map tiles | Port `MapTileProvider` + adapters; default **CARTO Positron**; keyed providers without key → **OSM**; prefs only in `/profile` (not Studio chrome) |
 
 Do **not** reintroduce Plotly as the primary studio map. Do **not** call `api-colombia.com` from the browser.
 

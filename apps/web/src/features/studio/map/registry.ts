@@ -1,15 +1,22 @@
 import { CartoDarkTileAdapter } from "@/features/studio/map/adapters/carto-dark";
 import { CartoPositronTileAdapter } from "@/features/studio/map/adapters/carto-positron";
 import { EsriGrayTileAdapter } from "@/features/studio/map/adapters/esri-gray";
+import { MapboxStreetsTileAdapter } from "@/features/studio/map/adapters/mapbox-streets";
 import { OpenTopoTileAdapter } from "@/features/studio/map/adapters/opentopo";
 import { OsmTileAdapter } from "@/features/studio/map/adapters/osm";
-import type {
-  MapTileProvider,
-  MapTileProviderId,
-  MapTileStyle,
+import {
+  MAP_TILE_PROVIDER_IDS,
+  type MapPreferences,
+  type MapTileProvider,
+  type MapTileProviderId,
+  type MapTileStyle,
 } from "@/features/studio/map/port";
+import {
+  DEFAULT_MAP_PROVIDER_ID,
+  readMapPreferences,
+} from "@/features/studio/map/preferences";
 
-const STORAGE_KEY = "rutaco_map_tile_provider";
+export { MAP_TILE_PROVIDER_IDS, isMapTileProviderId } from "@/features/studio/map/port";
 
 const factories: Record<MapTileProviderId, () => MapTileProvider> = {
   "carto-positron": () => new CartoPositronTileAdapter(),
@@ -17,41 +24,36 @@ const factories: Record<MapTileProviderId, () => MapTileProvider> = {
   osm: () => new OsmTileAdapter(),
   opentopo: () => new OpenTopoTileAdapter(),
   "esri-gray": () => new EsriGrayTileAdapter(),
+  "mapbox-streets": () => new MapboxStreetsTileAdapter(),
 };
-
-export const MAP_TILE_PROVIDER_IDS = Object.keys(factories) as MapTileProviderId[];
-
-export function isMapTileProviderId(value: string): value is MapTileProviderId {
-  return value in factories;
-}
 
 /** Build a concrete tile adapter by id (hexagonal outbound adapter factory). */
 export function createMapTileProvider(id: MapTileProviderId): MapTileProvider {
-  const factory = factories[id] ?? factories["carto-positron"];
+  const factory = factories[id] ?? factories[DEFAULT_MAP_PROVIDER_ID];
   return factory();
 }
 
+/** Catalog for profile config — styles without injecting a user key yet. */
 export function listMapTileStyles(): MapTileStyle[] {
   return MAP_TILE_PROVIDER_IDS.map((id) => createMapTileProvider(id).style());
 }
 
-function envDefaultId(): MapTileProviderId {
-  const raw = process.env.NEXT_PUBLIC_MAP_TILE_PROVIDER?.trim() || "carto-positron";
-  return isMapTileProviderId(raw) ? raw : "carto-positron";
-}
+/**
+ * Resolve the effective basemap for the Studio.
+ * Keyed providers without an API key fall back to OpenStreetMap.
+ */
+export function resolveMapTileStyle(prefs?: MapPreferences): MapTileStyle {
+  const effective = prefs ?? (typeof window !== "undefined" ? readMapPreferences() : {
+    providerId: DEFAULT_MAP_PROVIDER_ID,
+    apiKey: "",
+  });
 
-export function readStoredMapTileProviderId(): MapTileProviderId {
-  if (typeof window === "undefined") return envDefaultId();
-  const stored = window.localStorage.getItem(STORAGE_KEY);
-  if (stored && isMapTileProviderId(stored)) return stored;
-  return envDefaultId();
-}
+  const provider = createMapTileProvider(effective.providerId);
+  const style = provider.style(effective.apiKey);
 
-export function persistMapTileProviderId(id: MapTileProviderId): void {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(STORAGE_KEY, id);
-}
+  if (style.requiresApiKey && !effective.apiKey.trim()) {
+    return createMapTileProvider("osm").style();
+  }
 
-export function resolveMapTileStyle(id?: MapTileProviderId): MapTileStyle {
-  return createMapTileProvider(id ?? envDefaultId()).style();
+  return style;
 }
