@@ -22,14 +22,13 @@ Detalle: [`AGENTS.md`](https://github.com/bue221/proyecto-arquitectura-software-
 |------|--------|
 | Level 1 | Airport + Itinerary hexagonales, Compose, Swagger, migraciones |
 | Frontend | Studio Leaflet + tile Adapter, trips wizard, packing, SEO; map prefs en `/profile` |
-| Level 2 | Gateway + Redis/CB + RabbitMQ/notify + OTel/Jaeger |
+| Level 2 | Gateway + Redis/CB + RabbitMQ/notify + OTel/Jaeger + **Testcontainers** |
 | Level 3 (parcial) | gRPC `EnsureExists` + CI tests ≤3 min |
 | Ops local | `make up` / `make down` / `make smoke` / `make wiki` |
 
 ### Siguiente (prioridad)
 
-1. E2E Testcontainers (opcional / nightly — CI de PR se mantiene bajo 3 min)
-2. mTLS / auth S2S en gRPC
+1. mTLS / auth S2S en gRPC
 3. Kubernetes probes + ampliar CI/CD (imágenes / Sonar)
 4. Chaos / bulkhead / Prometheus / Pact / OpenFaaS packaging (según rúbrica)
 

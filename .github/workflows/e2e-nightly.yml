@@ -1,0 +1,28 @@
+name: e2e-nightly
+
+# Level 2 Testcontainers — keep off PR CI so unit tests stay under 3 minutes.
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "services/itinerary-service/**"
+      - ".github/workflows/e2e-nightly.yml"
+
+jobs:
+  itinerary-postgres:
+    name: Itinerary Testcontainers
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23.x"
+          cache: true
+          cache-dependency-path: services/itinerary-service/go.sum
+      - name: Integration tests (testcontainers)
+        working-directory: services/itinerary-service
+        run: go test ./internal/adapters/out/postgres -count=1 -timeout 8m -v
