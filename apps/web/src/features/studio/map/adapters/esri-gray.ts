@@ -10,6 +10,8 @@ const style: MapTileStyle = {
   attribution:
     "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ",
   maxZoom: 16,
+  // URL has no `{s}`; Leaflet still needs a non-undefined subdomains default.
+  subdomains: "abc",
   theme: "light",
   requiresApiKey: false,
 };

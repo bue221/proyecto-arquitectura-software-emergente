@@ -8,7 +8,13 @@ type MapTileLayerProps = {
   style: MapTileStyle;
 };
 
-/** Inbound map UI depends only on MapTileStyle from the port — never on a CDN brand. */
+/**
+ * Inbound map UI depends only on MapTileStyle from the port — never on a CDN brand.
+ *
+ * Leaflet always reads `options.subdomains.length` in `_getSubdomain`, even when the
+ * URL has no `{s}`. Passing `subdomains={undefined}` overrides the built-in default
+ * (`"abc"`) and crashes — only forward the prop when the adapter sets it.
+ */
 export function MapTileLayer({ style }: MapTileLayerProps) {
   return (
     <TileLayer
@@ -16,7 +22,7 @@ export function MapTileLayer({ style }: MapTileLayerProps) {
       url={style.urlTemplate}
       attribution={style.attribution}
       maxZoom={style.maxZoom}
-      subdomains={style.subdomains}
+      {...(style.subdomains ? { subdomains: style.subdomains } : {})}
     />
   );
 }
