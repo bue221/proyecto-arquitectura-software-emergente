@@ -1,9 +1,9 @@
 > **Fuente de verdad:** esta página se publica desde `wiki/` / `docs/` del monorepo.
 > Edita vía Pull Request en el código; no edites solo en la Wiki sin sincronizar.
 
-# Class / hexagonal sketch
+# Esquema de clases / hexagonal
 
-Conceptual view (not generated from code yet).
+Vista conceptual (los nombres coinciden con el código).
 
 ```mermaid
 classDiagram
@@ -78,10 +78,10 @@ classDiagram
   ItineraryRepository ..> OutboxMessage
 ```
 
-## SOLID mapping (short)
+## Mapeo SOLID (corto)
 
-- **S:** Use cases and adapters have one reason to change.
-- **O:** New providers implement `AirportProvider` without editing itinerary code.
-- **L:** Adapters honor port contracts (including error semantics).
-- **I:** Narrow ports (`AirportValidator` ≠ full catalog admin API).
-- **D:** Application depends on ports, not concrete HTTP/DB types.
+- **S:** cada caso de uso y cada adapter tiene una sola razón para cambiar.
+- **O:** un proveedor nuevo implementa `AirportProvider` sin editar el código de itinerarios.
+- **L:** los adapters honran el contrato del puerto (incluida la semántica de errores).
+- **I:** puertos estrechos (`AirportValidator` no es la API de administración del catálogo).
+- **D:** la aplicación depende de puertos, no de tipos concretos de HTTP o de BD.

@@ -1,21 +1,21 @@
-# ADR-0008: URI API versioning and list pagination
+# ADR-0008: versionado de API por URI y paginación de listas
 
-- **Status:** Accepted
-- **Date:** 2026-10-19
+- **Estado:** Aceptado
+- **Fecha:** 2026-10-19
 
-## Context
+## Contexto
 
-Level 3 requires explicit API versioning and pagination for list endpoints so clients can evolve without unbounded payloads.
+El Nivel 3 exige versionado explícito de la API y paginación en los listados, para que los clientes evolucionen sin payloads sin límite.
 
-## Decision
+## Decisión
 
-1. **Versioning:** public HTTP APIs live under `/api/v1/...`. Every successful response sets header `API-Version: 1`. Breaking changes require `/api/v2` (new routes), not silent field renames in v1.
-2. **Pagination:** `GET /api/v1/itineraries` uses offset pagination:
-   - Query: `page` (default 1), `pageSize` (default 20, max 100)
-   - Body: `items`, `count`, `page`, `pageSize`, `total`, `totalPages`
-3. Airport map list stays unpaged (bounded Colombia catalog); versioning header still applies.
+1. **Versionado:** las APIs HTTP públicas viven bajo `/api/v1/...`. Toda respuesta exitosa envía el header `API-Version: 1`. Un cambio incompatible exige `/api/v2` (rutas nuevas), no renombrar campos en silencio dentro de v1.
+2. **Paginación:** `GET /api/v1/itineraries` usa paginación por offset:
+   - Query: `page` (default 1), `pageSize` (default 20, máximo 100)
+   - Cuerpo: `items`, `count`, `page`, `pageSize`, `total`, `totalPages`
+3. El listado de aeropuertos para el mapa no se pagina (el catálogo de Colombia está acotado); el header de versión sí aplica.
 
-## Consequences
+## Consecuencias
 
-- Web clients that ignore pagination fields keep working (`items` preserved).
-- Gateway continues path-prefix proxy; no business logic for paging.
+- Los clientes web que ignoren los campos de paginación siguen funcionando (`items` se conserva).
+- El Gateway sigue haciendo proxy por prefijo de ruta; no hay lógica de negocio para paginar.

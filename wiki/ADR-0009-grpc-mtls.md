@@ -1,20 +1,20 @@
-# ADR-0009: gRPC mTLS for Airport ↔ Itinerary
+# ADR-0009: mTLS en gRPC entre Airport e Itinerary
 
-- **Status:** Accepted
-- **Date:** 2026-10-19
+- **Estado:** Aceptado
+- **Fecha:** 2026-10-19
 
-## Context
+## Contexto
 
-Level 3 requires service-to-service security (mTLS or OAuth2 client credentials) for the gRPC path used by Itinerary to validate airports.
+El Nivel 3 exige seguridad servicio a servicio (mTLS o client credentials OAuth2) en la ruta gRPC que Itinerary usa para validar aeropuertos.
 
-## Decision
+## Decisión
 
-- Use **mutual TLS** on Airport gRPC (`EnsureExists`) when `GRPC_MTLS_ENABLED=true`.
-- Itinerary presents a client certificate (`AIRPORT_GRPC_MTLS_ENABLED=true`).
-- Local Compose mounts `infra/certs/grpc` (dev self-signed CA). Unit tests keep insecure credentials unless mTLS is enabled.
-- Regenerate with `./scripts/gen-grpc-certs.sh`.
+- Usar **mTLS** en el gRPC de Airport (`EnsureExists`) cuando `GRPC_MTLS_ENABLED=true`.
+- Itinerary presenta un certificado de cliente (`AIRPORT_GRPC_MTLS_ENABLED=true`).
+- Compose local monta `infra/certs/grpc` (CA autofirmada de desarrollo). Los tests unitarios siguen con credenciales inseguras salvo que mTLS esté activo.
+- Regenerar con `./scripts/gen-grpc-certs.sh`.
 
-## Consequences
+## Consecuencias
 
-- Compose demos prove S2S auth without a full PKI.
-- HTTP Airport API remains available (Gateway / browser); only gRPC is mTLS-gated.
+- Las demos de Compose prueban autenticación S2S sin una PKI completa.
+- La API HTTP de Airport sigue disponible (Gateway / navegador); solo el gRPC queda detrás de mTLS.

@@ -1,67 +1,67 @@
 # Itinerary Service
 
-**Status:** Level 1 + Level 2 outbox relay — `services/itinerary-service` on port `8082`, Postgres host port `5434`, Swagger at `/swagger`.  
-Create writes outbox in the same TX; an in-process **outbox relay** publishes `ItineraryCreated` to RabbitMQ (`itinerary.events` / `itinerary.created`).
+**Estado:** Nivel 1 + relay de outbox Nivel 2 — `services/itinerary-service` en el puerto `8082`, Postgres del host en `5434`, Swagger en `/swagger`.  
+La creación escribe el outbox en la misma transacción; un **outbox relay** en proceso publica `ItineraryCreated` en RabbitMQ (`itinerary.events` / `itinerary.created`).
 
-## Packing checklist
+## Checklist de equipaje
 
-Each itinerary stores `packingItems` (JSONB): `{ id, label, packed, category? }`.
-New itineraries seed a default domestic-trip list when the client sends none.
-Update via `PUT /api/v1/itineraries/{id}` including the full packing array.
+Cada itinerario guarda `packingItems` (JSONB): `{ id, label, packed, category? }`.
+Si el cliente no envía lista, los itinerarios nuevos reciben una lista semilla de viaje nacional.
+Se actualiza con `PUT /api/v1/itineraries/{id}` enviando el arreglo completo.
 
-## Destination plans
+## Planes en el destino
 
-Each itinerary stores `planItems` (JSONB): `{ id, title, description?, category?, selected, source? }`.
-The web wizard step 2 sends selected recommendations / custom plans; empty array is valid (skip).
-Migration: `000003_plan_items`.
+Cada itinerario guarda `planItems` (JSONB): `{ id, title, description?, category?, selected, source? }`.
+El paso 2 del wizard web envía recomendaciones elegidas o planes propios; un arreglo vacío es válido (omitir).
+Migración: `000003_plan_items`.
 
-## Why
+## Por qué
 
-Owns **Itinerary Planning**. Persists personal itineraries, validates airport references against Airport Service, and emits integration events through the Transactional Outbox.
+Es dueño de **Planificación de itinerarios**. Persiste itinerarios personales, valida las referencias de aeropuerto contra Airport Service y emite eventos de integración mediante el Transactional Outbox.
 
-## Minimum itinerary fields
+## Campos mínimos del itinerario
 
-- User name
-- Origin airport ID
-- Destination airport ID
-- Travel date
-- Duration (minutes)
+- Nombre de la persona
+- ID del aeropuerto de origen
+- ID del aeropuerto de destino
+- Fecha de viaje
+- Duración (minutos)
 
-## Responsibilities
+## Responsabilidades
 
-- CRUD against dedicated Postgres.
-- Versioned migrations (golang-migrate or Atlas).
-- Validate airports via gRPC when `AIRPORT_GRPC_ADDR` is set (Compose default); HTTP fallback otherwise.
-- gRPC mTLS client certs when `AIRPORT_GRPC_MTLS_ENABLED=true` (Compose default; ADR-0009).
-- Write outbox in the same transaction as create.
-- Relay unpublished outbox rows to RabbitMQ (poller; mark `published_at`).
-- Expose Swagger/OpenAPI.
-- URI versioning under `/api/v1` with response header `API-Version: 1` (ADR-0008).
-- Paginated list: `GET /api/v1/itineraries?page=&pageSize=` → `items`, `page`, `pageSize`, `total`, `totalPages`.
+- CRUD contra su Postgres dedicado.
+- Migraciones versionadas (golang-migrate o Atlas).
+- Validar aeropuertos por gRPC cuando `AIRPORT_GRPC_ADDR` está definido (default de Compose); si no, fallback HTTP.
+- Certificados de cliente gRPC mTLS cuando `AIRPORT_GRPC_MTLS_ENABLED=true` (default de Compose; ADR-0009).
+- Escribir el outbox en la misma transacción que la creación.
+- Reenviar filas de outbox no publicadas a RabbitMQ (poller; marca `published_at`).
+- Exponer Swagger/OpenAPI.
+- Versionado por URI bajo `/api/v1` con header de respuesta `API-Version: 1` (ADR-0008).
+- Listado paginado: `GET /api/v1/itineraries?page=&pageSize=` → `items`, `page`, `pageSize`, `total`, `totalPages`.
 
-## Non-responsibilities
+## Fuera de su responsabilidad
 
-- Calling API Colombia directly
-- Rendering maps
-- Owning notification delivery
+- Llamar a API Colombia de forma directa
+- Renderizar mapas
+- Ser dueño de la entrega de notificaciones
 
-## Error strategy
+## Estrategia de errores
 
-| Condition | HTTP | Notes |
+| Condición | HTTP | Notas |
 |-----------|------|-------|
-| Invalid payload | 400 | Field-level validation messages |
-| Airport missing | 422 or 400 | `airport_invalid` after downstream 404 |
-| Not found | 404 | `itinerary_not_found` |
-| Conflict / invariant | 409 | Reserved for future uniqueness rules |
-| Downstream Airport down | 503 | Propagate failure with correlation id |
+| Payload inválido | 400 | Mensajes de validación por campo |
+| Aeropuerto inexistente | 422 o 400 | `airport_invalid` tras un 404 downstream |
+| No encontrado | 404 | `itinerary_not_found` |
+| Conflicto / invariante | 409 | Reservado para reglas futuras de unicidad |
+| Airport downstream caído | 503 | Se propaga el fallo con id de correlación |
 
-## Domain vs integration events
+## Eventos de dominio frente a integración
 
-- Domain (optional, in-process): used only inside this service if needed.
-- Integration: `ItineraryCreated` → AsyncAPI → RabbitMQ via outbox relay.
+- Dominio (opcional, en proceso): solo dentro de este servicio, si hace falta.
+- Integración: `ItineraryCreated` → AsyncAPI → RabbitMQ vía outbox relay.
 
-## Related diagrams
+## Diagramas relacionados
 
-- [`../03-diagrams/outbox.md`](../03-diagrams/outbox.md)
-- [`../03-diagrams/relational.md`](../03-diagrams/relational.md)
-- [`../03-diagrams/sequences.md`](../03-diagrams/sequences.md)
+- [Diagrams-outbox](Diagrams-outbox)
+- [Diagrams-relational](Diagrams-relational)
+- [Diagrams-sequences](Diagrams-sequences)

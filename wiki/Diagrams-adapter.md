@@ -1,27 +1,27 @@
 > **Fuente de verdad:** esta página se publica desde `wiki/` / `docs/` del monorepo.
 > Edita vía Pull Request en el código; no edites solo en la Wiki sin sincronizar.
 
-# Adapter pattern (Airport Service)
+# Patrón Adapter (Airport Service)
 
 ```mermaid
 flowchart LR
   FE[Next.js] -->|DTO interno| GW[Gateway]
-  GW -->|DTO interno| API[HTTP adapter in]
+  GW -->|DTO interno| API[Adapter HTTP de entrada]
   API --> UC[GetAirport / ListForMap]
-  UC --> PORT{{AirportProvider port}}
+  UC --> PORT{{Puerto AirportProvider}}
   PORT --> ADP[ColombiaAPIAdapter]
-  ADP -->|HTTP JSON externo| EXT[API Colombia]
-  ADP -->|Airport dominio| UC
-  UC --> CACHE[Redis cache adapter]
+  ADP -->|JSON HTTP externo| EXT[API Colombia]
+  ADP -->|Airport de dominio| UC
+  UC --> CACHE[Adapter de caché Redis]
 ```
 
-## Rules
+## Reglas
 
-1. **Port** (`AirportProvider`) is defined in domain language.
-2. **Adapter** translates external fields → `Airport` (anti-corruption layer).
-3. Controllers expose **internal** DTOs (including Plotly-friendly coordinates).
-4. Frontend **never** imports or calls API Colombia URLs.
+1. El **puerto** (`AirportProvider`) se define en el lenguaje del dominio.
+2. El **Adapter** traduce campos externos → `Airport` (capa anticorrupción).
+3. Los controladores exponen DTOs **internos** (incluidas coordenadas aptas para el mapa).
+4. El frontend **nunca** importa ni llama URLs de API Colombia.
 
-## Why
+## Por qué
 
-Satisfies the rubric’s formal Adapter requirement and keeps external churn out of Itinerary BC and the UI.
+Cumple el requisito formal de Adapter de la rúbrica y deja la volatilidad externa fuera del BC de itinerarios y de la UI.

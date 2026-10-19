@@ -1,15 +1,15 @@
-# Kubernetes (Level 3)
+# Kubernetes (Nivel 3)
 
-Manifests under `infra/k8s/` for local/Kind demos:
+Manifiestos en `infra/k8s/` para demos locales o Kind:
 
-| File | Purpose |
-|------|---------|
-| `namespace.yaml` | `rutaco` namespace |
-| `airport-service.yaml` | Deployment + Service; probes `/ready` `/live` |
-| `itinerary-service.yaml` | Deployment + Service; probes `/ready` `/live` |
-| `api-gateway.yaml` | Edge Deployment + Service; probes `/ready` `/live` |
+| Archivo | Propósito |
+|---------|-----------|
+| `namespace.yaml` | namespace `rutaco` |
+| `airport-service.yaml` | Deployment + Service; probes `/ready` y `/live` |
+| `itinerary-service.yaml` | Deployment + Service; probes `/ready` y `/live` |
+| `api-gateway.yaml` | Deployment + Service de borde; probes `/ready` y `/live` |
 
-Apply (after building images tagged `rutaco/*:local`):
+Aplicar (después de construir imágenes etiquetadas `rutaco/*:local`):
 
 ```bash
 kubectl apply -f infra/k8s/namespace.yaml
@@ -17,4 +17,4 @@ kubectl apply -f infra/k8s/
 kubectl -n rutaco get pods
 ```
 
-Probes use HTTP GET on the same ports as Compose. Supporting deps (Postgres, Redis, RabbitMQ) remain Compose-first for the academic demo; wire them via Secrets/ConfigMaps when targeting a full cluster.
+Las probes usan HTTP GET en los mismos puertos que Compose. Las dependencias de apoyo (Postgres, Redis, RabbitMQ) siguen primero en Compose para la demo académica; conéctalas vía Secrets/ConfigMaps cuando el destino sea un clúster completo.

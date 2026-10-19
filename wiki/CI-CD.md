@@ -1,47 +1,47 @@
-# CI/CD plan
+# Plan de CI/CD
 
-## Why
+## Por qué
 
-Level 3 and the DevOps rubric require continuous integration and an example of continuous deployment, plus quality gates (tests, SonarQube).
+El Nivel 3 y la rúbrica de DevOps piden integración continua, un ejemplo de despliegue continuo y compuertas de calidad (tests, SonarQube).
 
-## Current (this PR)
+## Actual (este estado)
 
-| Workflow | Trigger | Purpose | Budget |
-|----------|---------|---------|--------|
-| [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) | PR + push `main` | **Go unit tests only** (airport, itinerary, gateway, notify, proto) | `timeout-minutes: 3` |
+| Workflow | Disparador | Propósito | Presupuesto |
+|----------|------------|-----------|-------------|
+| [`.github/workflows/ci.yml`](https://github.com/bue221/proyecto-arquitectura-software-emergente/blob/main/.github/workflows/ci.yml) | PR + push a `main` | **Solo tests unitarios Go** (airport, itinerary, gateway, notify, proto) | `timeout-minutes: 3` |
 
-No image publish / Sonar / Deploy yet — keep CI fast until those land in dedicated PRs.
+Todavía no hay publicación de imágenes, Sonar ni Deploy: el CI se mantiene rápido hasta que eso llegue en PRs dedicados.
 
-## Target pipeline (later)
+## Pipeline objetivo (después)
 
 ```mermaid
 flowchart LR
-  PR[Pull Request] --> B[Build Go modules + Next.js]
-  B --> U[Unit tests]
-  U --> L[Lint / static analysis]
-  L --> S[SonarQube scan]
-  S --> I[Integration / Testcontainers E2E on main]
-  I --> IMG[Build container images]
-  IMG --> DEP[Deploy example - Compose or K8s staging]
+  PR[Pull Request] --> B[Build módulos Go + Next.js]
+  B --> U[Tests unitarios]
+  U --> L[Lint / análisis estático]
+  L --> S[Escaneo SonarQube]
+  S --> I[E2E Testcontainers en main]
+  I --> IMG[Build de imágenes]
+  IMG --> DEP[Ejemplo de deploy - Compose o K8s staging]
 ```
 
-## Jobs (planned)
+## Jobs (planeados)
 
-| Workflow | Trigger | Purpose |
-|----------|---------|---------|
-| `ci.yml` | PR + push `main` | Unit tests (done) |
+| Workflow | Disparador | Propósito |
+|----------|------------|-----------|
+| `ci.yml` | PR + push a `main` | Tests unitarios (hecho) |
 | `sonar.yml` | PR + main | SonarQube / SonarCloud |
-| `e2e.yml` | main / nightly | Testcontainers flow |
-| `cd-example.yml` | tags / main | Push images + sample deploy |
+| `e2e.yml` | main / nightly | Flujo Testcontainers |
+| `cd-example.yml` | tags / main | Push de imágenes + deploy de muestra |
 
-## Environments
+## Entornos
 
-| Env | Purpose |
-|-----|---------|
-| Local Compose | Dev + demo |
-| CI ephemeral | PR verification |
-| Staging K8s (optional) | CD example with probes |
+| Entorno | Propósito |
+|---------|-----------|
+| Compose local | Desarrollo + demo |
+| CI efímero | Verificación del PR |
+| K8s staging (opcional) | Ejemplo de CD con probes |
 
-## Secrets
+## Secretos
 
-Stored in GitHub Actions secrets — never in git. Document required names when CD lands.
+Viven en los secrets de GitHub Actions — nunca en git. Documentar los nombres requeridos cuando exista CD.

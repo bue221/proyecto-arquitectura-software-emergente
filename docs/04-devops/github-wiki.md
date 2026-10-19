@@ -12,6 +12,10 @@ Besides the versioned `docs/` tree (reviewed via PRs), the repository exposes a 
 
 **Edits:** change `docs/` and/or `wiki/` on a branch → PR → merge → publish wiki.
 
+## Language
+
+`docs/` may stay in English. Every page under `wiki/` is **Spanish** prose. Keep filenames, link targets, commands, paths, and code identifiers in English. When mirroring a doc change, translate the wiki page; do not paste English paragraphs. Rule: root `AGENTS.md` → “Wiki language”.
+
 ## One-time bootstrap
 
 GitHub does not create `<repo>.wiki.git` until the first page exists in the UI:

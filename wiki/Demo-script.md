@@ -1,32 +1,32 @@
-# Demo script (rubric evidence)
+# Guion de demo (evidencia de rúbrica)
 
-Use this script for recordings/screenshots. Mark items as you complete implementation levels.
+Usa este guion para grabaciones o capturas. Marca los ítems a medida que se cubren los niveles.
 
-## Level 1
+## Nivel 1
 
-1. Show repo structure + wiki home + ADRs.
-2. Open Next.js Studio map with at least one airport marker (Leaflet).
-3. Create itinerary via UI or HTTP; show Swagger.
-4. Show Postgres itinerary row.
-5. Show Docker Compose running services + DBs.
-6. Show structured log line with `trace_id`.
+1. Mostrar la estructura del repo + el inicio de la wiki + los ADRs.
+2. Abrir el mapa del Studio en Next.js con al menos un marcador de aeropuerto (Leaflet).
+3. Crear un itinerario por UI o HTTP; mostrar Swagger.
+4. Mostrar la fila del itinerario en Postgres.
+5. Mostrar Docker Compose con servicios y bases en marcha.
+6. Mostrar una línea de log estructurado con `trace_id`.
 
-## Level 2
+## Nivel 2
 
-1. Break / mock API Colombia → circuit breaker opens (metrics/logs).
-2. Redis cache hit after warmup.
-3. Request through Gateway with JWT; reject without token.
-4. Notification appears after create (async).
-5. AsyncAPI file walkthrough.
-6. Jaeger UI (`:16686`): Gateway → Itinerary → Airport on create; then `GET /api/v1/demo/fail` error span.
-7. E2E Testcontainers run output.
+1. Romper o simular API Colombia → el circuit breaker abre (métricas/logs).
+2. Acierto de caché Redis después del calentamiento.
+3. Petición por el Gateway con JWT; rechazo sin token.
+4. La notificación aparece después del create (async).
+5. Recorrido del archivo AsyncAPI.
+6. UI de Jaeger (`:16686`): Gateway → Itinerary → Airport en el create; luego el span de error de `GET /api/v1/demo/fail`.
+7. Salida de la corrida E2E con Testcontainers.
 
-## Level 3
+## Nivel 3
 
-1. Outbox table + relay publishing explanation (double-write slide).
-2. gRPC call Itinerary → Airport (grpcurl or trace).
-3. GitHub Actions green + Sonar gate.
-4. K8s manifests with readiness/liveness (`infra/k8s/`, probes `/ready` `/live`).
-5. Alert example (Prometheus `:9090`) and/or Toxiproxy latency (`infra/toxiproxy/README.md`).
-6. Pact contract test output.
-7. Self-assessment table filled in [`../06-self-assessment.md`](../06-self-assessment.md).
+1. Explicar la tabla outbox + el relay (diapositiva del double-write).
+2. Llamada gRPC Itinerary → Airport (grpcurl o traza).
+3. GitHub Actions en verde + compuerta de Sonar.
+4. Manifiestos K8s con readiness/liveness (`infra/k8s/`, probes `/ready` y `/live`).
+5. Ejemplo de alerta (Prometheus `:9090`) y/o latencia con Toxiproxy (`infra/toxiproxy/README.md`).
+6. Salida del test de contrato Pact.
+7. Tabla de autoevaluación completa en [Self-assessment](Self-assessment).

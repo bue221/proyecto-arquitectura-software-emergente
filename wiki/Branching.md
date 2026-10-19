@@ -1,37 +1,37 @@
-# Branching & Pull Request policy
+# Política de ramas y Pull Requests
 
-## Why
+## Por qué
 
-The course rubric requires standard branches, Pull Requests, and a visible DevOps cycle (planning → code → review → integrate). This also keeps AI agents from committing straight to `main`.
+La rúbrica pide ramas estándar, Pull Requests y un ciclo DevOps visible (planear → codear → revisar → integrar). También impide que los agentes de IA commiteen directo a `main`.
 
-## Hard rule (also in `AGENTS.md`)
+## Regla dura (también en `AGENTS.md`)
 
 ```text
 every change → branch → PR → merge into main
 ```
 
-No exceptions for docs, chores, or agent work. Local commits on `main` are not acceptable delivery.
+No hay excepción para docs, chores ni trabajo de agentes. Un commit local en `main` no es una entrega válida.
 
-## Default branch
+## Rama por defecto
 
-- `main` — always releasable documentation/code; **protected**; merge **only via PR**.
+- `main` — documentación y código siempre publicables; **protegida**; el merge **solo vía PR**.
 
-Optional later: `develop` for integration if the team grows. Until then, feature branches merge to `main`.
+Más adelante, opcional: `develop` para integración si el equipo crece. Hasta entonces, las ramas de feature se fusionan a `main`.
 
-## Branch naming
+## Nombres de rama
 
-| Prefix | Use |
-|--------|-----|
-| `feat/<scope>-<slug>` | New behavior |
-| `fix/<scope>-<slug>` | Bug fix |
-| `docs/<slug>` | Wiki / ADR only |
-| `chore/<slug>` | Tooling, CI, deps |
-| `refactor/<scope>-<slug>` | No behavior change |
-| `test/<scope>-<slug>` | Tests only |
+| Prefijo | Uso |
+|---------|-----|
+| `feat/<scope>-<slug>` | Comportamiento nuevo |
+| `fix/<scope>-<slug>` | Corrección |
+| `docs/<slug>` | Solo wiki / ADR |
+| `chore/<slug>` | Tooling, CI, dependencias |
+| `refactor/<scope>-<slug>` | Sin cambio de comportamiento |
+| `test/<scope>-<slug>` | Solo tests |
 
 Scopes: `airport`, `itinerary`, `gateway`, `notify`, `web`, `infra`, `docs`.
 
-Examples:
+Ejemplos:
 
 - `feat/airport-colombia-adapter`
 - `docs/outbox-diagram`
@@ -39,7 +39,7 @@ Examples:
 
 ## Commits
 
-Conventional Commits, **English**:
+Conventional Commits, en **inglés**:
 
 ```text
 feat(itinerary): add create use case with outbox write
@@ -47,17 +47,17 @@ fix(airport): treat upstream 429 as retryable
 docs(adr): accept rabbitmq broker decision
 ```
 
-## PR rules
+## Reglas del PR
 
-1. One work unit per PR (reviewable).
-2. Fill [PR template](../../.github/PULL_REQUEST_TEMPLATE.md).
-3. Update `docs/` **and** matching `wiki/` pages in the **same** PR when architecture/behavior/UI/ops change.
-4. After merge: publish wiki with `make wiki` (see `AGENTS.md` — mandatory wiki sync).
-5. Link backlog/Jira issue when available.
-6. Squash or merge as team prefers; keep history readable.
-7. Do not merge with failing required checks once CI exists.
+1. Una unidad de trabajo por PR (revisable).
+2. Completar la [plantilla de PR](https://github.com/bue221/proyecto-arquitectura-software-emergente/blob/main/.github/PULL_REQUEST_TEMPLATE.md).
+3. Actualizar `docs/` **y** las páginas `wiki/` correspondientes en el **mismo** PR cuando cambien arquitectura, comportamiento, UI u ops. La prosa de `wiki/` va en español; los nombres de archivo no se traducen.
+4. Tras el merge: publicar la wiki con `make wiki` (ver `AGENTS.md` — sincronización obligatoria).
+5. Enlazar el issue de backlog/Jira cuando exista.
+6. Squash o merge según prefiera el equipo; el historial debe poder leerse.
+7. No fusionar con checks obligatorios en rojo cuando CI exista.
 
-## Agent rule
+## Regla para agentes
 
-Agents must **propose** branch name + PR summary; never assume direct commits to `main` are acceptable.  
-Agents must update `wiki/` in the PR and run `make wiki` after merge when wiki content changed.
+Los agentes deben **proponer** el nombre de rama y el resumen del PR; nunca asumir que un commit directo a `main` es aceptable.  
+Deben actualizar `wiki/` en el PR (en español) y ejecutar `make wiki` después del merge si cambió el contenido de la wiki.

@@ -1,39 +1,39 @@
 > **Fuente de verdad:** esta página se publica desde `wiki/` / `docs/` del monorepo.
 > Edita vía Pull Request en el código; no edites solo en la Wiki sin sincronizar.
 
-# Architecture overview
+# Resumen de arquitectura
 
-## Intent
+## Intención
 
-Combine three styles in one runnable system:
+Combinar tres estilos en un sistema que se puede ejecutar:
 
-| Style | Where | How we prove it |
-|-------|-------|-----------------|
-| Microservices | `airport-service`, `itinerary-service` | Separate deployables, DBs, HTTP/gRPC |
-| Event-driven | Itinerary → broker → FaaS | Outbox + AsyncAPI + consumers |
-| Serverless | `notification-function` | Ephemeral handlers on events / on-demand reports |
+| Estilo | Dónde | Cómo se demuestra |
+|--------|-------|-------------------|
+| Microservicios | `airport-service`, `itinerary-service` | Despliegues, bases y HTTP/gRPC separados |
+| Orientado a eventos | Itinerary → bróker → FaaS | Outbox + AsyncAPI + consumidores |
+| Serverless | `notification-function` | Handlers efímeros ante eventos o reportes bajo demanda |
 
-Cross-cutting: **hexagonal architecture**, **DDD bounded contexts**, **Adapter** for API Colombia, **Gateway** without business logic.
+Transversal: **arquitectura hexagonal**, **contextos delimitados (DDD)**, **Adapter** para API Colombia y **Gateway** sin lógica de negocio.
 
-## High-level view
+## Vista de alto nivel
 
 ```mermaid
 flowchart TB
-  subgraph clients [Clients]
-    WEB[Next.js + Plotly.js]
+  subgraph clients [Clientes]
+    WEB[Next.js + Leaflet]
   end
 
-  subgraph edge [Edge]
+  subgraph edge [Borde]
     GW[API Gateway / BFF]
   end
 
-  subgraph runtime [Runtime]
+  subgraph runtime [Ejecución]
     AIR[Airport Service - Go]
     ITI[Itinerary Service - Go]
-    FAAS[Notification Functions - FaaS]
+    FAAS[Funciones de notificación - FaaS]
   end
 
-  subgraph data [Data and messaging]
+  subgraph data [Datos y mensajería]
     R[(Redis)]
     DB1[(Postgres Airport)]
     DB2[(Postgres Itinerary + Outbox)]
@@ -46,87 +46,87 @@ flowchart TB
   WEB --> GW
   GW --> AIR
   GW --> ITI
-  ITI -->|validate airports HTTP/gRPC| AIR
+  ITI -->|validar aeropuertos HTTP/gRPC| AIR
   AIR --> R
   AIR --> EXT
   AIR --> DB1
   ITI --> DB2
-  ITI -->|Outbox publisher| MQ
+  ITI -->|publicador Outbox| MQ
   MQ --> FAAS
   FAAS --> DB3
 ```
 
-## Service responsibilities
+## Responsabilidades por servicio
 
 ### Airport Service
 
-- Port: `AirportProvider` (domain).
-- Adapter: API Colombia HTTP client → domain model → Plotly-friendly DTO.
-- Resilience: timeout, retry+backoff+jitter, circuit breaker, Redis cache.
-- Exposes REST (and later gRPC) for airport by ID / list for map.
+- Puerto: `AirportProvider` (dominio).
+- Adapter: cliente HTTP de API Colombia → modelo de dominio → DTO apto para el mapa.
+- Resiliencia: timeout, retry + backoff + jitter, circuit breaker, caché Redis.
+- Expone REST (y luego gRPC) para aeropuerto por ID y listado del mapa.
 
 ### Itinerary Service
 
-- Aggregate: `Itinerary` (user name, origin ID, destination ID, travel date, duration minutes).
-- CRUD on own Postgres.
-- Before persist: verify airports exist via Airport Service.
-- On create: write row + outbox row in **one transaction**; relay publishes `ItineraryCreated`.
+- Agregado: `Itinerary` (nombre de usuario, ID de origen, ID de destino, fecha de viaje, duración en minutos).
+- CRUD sobre su propio Postgres.
+- Antes de persistir: verifica que los aeropuertos existan vía Airport Service.
+- Al crear: escribe la fila y la fila de outbox en **una transacción**; el relay publica `ItineraryCreated`.
 
-### Notification Function (Serverless)
+### Notification Function (serverless)
 
-- Triggered by broker event (not a long-lived business API).
-- Simulates notification delivery; stores history in its DB.
-- Optional on-demand report function for metrics consolidation.
+- Se dispara por un evento del bróker (no es una API de negocio de larga vida).
+- Simula el envío de la notificación y guarda el historial en su BD.
+- Función opcional de reporte bajo demanda para consolidar métricas.
 
 ### API Gateway
 
-- Routes `/airports/*`, `/itineraries/*`.
-- Rate limiting, JWT validation/propagation.
-- **No** itinerary or airport business rules.
+- Enruta `/airports/*` y `/itineraries/*`.
+- Rate limiting y validación/propagación de JWT.
+- **Sin** reglas de negocio de itinerarios ni de aeropuertos.
 
-## Hexagonal slice (every Go service)
+## Corte hexagonal (cada servicio Go)
 
 ```text
-cmd/                 # main, wiring
-internal/domain/     # entities, ports, domain errors
-internal/application/# use cases
+cmd/                 # main, cableado
+internal/domain/     # entidades, puertos, errores de dominio
+internal/application/# casos de uso
 internal/adapters/in/http|grpc/
 internal/adapters/out/postgres|redis|http|messaging/
 ```
 
-Dependency rule: adapters depend inward; domain depends on nothing external.
+Regla de dependencias: los adaptadores apuntan hacia adentro; el dominio no depende de nada externo.
 
-## Quality attributes (prioritized)
+## Atributos de calidad (priorizados)
 
-| Priority | Attribute | Tactic |
-|----------|-----------|--------|
-| H | Modularity / maintainability | Hexagonal + BC isolation |
-| H | Reliability | Timeouts, CB, outbox, retries |
-| H | Observability | OTel traces, JSON logs, Prometheus |
-| M | Performance | Redis cache, Go concurrency model |
-| M | Security | JWT at edge, S2S propagation; mTLS/OAuth later (L3) |
-| M | Deployability | Compose → GH Actions → K8s |
+| Prioridad | Atributo | Táctica |
+|-----------|----------|---------|
+| A | Modularidad / mantenibilidad | Hexagonal + aislamiento de BC |
+| A | Confiabilidad | Timeouts, CB, outbox, reintentos |
+| A | Observabilidad | Trazas OTel, logs JSON, Prometheus |
+| M | Rendimiento | Caché Redis, modelo de concurrencia de Go |
+| M | Seguridad | JWT en el borde, propagación S2S; mTLS/OAuth después (N3) |
+| M | Desplegabilidad | Compose → GitHub Actions → K8s |
 
-## Integration styles
+## Estilos de integración
 
-| From → To | Style | Contract |
-|-----------|-------|----------|
+| De → A | Estilo | Contrato |
+|--------|--------|----------|
 | Web → Gateway | HTTPS REST | OpenAPI |
-| Gateway → Services | HTTPS REST | OpenAPI |
-| Itinerary → Airport | REST (L1/L2), gRPC (L3) | OpenAPI / Protobuf |
-| Itinerary → Notifications | Async events | AsyncAPI |
-| Airport → API Colombia | HTTPS + Adapter | External schema mapped internally |
+| Gateway → servicios | HTTPS REST | OpenAPI |
+| Itinerary → Airport | REST (N1/N2), gRPC (N3) | OpenAPI / Protobuf |
+| Itinerary → Notifications | Eventos async | AsyncAPI |
+| Airport → API Colombia | HTTPS + Adapter | Esquema externo mapeado adentro |
 
-## Double Write Problem (Level 3)
+## Problema de double write (Nivel 3)
 
-Publishing to RabbitMQ in a second step after `INSERT itinerary` can lose events or create orphans.
+Publicar en RabbitMQ en un segundo paso, después del `INSERT` del itinerario, puede perder eventos o dejar huérfanos.
 
-**Resolution:** Transactional Outbox — same DB transaction writes itinerary + outbox message; a publisher/CDC worker emits to the broker; consumers are idempotent.
+**Resolución:** Transactional Outbox. La misma transacción de BD escribe el itinerario y el mensaje de outbox; un worker publicador/CDC lo emite al bróker; los consumidores son idempotentes.
 
-Details: [`../03-diagrams/outbox.md`](../03-diagrams/outbox.md) and ADR-0005.
+Detalle: [Diagrams-outbox](Diagrams-outbox) y ADR-0005.
 
-## Next reading
+## Lectura siguiente
 
-- Formal doc: [`document.md`](document.md)
-- DDD: [`bounded-contexts.md`](bounded-contexts.md)
-- Diagrams: [`../03-diagrams/`](../03-diagrams/)
+- Documento formal: [Architecture-document](Architecture-document)
+- DDD: [Bounded-contexts](Bounded-contexts)
+- Diagramas: [Diagrams-index](Diagrams-index)

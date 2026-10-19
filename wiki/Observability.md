@@ -1,31 +1,31 @@
-# Observability — OpenTelemetry + Jaeger (Level 2)
+# Observabilidad — OpenTelemetry + Jaeger (Nivel 2)
 
 ## Stack
 
-| Piece | URL / env |
-|-------|-----------|
-| Jaeger UI | http://localhost:16686 |
+| Pieza | URL / entorno |
+|-------|----------------|
+| UI de Jaeger | http://localhost:16686 |
 | OTLP HTTP | `jaeger:4318` (Compose) |
-| Env | `OTEL_EXPORTER_OTLP_ENDPOINT=jaeger:4318` on Gateway, Airport, Itinerary |
+| Entorno | `OTEL_EXPORTER_OTLP_ENDPOINT=jaeger:4318` en Gateway, Airport e Itinerary |
 
-Traces use W3C Trace Context. Logs still expose `X-Trace-Id` / `trace_id` (aligned with the OTel trace id when a span is active).
+Las trazas usan W3C Trace Context. Los logs siguen exponiendo `X-Trace-Id` / `trace_id` (alineado al trace id de OTel cuando hay un span activo).
 
-## Happy-path demo
+## Demo del camino feliz
 
 1. `make up`
-2. Create an itinerary via Gateway (JWT) — or hit `GET /api/v1/airports/1` through `:8080`.
-3. Open Jaeger → service `api-gateway` → find the trace spanning Gateway → (Itinerary) → Airport.
+2. Crear un itinerario vía Gateway (JWT), o pegarle a `GET /api/v1/airports/1` por `:8080`.
+3. Abrir Jaeger → servicio `api-gateway` → encontrar la traza que cruza Gateway → (Itinerary) → Airport.
 
-## Controlled failure demo
+## Demo de fallo controlado
 
 ```bash
 curl -sI http://localhost:8080/api/v1/demo/fail
-# expect HTTP/1.1 503
+# se espera HTTP/1.1 503
 ```
 
-In Jaeger, search service `airport-service` (or `api-gateway`) for operation `demo.controlled_failure` — span status **Error**.
+En Jaeger, buscar el servicio `airport-service` (o `api-gateway`) y la operación `demo.controlled_failure`: el estado del span es **Error**.
 
-## Related
+## Relacionado
 
-- Demo script: [`demo-script.md`](demo-script.md)
-- Self-assessment: [`../06-self-assessment.md`](../06-self-assessment.md)
+- Guion de demo: [Demo-script](Demo-script)
+- Autoevaluación: [Self-assessment](Self-assessment)

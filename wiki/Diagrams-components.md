@@ -1,4 +1,4 @@
-# Component diagram
+# Diagrama de componentes
 
 ```mermaid
 flowchart TB
@@ -13,28 +13,28 @@ flowchart TB
   RMQ[[RabbitMQ :5672]]
   COL[API Colombia]
 
-  WEB -->|JWT for itineraries| GW
-  GW -->|public airports| AIR
-  GW -->|protected itineraries| ITI
-  ITI -->|S2S validate airports| AIR
+  WEB -->|JWT para itinerarios| GW
+  GW -->|aeropuertos públicos| AIR
+  GW -->|itinerarios protegidos| ITI
+  ITI -->|S2S validar aeropuertos| AIR
   AIR --> COL
   AIR --> REDIS
   ITI --> PG2
-  ITI -->|outbox relay| RMQ
+  ITI -->|relay de outbox| RMQ
   RMQ --> NF
   NF --> PG3
 ```
 
-## Current wiring
+## Cableado actual
 
-- Browser → **API Gateway only** (`:8080`).
-- Itinerary routes require Bearer JWT issued via `POST /auth/token`.
-- Itinerary → Airport remains direct service-to-service (not through the gateway).
-- Airport → Redis cache-aside; circuit breaker wraps Colombia HTTP.
-- Itinerary outbox relay → RabbitMQ → notification-function (idempotent).
+- El navegador va **solo al API Gateway** (`:8080`).
+- Las rutas de itinerario exigen un JWT Bearer emitido por `POST /auth/token`.
+- Itinerary → Airport sigue siendo servicio a servicio directo (no pasa por el gateway).
+- Airport → caché Redis cache-aside; el circuit breaker envuelve el HTTP de Colombia.
+- Relay de outbox de Itinerary → RabbitMQ → notification-function (idempotente).
 
-## Notes
+## Notas
 
-- Each service package is independently buildable/deployable.
-- Contracts live in `packages/contracts` and `packages/proto`.
-- Local stack: `make up` from repo root.
+- Cada paquete de servicio se construye y despliega por separado.
+- Los contratos viven en `packages/contracts` y `packages/proto`.
+- Stack local: `make up` desde la raíz del repo.
