@@ -1,11 +1,21 @@
 import { getJson, sendJson } from "@/lib/api/http";
-
-const TOKEN_KEY = "pi_access_token";
+import {
+  clearSession,
+  getAccessToken,
+  setAccessToken,
+  setStoredProfile,
+  type TravelerProfile,
+} from "@/lib/auth/session";
 
 export type TokenResponse = {
   accessToken: string;
   tokenType: string;
   expiresAt: string;
+};
+
+export type LoginInput = {
+  displayName: string;
+  email: string;
 };
 
 function gatewayBase(): string {
@@ -16,18 +26,12 @@ function gatewayBase(): string {
   );
 }
 
-export function getAccessToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return window.sessionStorage.getItem(TOKEN_KEY);
+function subjectFromEmail(email: string): string {
+  const local = email.trim().toLowerCase().split("@")[0] || "traveler";
+  return local.replace(/[^a-z0-9._-]/g, "-").slice(0, 48) || "traveler";
 }
 
-export function setAccessToken(token: string): void {
-  window.sessionStorage.setItem(TOKEN_KEY, token);
-}
-
-export function clearAccessToken(): void {
-  window.sessionStorage.removeItem(TOKEN_KEY);
-}
+export { getAccessToken };
 
 export async function issueAccessToken(subject: string, role = "traveler"): Promise<string> {
   const data = await sendJson<TokenResponse>(`${gatewayBase()}/auth/token`, "POST", {
@@ -41,6 +45,31 @@ export async function issueAccessToken(subject: string, role = "traveler"): Prom
   return data.accessToken;
 }
 
+export async function loginTraveler(input: LoginInput): Promise<TravelerProfile> {
+  const email = input.email.trim().toLowerCase();
+  const displayName = input.displayName.trim();
+  if (!email || !displayName) {
+    throw new Error("Name and email are required");
+  }
+  const subject = subjectFromEmail(email);
+  await issueAccessToken(subject, "traveler");
+  const profile: TravelerProfile = {
+    subject,
+    displayName,
+    email,
+    bio: "",
+    homeCity: "Bogotá",
+    role: "traveler",
+  };
+  setStoredProfile(profile);
+  return profile;
+}
+
+export function logoutTraveler(): void {
+  clearSession();
+}
+
+/** Prefer an existing session token; otherwise issue a demo token for guest map browsing. */
 export async function ensureAccessToken(subject = "demo-traveler"): Promise<string> {
   const existing = getAccessToken();
   if (existing) return existing;

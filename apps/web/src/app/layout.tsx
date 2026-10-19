@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Fraunces, Manrope } from "next/font/google";
+import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 
 import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider } from "@/features/auth/AuthProvider";
 import { cn } from "@/lib/utils";
 
 import "./globals.css";
@@ -11,14 +12,14 @@ const display = Fraunces({
   variable: "--font-display",
 });
 
-const sans = Manrope({
+const sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
 });
 
 export const metadata: Metadata = {
-  title: "Personal Itineraries",
-  description: "Colombian airport map and personal travel itineraries",
+  title: "RutaCO — Itinerarios personales",
+  description: "Explora aeropuertos de Colombia y arma tus viajes con checklist de maleta",
 };
 
 export default function RootLayout({
@@ -27,10 +28,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", sans.variable, display.variable)}>
+    <html lang="es" className={cn("font-sans", sans.variable, display.variable)}>
       <body className="min-h-screen antialiased">
-        {children}
-        <Toaster richColors closeButton position="top-right" />
+        <AuthProvider>
+          {children}
+          <Toaster richColors closeButton position="top-right" />
+        </AuthProvider>
       </body>
     </html>
   );

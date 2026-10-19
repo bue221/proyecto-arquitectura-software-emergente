@@ -33,11 +33,17 @@ async function authHeaders(subjectHint?: string): Promise<HeadersInit> {
   return { Authorization: `Bearer ${token}` };
 }
 
-export async function listItineraries(): Promise<Itinerary[]> {
+export async function listItineraries(subjectHint?: string): Promise<Itinerary[]> {
   const data = await getJson<{ items: Itinerary[] }>(`${apiBase()}/api/v1/itineraries`, {
-    headers: await authHeaders(),
+    headers: await authHeaders(subjectHint),
   });
   return data.items || [];
+}
+
+export async function getItinerary(id: string, subjectHint?: string): Promise<Itinerary> {
+  return getJson<Itinerary>(`${apiBase()}/api/v1/itineraries/${id}`, {
+    headers: await authHeaders(subjectHint),
+  });
 }
 
 export async function createItinerary(input: ItineraryInput): Promise<Itinerary> {
