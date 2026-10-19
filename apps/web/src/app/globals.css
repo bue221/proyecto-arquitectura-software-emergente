@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #f7fafc;
+  --foreground: #16324f;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-sans), "Manrope", sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-display), "Fraunces", Georgia, serif;
+}

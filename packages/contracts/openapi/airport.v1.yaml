@@ -1,0 +1,34 @@
+openapi: 3.0.3
+info:
+  title: Airport Service API
+  version: 1.0.0
+  description: Canonical OpenAPI copy for Airport Service (sync with services/airport-service/cmd/server/openapi.yaml).
+servers:
+  - url: http://localhost:8081
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+  /api/v1/airports:
+    get:
+      summary: List airports for Plotly map
+      responses:
+        "200":
+          description: Plotly-ready points
+  /api/v1/airports/{id}:
+    get:
+      summary: Get airport by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Airport
+        "404":
+          description: Not found

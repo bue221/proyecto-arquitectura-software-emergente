@@ -22,7 +22,15 @@ Monorepo for a distributed **personal travel itineraries** system (academic arch
 
 ## Repository status
 
-**Phase 0 — Architecture & documentation.** No runnable business services yet. Implementation starts after ADRs and wiki are accepted.
+**Phase 1 (in progress) — Airport Service + Next.js map.** Phase 0 docs are on `main`. Feature work lands via PRs from branches such as `feat/airport-web-scaffold`.
+
+```bash
+# Airport API
+cd services/airport-service && go run ./cmd/server
+
+# Web map
+cd apps/web && cp .env.local.example .env.local && npm install && npm run dev
+```
 
 ## Planned layout
 

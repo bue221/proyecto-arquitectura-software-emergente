@@ -6,17 +6,17 @@ Update this table in PRs as criteria are met. Status: `pending` | `partial` | `d
 
 | Criterion | Status | Evidence |
 |-----------|--------|----------|
-| Adapter pattern | pending | |
-| Hexagonal layers | pending | |
+| Adapter pattern | partial | `services/airport-service/internal/adapters/out/colombia` |
+| Hexagonal layers | partial | Airport Service packages (`domain`/`application`/`adapters`) |
 | DDD BCs + ubiquitous language | done (docs) | `docs/01-architecture/bounded-contexts.md` |
 | Itinerary CRUD + HTTP airport validation | pending | |
 | Relational DB | pending | |
 | Versioned migrations | pending | |
-| Swagger per service | pending | |
-| Proper HTTP errors | pending | |
-| Structured logs + correlation | pending | |
-| Frontend Plotly map | pending | |
-| Docker Compose | pending | |
+| Swagger per service | partial | Airport `/swagger` + `packages/contracts/openapi/airport.v1.yaml` |
+| Proper HTTP errors | partial | Airport Problem JSON (`code`/`message`/`trace_id`) |
+| Structured logs + correlation | partial | Airport JSON logs + `X-Trace-Id` |
+| Frontend Plotly map | partial | `apps/web` map consumes Airport Service |
+| Docker Compose | partial | `infra/docker/docker-compose.yml` (airport + web) |
 | README + diagrams | done (docs) | `docs/03-diagrams/*` |
 
 ## Level 2 — Advanced

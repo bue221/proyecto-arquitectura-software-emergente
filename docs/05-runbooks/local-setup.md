@@ -1,33 +1,46 @@
 # Local setup
 
-## Status
+## Prerequisites
 
-Phase 0: documentation only. This runbook will be completed when Compose stacks land.
-
-## Prerequisites (planned)
-
-- Docker + Docker Compose
 - Go 1.22+
 - Node.js 20+
-- `make` (optional wrappers)
+- Docker + Docker Compose (optional for containerized run)
 
-## Planned happy path
+## Option A — native (fastest for Level 1)
 
 ```bash
-# after implementation PRs
-git clone <repo>
-cp .env.example .env
-docker compose -f infra/docker/docker-compose.yml up --build
-# web http://localhost:3000
-# gateway http://localhost:8080
-# swagger per service ports TBD
+# 1) Airport Service
+cd services/airport-service
+go test ./...
+go run ./cmd/server
+
+# 2) Web (other terminal)
+cd apps/web
+cp .env.local.example .env.local
+npm install
+npm run dev
 ```
 
-## Smoke checks (planned)
+- Web: http://localhost:3000
+- Airport API: http://localhost:8081
+- Swagger: http://localhost:8081/swagger
 
-1. Gateway health 200.
-2. Airports map endpoint returns adapted DTO.
-3. Create itinerary → 201 → notification row appears.
-4. Jaeger shows a distributed trace for the create flow.
+## Option B — Docker Compose
 
-Until services exist, use the wiki diagrams for walkthroughs.
+```bash
+cd infra/docker
+docker compose up --build
+```
+
+Browser still uses `http://localhost:8081` for the Airport API (client-side fetch).
+
+## Smoke checks (Level 1)
+
+1. `GET /health` → `{"status":"ok"}`
+2. `GET /api/v1/airports/1` → adapted DTO with `lat`/`lon` (not raw API Colombia schema)
+3. `GET /api/v1/airports` → `{ count, points[] }` for Plotly
+4. Web map shows markers without calling API Colombia from the browser
+
+## Not available yet
+
+Gateway, Itinerary CRUD, RabbitMQ, Redis, Jaeger — later PRs (Level 1 itinerary / Level 2+).
