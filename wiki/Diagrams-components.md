@@ -5,36 +5,33 @@
 
 ```mermaid
 flowchart TB
-  WEB[apps/web Next.js + shadcn + Plotly :3000]
-
-  GW[services/api-gateway planned L2]
+  WEB[apps/web Next.js + shadcn :3000]
+  GW[services/api-gateway :8080]
   AIR[services/airport-service :8081]
   ITI[services/itinerary-service :8082]
-  NF[services/notification-function planned L2]
-
+  NF[services/notification-function planned]
   PG2[(Postgres Itinerary :5434)]
-  REDIS[(Redis planned L2)]
-  RMQ[[RabbitMQ planned L2]]
+  REDIS[(Redis :6379)]
+  RMQ[[RabbitMQ planned]]
   COL[API Colombia]
 
-  WEB --> AIR
-  WEB --> ITI
-  WEB -.-> GW
-  GW -.-> AIR
-  GW -.-> ITI
-  ITI --> AIR
+  WEB -->|JWT for itineraries| GW
+  GW -->|public airports| AIR
+  GW -->|protected itineraries| ITI
+  ITI -->|S2S validate airports| AIR
   AIR --> COL
-  AIR -.-> REDIS
+  AIR --> REDIS
   ITI --> PG2
   ITI -.-> RMQ
   RMQ -.-> NF
 ```
 
-## Current Level 1 wiring
+## Current wiring
 
-- Web calls Airport and Itinerary **directly** (Gateway arrives in Level 2).
-- Airport uses in-memory cache today; Redis is Level 2.
-- Itinerary writes outbox rows; broker relay is Level 2/3.
+- Browser → **API Gateway only** (`:8080`).
+- Airport → Redis cache-aside + circuit breaker on Colombia HTTP.
+- Itinerary writes outbox rows; broker relay is still planned.
+- Local: `make up` from repo root.
 
 ## Notes
 

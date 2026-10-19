@@ -23,9 +23,9 @@ Update this table in PRs as criteria are met. Status: `pending` | `partial` | `d
 
 | Criterion | Status | Evidence |
 |-----------|--------|----------|
-| Circuit breaker | pending | |
-| Retry + backoff | pending | |
-| Redis cache | pending | |
+| Circuit breaker | done | `adapters/out/resilience` + Colombia adapter; `GET /api/v1/resilience` |
+| Retry + backoff | done | exponential + full jitter in `resilience/retry.go` |
+| Redis cache | done | `adapters/out/rediscache` + Compose `redis`; memory fallback |
 | API Gateway + rate limit + JWT | done | `services/api-gateway` `:8080`; itineraries require Bearer |
 | Notification consumer | pending | |
 | Broker RabbitMQ | pending | |

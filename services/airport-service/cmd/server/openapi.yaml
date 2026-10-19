@@ -13,6 +13,25 @@ paths:
       responses:
         "200":
           description: OK
+  /api/v1/resilience:
+    get:
+      summary: Resilience snapshot (cache backend + circuit breaker)
+      operationId: resilienceStatus
+      responses:
+        "200":
+          description: Current resilience configuration and breaker state
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cache_backend:
+                    type: string
+                    enum: [redis, memory]
+                  circuit_breaker:
+                    type: object
+                  retry:
+                    type: object
   /api/v1/airports:
     get:
       summary: List airports for Plotly map

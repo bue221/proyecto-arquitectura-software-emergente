@@ -11,7 +11,7 @@ type entry struct {
 	expiresAt time.Time
 }
 
-// Cache is a process-local TTL cache used until Redis lands (Level 2).
+// Cache is a process-local TTL fallback when Redis is unset or unreachable.
 type Cache struct {
 	mu    sync.RWMutex
 	ttl   time.Duration

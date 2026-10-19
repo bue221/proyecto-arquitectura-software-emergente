@@ -22,17 +22,24 @@ Monorepo for a distributed **personal travel itineraries** system (academic arch
 | Branching & PRs | [`docs/04-devops/branching.md`](docs/04-devops/branching.md) |
 | Self-assessment | [`docs/06-self-assessment.md`](docs/06-self-assessment.md) |
 
-## Repository status
-
-**Phase 1 (in progress) — Airport Service + Next.js map.** Phase 0 docs are on `main`. Feature work lands via PRs from branches such as `feat/airport-web-scaffold`.
+## Run locally
 
 ```bash
-# Airport API
-cd services/airport-service && go run ./cmd/server
-
-# Web map
-cd apps/web && cp .env.local.example .env.local && npm install && npm run dev
+make up      # Docker: Gateway + Redis + Airport + Itinerary + Web
+make smoke   # quick API checks
+make down
 ```
+
+| URL | Service |
+|-----|---------|
+| http://localhost:3000 | Web |
+| http://localhost:8080/health | API Gateway |
+| http://localhost:8081/swagger | Airport |
+| http://localhost:8081/api/v1/resilience | Airport CB / cache |
+
+## Repository status
+
+Level 1 + Gateway + Airport Redis/circuit-breaker are in place. Remaining Level 2/3 (RabbitMQ notify, Jaeger, Testcontainers) lands via PRs.
 
 ## Planned layout
 

@@ -3,6 +3,7 @@ package colombia
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -10,6 +11,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/bue221/personal-itineraries/services/airport-service/internal/adapters/out/resilience"
 	"github.com/bue221/personal-itineraries/services/airport-service/internal/domain"
 )
 
@@ -20,15 +22,20 @@ type Adapter struct {
 	baseURL    string
 	httpClient *http.Client
 	cache      domain.AirportCache
+	breaker    *resilience.Breaker
+	retry      resilience.RetryConfig
 	listKey    string
 }
 
-func NewAdapter(baseURL string, timeout time.Duration, cache domain.AirportCache) *Adapter {
+func NewAdapter(baseURL string, timeout time.Duration, cache domain.AirportCache, breaker *resilience.Breaker) *Adapter {
 	if baseURL == "" {
 		baseURL = defaultBaseURL
 	}
 	if timeout <= 0 {
 		timeout = 8 * time.Second
+	}
+	if breaker == nil {
+		breaker = resilience.NewBreaker(5, 30*time.Second)
 	}
 	return &Adapter{
 		baseURL: baseURL,
@@ -36,19 +43,25 @@ func NewAdapter(baseURL string, timeout time.Duration, cache domain.AirportCache
 			Timeout: timeout,
 		},
 		cache:   cache,
+		breaker: breaker,
+		retry:   resilience.DefaultRetry(),
 		listKey: "airports:list:v1",
 	}
 }
 
+func (a *Adapter) BreakerSnapshot() map[string]any {
+	return a.breaker.Snapshot()
+}
+
 type externalAirport struct {
-	ID         int     `json:"id"`
-	Name       string  `json:"name"`
-	IATACode   string  `json:"iataCode"`
-	OACICode   string  `json:"oaciCode"`
-	Type       string  `json:"type"`
-	Latitude   float64 `json:"latitude"`
-	Longitude  float64 `json:"longitude"`
-	City       *struct {
+	ID        int     `json:"id"`
+	Name      string  `json:"name"`
+	IATACode  string  `json:"iataCode"`
+	OACICode  string  `json:"oaciCode"`
+	Type      string  `json:"type"`
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	City      *struct {
 		Name string `json:"name"`
 	} `json:"city"`
 }
@@ -69,36 +82,31 @@ func (a *Adapter) GetByID(ctx context.Context, id string) (domain.Airport, error
 	}
 
 	url := fmt.Sprintf("%s/api/v1/Airport/%s", a.baseURL, id)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	if err != nil {
-		return domain.Airport{}, fmt.Errorf("%w: build request: %v", domain.ErrUpstreamUnavailable, err)
-	}
-
-	res, err := a.httpClient.Do(req)
-	if err != nil {
-		return domain.Airport{}, fmt.Errorf("%w: %v", domain.ErrUpstreamUnavailable, err)
-	}
-	defer res.Body.Close()
-
-	body, err := io.ReadAll(io.LimitReader(res.Body, 1<<20))
-	if err != nil {
-		return domain.Airport{}, fmt.Errorf("%w: read body: %v", domain.ErrUpstreamUnavailable, err)
-	}
-
-	switch res.StatusCode {
-	case http.StatusOK:
-		var ext externalAirport
-		if err := json.Unmarshal(body, &ext); err != nil {
-			return domain.Airport{}, fmt.Errorf("%w: decode: %v", domain.ErrUpstreamUnavailable, err)
+	var airport domain.Airport
+	err := a.withResilience(ctx, func(ctx context.Context) error {
+		body, status, err := a.get(ctx, url, 1<<20)
+		if err != nil {
+			return err
 		}
-		airport := mapExternal(ext)
-		a.storeCache(ctx, cacheKey, airport)
-		return airport, nil
-	case http.StatusNotFound:
-		return domain.Airport{}, domain.ErrNotFound
-	default:
-		return domain.Airport{}, fmt.Errorf("%w: status %d", domain.ErrUpstreamUnavailable, res.StatusCode)
+		switch status {
+		case http.StatusOK:
+			var ext externalAirport
+			if err := json.Unmarshal(body, &ext); err != nil {
+				return fmt.Errorf("%w: decode: %v", domain.ErrUpstreamUnavailable, err)
+			}
+			airport = mapExternal(ext)
+			a.storeCache(ctx, cacheKey, airport)
+			return nil
+		case http.StatusNotFound:
+			return domain.ErrNotFound
+		default:
+			return fmt.Errorf("%w: status %d", domain.ErrUpstreamUnavailable, status)
+		}
+	})
+	if err != nil {
+		return domain.Airport{}, err
 	}
+	return airport, nil
 }
 
 func (a *Adapter) ListAll(ctx context.Context) ([]domain.Airport, error) {
@@ -112,36 +120,71 @@ func (a *Adapter) ListAll(ctx context.Context) ([]domain.Airport, error) {
 	}
 
 	url := a.baseURL + "/api/v1/Airport"
+	var airports []domain.Airport
+	err := a.withResilience(ctx, func(ctx context.Context) error {
+		body, status, err := a.get(ctx, url, 8<<20)
+		if err != nil {
+			return err
+		}
+		if status != http.StatusOK {
+			return fmt.Errorf("%w: status %d", domain.ErrUpstreamUnavailable, status)
+		}
+		var ext []externalAirport
+		if err := json.Unmarshal(body, &ext); err != nil {
+			return fmt.Errorf("%w: decode: %v", domain.ErrUpstreamUnavailable, err)
+		}
+		airports = make([]domain.Airport, 0, len(ext))
+		for _, item := range ext {
+			airports = append(airports, mapExternal(item))
+		}
+		a.storeCache(ctx, a.listKey, airports)
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return airports, nil
+}
+
+func (a *Adapter) withResilience(ctx context.Context, fn func(context.Context) error) error {
+	if err := a.breaker.Allow(); err != nil {
+		return fmt.Errorf("%w: %v", domain.ErrUpstreamUnavailable, err)
+	}
+
+	err := resilience.Do(ctx, a.retry, func(ctx context.Context) error {
+		callErr := fn(ctx)
+		if callErr == nil || errors.Is(callErr, domain.ErrNotFound) || errors.Is(callErr, domain.ErrInvalidID) {
+			return callErr
+		}
+		return callErr
+	})
+
+	if err == nil || errors.Is(err, domain.ErrNotFound) || errors.Is(err, domain.ErrInvalidID) {
+		a.breaker.Success()
+		return err
+	}
+	a.breaker.Failure()
+	if errors.Is(err, resilience.ErrOpen) {
+		return fmt.Errorf("%w: circuit open", domain.ErrUpstreamUnavailable)
+	}
+	return err
+}
+
+func (a *Adapter) get(ctx context.Context, url string, limit int64) ([]byte, int, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: build request: %v", domain.ErrUpstreamUnavailable, err)
+		return nil, 0, fmt.Errorf("%w: build request: %v", domain.ErrUpstreamUnavailable, err)
 	}
-
 	res, err := a.httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %v", domain.ErrUpstreamUnavailable, err)
+		return nil, 0, fmt.Errorf("%w: %v", domain.ErrUpstreamUnavailable, err)
 	}
 	defer res.Body.Close()
-
-	body, err := io.ReadAll(io.LimitReader(res.Body, 8<<20))
+	body, err := io.ReadAll(io.LimitReader(res.Body, limit))
 	if err != nil {
-		return nil, fmt.Errorf("%w: read body: %v", domain.ErrUpstreamUnavailable, err)
+		return nil, res.StatusCode, fmt.Errorf("%w: read body: %v", domain.ErrUpstreamUnavailable, err)
 	}
-	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%w: status %d", domain.ErrUpstreamUnavailable, res.StatusCode)
-	}
-
-	var ext []externalAirport
-	if err := json.Unmarshal(body, &ext); err != nil {
-		return nil, fmt.Errorf("%w: decode: %v", domain.ErrUpstreamUnavailable, err)
-	}
-
-	airports := make([]domain.Airport, 0, len(ext))
-	for _, item := range ext {
-		airports = append(airports, mapExternal(item))
-	}
-	a.storeCache(ctx, a.listKey, airports)
-	return airports, nil
+	return body, res.StatusCode, nil
 }
 
 func (a *Adapter) storeCache(ctx context.Context, key string, value any) {
@@ -173,10 +216,8 @@ func mapExternal(ext externalAirport) domain.Airport {
 	}
 }
 
-// normalizeCoordinates fixes API Colombia quirk where lat/lon are often swapped.
 func normalizeCoordinates(rawLat, rawLon float64) (lat, lon float64) {
 	lat, lon = rawLat, rawLon
-	// Colombia roughly: lat [-5, 14], lon [-82, -66]
 	inLatBand := func(v float64) bool { return v >= -5 && v <= 14 }
 	inLonBand := func(v float64) bool { return v <= -66 && v >= -82 }
 

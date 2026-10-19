@@ -26,15 +26,15 @@ Update this table in PRs as criteria are met. Status: `pending` | `partial` | `d
 
 | Criterion | Status | Evidence |
 |-----------|--------|----------|
-| Circuit breaker | pending | |
-| Retry + backoff | pending | |
-| Redis cache | pending | |
-| API Gateway + rate limit + JWT | pending | |
+| Circuit breaker | done | `adapters/out/resilience` + Colombia adapter; `GET /api/v1/resilience` |
+| Retry + backoff | done | exponential + full jitter in `resilience/retry.go` |
+| Redis cache | done | `adapters/out/rediscache` + Compose `redis`; memory fallback |
+| API Gateway + rate limit + JWT | done | `services/api-gateway` `:8080` |
 | Notification consumer | pending | |
 | Broker RabbitMQ | pending | |
-| AsyncAPI | pending | |
+| AsyncAPI | pending | draft in `packages/contracts/asyncapi` |
 | OTel + Jaeger | pending | |
-| JWT propagation | pending | |
+| JWT propagation | done | Gateway validates JWT and forwards `Authorization` + `X-User-*` |
 | E2E Testcontainers | pending | |
 | Controlled failure demo | pending | |
 

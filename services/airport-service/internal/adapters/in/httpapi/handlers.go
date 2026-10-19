@@ -14,11 +14,20 @@ import (
 type Handlers struct {
 	GetAirport application.GetAirport
 	ListMap    application.ListAirportsForMap
+	Resilience func() map[string]any
 	Log        *slog.Logger
 }
 
 func (h Handlers) Health(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
+}
+
+func (h Handlers) ResilienceStatus(w http.ResponseWriter, r *http.Request) {
+	if h.Resilience == nil {
+		writeJSON(w, http.StatusOK, map[string]string{"status": "unavailable"})
+		return
+	}
+	writeJSON(w, http.StatusOK, h.Resilience())
 }
 
 func (h Handlers) GetByID(w http.ResponseWriter, r *http.Request) {

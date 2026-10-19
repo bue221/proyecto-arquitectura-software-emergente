@@ -9,11 +9,23 @@
 - Node.js 20+
 - Docker + Docker Compose
 
-## Option A — Docker Compose (recommended)
+## Option A — one command (recommended)
+
+From the repo root:
 
 ```bash
-cd infra/docker
-docker compose up --build
+make up      # build + start full stack
+make smoke  # health + airport + JWT itinerary
+make logs   # follow containers
+make down   # stop
+```
+
+Or without Make:
+
+```bash
+./scripts/dev-up.sh
+./scripts/dev-smoke.sh
+./scripts/dev-down.sh
 ```
 
 Services:
@@ -21,47 +33,48 @@ Services:
 | Service | URL |
 |---------|-----|
 | Web | http://localhost:3000 |
+| API Gateway | http://localhost:8080/health |
 | Airport API / Swagger | http://localhost:8081/swagger |
+| Airport resilience | http://localhost:8081/api/v1/resilience |
 | Itinerary API / Swagger | http://localhost:8082/swagger |
+| Redis | localhost:6379 |
 | Itinerary Postgres | localhost:5434 |
 
 ## Option B — native processes
 
 ```bash
-# 1) Postgres for itineraries
+# 1) Infra
+docker run --rm --name pi-redis -p 6379:6379 redis:7-alpine
 docker run --rm --name itinerary-db \
   -e POSTGRES_USER=itinerary -e POSTGRES_PASSWORD=itinerary -e POSTGRES_DB=itinerary \
   -p 5434:5432 postgres:16-alpine
 
 # 2) Airport Service
-cd services/airport-service && go run ./cmd/server
+cd services/airport-service
+export REDIS_ADDR=localhost:6379
+go run ./cmd/server
 
 # 3) Itinerary Service
 cd services/itinerary-service
 export DATABASE_URL='postgres://itinerary:itinerary@localhost:5434/itinerary?sslmode=disable'
 export AIRPORT_SERVICE_URL='http://localhost:8081'
-go test ./...
 go run ./cmd/server
 
-# 4) Web
+# 4) Gateway
+cd services/api-gateway && go run ./cmd/server
+
+# 5) Web
 cd apps/web
 cp .env.local.example .env.local
 npm install && npm run dev
 ```
 
-## Smoke checks (Level 1)
+## Smoke checks
 
-1. `GET http://localhost:8081/health` and `/api/v1/airports/1`
-2. `GET http://localhost:8082/health`
-3. Create itinerary:
-   ```bash
-   curl -sS -X POST http://localhost:8082/api/v1/itineraries \
-     -H 'Content-Type: application/json' \
-     -d '{"userName":"Ana","originAirportId":"1","destinationAirportId":"2","travelDate":"2026-11-01","durationMinutes":95}'
-   ```
-4. Confirm map + itinerary form on http://localhost:3000
-5. Confirm browser never calls `api-colombia.com`
+1. `make smoke` (preferred)
+2. `GET http://localhost:8081/api/v1/resilience` → `cache_backend: redis`, breaker `closed`
+3. Map + itinerary form on http://localhost:3000 (browser talks only to Gateway `:8080`)
 
 ## Not available yet
 
-API Gateway, Redis CB, RabbitMQ relay/notifications, Jaeger — Level 2+ PRs.
+RabbitMQ relay / notification FaaS, Jaeger, Testcontainers — remaining Level 2/3 PRs.
