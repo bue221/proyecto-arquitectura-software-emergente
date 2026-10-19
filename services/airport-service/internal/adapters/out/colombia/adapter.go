@@ -11,6 +11,8 @@ import (
 	"strconv"
 	"time"
 
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+
 	"github.com/bue221/personal-itineraries/services/airport-service/internal/adapters/out/resilience"
 	"github.com/bue221/personal-itineraries/services/airport-service/internal/domain"
 )
@@ -40,7 +42,8 @@ func NewAdapter(baseURL string, timeout time.Duration, cache domain.AirportCache
 	return &Adapter{
 		baseURL: baseURL,
 		httpClient: &http.Client{
-			Timeout: timeout,
+			Timeout:   timeout,
+			Transport: otelhttp.NewTransport(http.DefaultTransport),
 		},
 		cache:   cache,
 		breaker: breaker,

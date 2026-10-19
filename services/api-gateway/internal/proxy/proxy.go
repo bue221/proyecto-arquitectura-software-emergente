@@ -6,6 +6,8 @@ import (
 	"net/url"
 	"time"
 
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+
 	"github.com/bue221/personal-itineraries/services/api-gateway/internal/platform/logging"
 )
 
@@ -29,10 +31,11 @@ func New(target string, timeout time.Duration) (*httputil.ReverseProxy, error) {
 		w.WriteHeader(http.StatusBadGateway)
 		_, _ = w.Write([]byte(`{"code":"upstream_unavailable","message":"Upstream service is unavailable"}`))
 	}
-	proxy.Transport = &http.Transport{
+	baseTransport := &http.Transport{
 		ResponseHeaderTimeout: timeout,
 		IdleConnTimeout:       90 * time.Second,
 	}
+	proxy.Transport = otelhttp.NewTransport(baseTransport)
 	// Browser CORS is owned by the gateway middleware. Upstream services also emit
 	// Access-Control-* headers; duplicated ACAO values make fetch() fail in browsers.
 	proxy.ModifyResponse = func(res *http.Response) error {

@@ -3,6 +3,8 @@ package httpapi
 import (
 	"net/http"
 
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+
 	"github.com/bue221/personal-itineraries/services/api-gateway/internal/auth"
 	"github.com/bue221/personal-itineraries/services/api-gateway/internal/middleware"
 )
@@ -20,6 +22,7 @@ func NewRouter(h Handlers, tokens *auth.TokenService, up Upstream, rateRPS float
 	// Public catalog reads through the gateway (no business logic here).
 	mux.Handle("GET /api/v1/airports", up.Airport)
 	mux.Handle("GET /api/v1/airports/{id}", up.Airport)
+	mux.Handle("GET /api/v1/demo/fail", up.Airport)
 
 	// Itinerary surface is protected at the edge.
 	protected := middleware.RequireJWT(tokens)
@@ -33,5 +36,5 @@ func NewRouter(h Handlers, tokens *auth.TokenService, up Upstream, rateRPS float
 	handler = middleware.RateLimit(rateRPS, rateBurst)(handler)
 	handler = middleware.Trace(handler)
 	handler = middleware.CORS(handler)
-	return handler
+	return otelhttp.NewHandler(handler, "api-gateway")
 }

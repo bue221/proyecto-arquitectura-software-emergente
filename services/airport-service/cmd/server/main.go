@@ -19,6 +19,7 @@ import (
 	"github.com/bue221/personal-itineraries/services/airport-service/internal/domain"
 	"github.com/bue221/personal-itineraries/services/airport-service/internal/platform/config"
 	"github.com/bue221/personal-itineraries/services/airport-service/internal/platform/logging"
+	"github.com/bue221/personal-itineraries/services/airport-service/internal/platform/otelx"
 )
 
 //go:embed openapi.yaml
@@ -27,6 +28,17 @@ var openAPI []byte
 func main() {
 	cfg := config.Load()
 	log := logging.NewJSONLogger()
+
+	ctx := context.Background()
+	shutdownTracing, err := otelx.Init(ctx, "airport-service", cfg.OTelEndpoint)
+	if err != nil {
+		log.Error("otel_init_failed", "error", err.Error())
+		os.Exit(1)
+	}
+	defer func() { _ = shutdownTracing(context.Background()) }()
+	if cfg.OTelEndpoint != "" {
+		log.Info("otel_enabled", "endpoint", cfg.OTelEndpoint)
+	}
 
 	cache, cacheBackend := buildCache(cfg, log)
 	breaker := resilience.NewBreaker(cfg.CBFailureThreshold, cfg.CBCooldown)

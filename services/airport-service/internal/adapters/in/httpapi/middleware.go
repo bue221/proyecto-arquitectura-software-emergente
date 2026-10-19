@@ -3,8 +3,10 @@ package httpapi
 import (
 	"net/http"
 
-	"github.com/bue221/personal-itineraries/services/airport-service/internal/platform/logging"
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/trace"
+
+	"github.com/bue221/personal-itineraries/services/airport-service/internal/platform/logging"
 )
 
 func TraceMiddleware(next http.Handler) http.Handler {
@@ -12,6 +14,9 @@ func TraceMiddleware(next http.Handler) http.Handler {
 		traceID := r.Header.Get("X-Trace-Id")
 		if traceID == "" {
 			traceID = r.Header.Get("X-Request-Id")
+		}
+		if sc := trace.SpanFromContext(r.Context()).SpanContext(); sc.IsValid() {
+			traceID = sc.TraceID().String()
 		}
 		if traceID == "" {
 			traceID = uuid.NewString()

@@ -5,7 +5,7 @@ Use this script for recordings/screenshots. Mark items as you complete implement
 ## Level 1
 
 1. Show repo structure + wiki home + ADRs.
-2. Open Next.js map with at least one airport marker (Plotly).
+2. Open Next.js Studio map with at least one airport marker (Leaflet).
 3. Create itinerary via UI or HTTP; show Swagger.
 4. Show Postgres itinerary row.
 5. Show Docker Compose running services + DBs.
@@ -18,7 +18,7 @@ Use this script for recordings/screenshots. Mark items as you complete implement
 3. Request through Gateway with JWT; reject without token.
 4. Notification appears after create (async).
 5. AsyncAPI file walkthrough.
-6. Jaeger trace: Gateway → Itinerary → Airport.
+6. Jaeger UI (`:16686`): Gateway → Itinerary → Airport on create; then `GET /api/v1/demo/fail` error span.
 7. E2E Testcontainers run output.
 
 ## Level 3

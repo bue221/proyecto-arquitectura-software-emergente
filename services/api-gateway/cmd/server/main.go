@@ -13,12 +13,24 @@ import (
 	"github.com/bue221/personal-itineraries/services/api-gateway/internal/httpapi"
 	"github.com/bue221/personal-itineraries/services/api-gateway/internal/platform/config"
 	"github.com/bue221/personal-itineraries/services/api-gateway/internal/platform/logging"
+	"github.com/bue221/personal-itineraries/services/api-gateway/internal/platform/otelx"
 	"github.com/bue221/personal-itineraries/services/api-gateway/internal/proxy"
 )
 
 func main() {
 	cfg := config.Load()
 	log := logging.NewJSONLogger()
+
+	ctx := context.Background()
+	shutdownTracing, err := otelx.Init(ctx, "api-gateway", cfg.OTelEndpoint)
+	if err != nil {
+		log.Error("otel_init_failed", "error", err.Error())
+		os.Exit(1)
+	}
+	defer func() { _ = shutdownTracing(context.Background()) }()
+	if cfg.OTelEndpoint != "" {
+		log.Info("otel_enabled", "endpoint", cfg.OTelEndpoint)
+	}
 
 	airportProxy, err := proxy.New(cfg.AirportServiceURL, cfg.ProxyTimeout)
 	if err != nil {
@@ -56,8 +68,8 @@ func main() {
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 	<-stop
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	_ = server.Shutdown(ctx)
+	_ = server.Shutdown(shutdownCtx)
 	log.Info("api_gateway_stopped")
 }

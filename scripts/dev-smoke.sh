@@ -30,6 +30,12 @@ echo "==> Notification function health"
 curl -fsS http://localhost:8083/health | tee /tmp/pi-notify-health.json
 echo
 
+echo "==> Controlled failure demo (expect 503)"
+CODE=$(curl -s -o /tmp/pi-demo-fail.json -w '%{http_code}' http://localhost:8080/api/v1/demo/fail || true)
+echo "demo/fail status=$CODE"
+cat /tmp/pi-demo-fail.json 2>/dev/null || true
+echo
+
 echo "==> Wait for outbox → RabbitMQ → notification (up to 15s)"
 for i in $(seq 1 15); do
   COUNT=$(docker compose -f infra/docker/docker-compose.yml exec -T notification-db \

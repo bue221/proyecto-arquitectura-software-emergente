@@ -30,6 +30,7 @@ make wiki    # publish wiki/ → GitHub Wiki (after merge)
 | RabbitMQ UI | http://localhost:15672 (guest/guest) |
 | Notification FaaS | http://localhost:8083/health |
 | Notification Postgres | localhost:5435 |
+| Jaeger UI | http://localhost:16686 |
 
 The browser should call **only the Gateway** (`:8080`).
 

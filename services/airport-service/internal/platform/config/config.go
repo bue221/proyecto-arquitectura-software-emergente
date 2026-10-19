@@ -14,6 +14,7 @@ type Config struct {
 	RedisAddr          string
 	CBFailureThreshold int
 	CBCooldown         time.Duration
+	OTelEndpoint       string
 }
 
 func Load() Config {
@@ -25,6 +26,7 @@ func Load() Config {
 		RedisAddr:          getEnv("REDIS_ADDR", ""),
 		CBFailureThreshold: getInt("CB_FAILURE_THRESHOLD", 5),
 		CBCooldown:         getDurationMS("CB_COOLDOWN_MS", 30000),
+		OTelEndpoint:       getEnv("OTEL_EXPORTER_OTLP_ENDPOINT", ""),
 	}
 }
 
