@@ -19,7 +19,8 @@ Premium itinerary **studio** + trip management: interactive Colombia map, glassm
 | Toasts | Sonner | mutations feedback |
 | Auth UX | Demo login → Gateway JWT | profile in `localStorage` |
 | Map prefs | `/profile` config | provider + optional API key; keyed without key → OSM |
-| SEO | `metadata`, OG, Twitter, `sitemap.ts`, `robots.ts`, JSON-LD | `NEXT_PUBLIC_SITE_URL` |
+| SEO / brand | `icon.svg`, apple-icon, OG/Twitter images, `manifest.ts`, JSON-LD | emerald RutaCO mark |
+| SEO routes | `sitemap.ts`, `robots.ts` | `NEXT_PUBLIC_SITE_URL` |
 
 ## Visual language
 
