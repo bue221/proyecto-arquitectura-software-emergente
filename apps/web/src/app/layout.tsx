@@ -35,6 +35,18 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "RutaCO" }],
   creator: "RutaCO",
+  publisher: "RutaCO",
+  category: "travel",
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/apple-icon", sizes: "180x180", type: "image/png" }],
+  },
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "RutaCO",
+    statusBarStyle: "default",
+  },
   openGraph: {
     type: "website",
     locale: "es_CO",
@@ -60,11 +72,12 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
-    { media: "(prefers-color-scheme: dark)", color: "#020617" },
+    { media: "(prefers-color-scheme: light)", color: "#059669" },
+    { media: "(prefers-color-scheme: dark)", color: "#064e3b" },
   ],
   width: "device-width",
   initialScale: 1,
+  colorScheme: "light",
 };
 
 export default function RootLayout({
@@ -82,11 +95,16 @@ export default function RootLayout({
       "Planificador de itinerarios personales entre aeropuertos de Colombia con mapa interactivo.",
     url: siteUrl,
     inLanguage: "es-CO",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "COP",
+    },
   };
 
   return (
     <html lang="es" className={cn("font-sans", sans.variable)}>
-      <body className="min-h-screen antialiased">
+      <body className="min-h-dvh antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

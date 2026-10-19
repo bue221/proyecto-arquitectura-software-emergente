@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, Plane } from "lucide-react";
+import { Menu } from "lucide-react";
 
+import { RutaCoMark } from "@/components/brand/RutaCoMark";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -43,11 +44,12 @@ export function SiteHeader({ variant = "default" }: SiteHeaderProps) {
       )}
     >
       <div className="mx-auto flex h-full w-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight text-slate-900">
-          <span className="flex size-9 items-center justify-center rounded-full bg-emerald-600 text-white shadow-sm">
-            <Plane className="size-4" aria-hidden />
-          </span>
-          <span className="text-[15px]">
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 font-semibold tracking-tight text-slate-900"
+        >
+          <RutaCoMark className="size-9 shadow-sm" />
+          <span className="text-[15px] leading-none">
             Ruta<span className="text-emerald-600">CO</span>
           </span>
         </Link>
