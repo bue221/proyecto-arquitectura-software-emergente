@@ -36,7 +36,9 @@ Owns the **Airport Catalog** bounded context. Isolates API Colombia behind an Ad
 - **Timeout:** `UPSTREAM_TIMEOUT_MS` on Colombia HTTP client (default 8s).
 - **Retry:** 3 attempts, exponential backoff + full jitter (`200ms` → max `2s`).
 - **Circuit breaker:** opens after `CB_FAILURE_THRESHOLD` consecutive failures; cooldown `CB_COOLDOWN_MS`.
-- **Inspect:** `GET /api/v1/resilience` returns cache backend + breaker snapshot.
+- **Bulkhead:** semaphore limits concurrent Colombia calls (`BULKHEAD_MAX_CONCURRENT`, default 8).
+- **Inspect:** `GET /api/v1/resilience` returns cache backend + breaker + bulkhead snapshot.
+- **Metrics:** `GET /metrics` (Prometheus); Compose scrapes via `prometheus:9090` with alerts for CB open / bulkhead rejects.
 
 ## Error strategy
 

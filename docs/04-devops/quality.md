@@ -27,3 +27,9 @@
 
 - Inject latency/timeouts toward API Colombia mock.
 - Capture CB open metrics + Grafana/Prometheus alert screenshots in demo evidence.
+
+## Prometheus alerts (Level 3)
+
+- Config: `infra/prometheus/prometheus.yml` + `alerts.yml`.
+- Rules: `AirportCircuitBreakerOpen`, `AirportBulkheadSaturated`.
+- Scrape Airport `/metrics` from Compose service `prometheus` (`:9090`).

@@ -25,6 +25,7 @@ services:
       REDIS_ADDR: "redis:6379"
       CB_FAILURE_THRESHOLD: "5"
       CB_COOLDOWN_MS: "30000"
+      BULKHEAD_MAX_CONCURRENT: "8"
       OTEL_EXPORTER_OTLP_ENDPOINT: jaeger:4318
       GRPC_MTLS_ENABLED: "true"
       GRPC_TLS_CERT_FILE: /certs/server.crt
@@ -85,6 +86,16 @@ services:
       - "4318:4318"
     environment:
       COLLECTOR_OTLP_ENABLED: "true"
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+    depends_on:
+      - airport-service
 
   itinerary-service:
     build:

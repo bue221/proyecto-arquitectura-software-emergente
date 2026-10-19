@@ -15,6 +15,7 @@ import (
 
 	"github.com/bue221/personal-itineraries/services/airport-service/internal/adapters/out/resilience"
 	"github.com/bue221/personal-itineraries/services/airport-service/internal/domain"
+	"github.com/bue221/personal-itineraries/services/airport-service/internal/platform/metrics"
 )
 
 const defaultBaseURL = "https://api-colombia.com"
@@ -25,11 +26,16 @@ type Adapter struct {
 	httpClient *http.Client
 	cache      domain.AirportCache
 	breaker    *resilience.Breaker
+	bulkhead   *resilience.Bulkhead
 	retry      resilience.RetryConfig
 	listKey    string
 }
 
 func NewAdapter(baseURL string, timeout time.Duration, cache domain.AirportCache, breaker *resilience.Breaker) *Adapter {
+	return NewAdapterWithBulkhead(baseURL, timeout, cache, breaker, resilience.NewBulkhead(8))
+}
+
+func NewAdapterWithBulkhead(baseURL string, timeout time.Duration, cache domain.AirportCache, breaker *resilience.Breaker, bulkhead *resilience.Bulkhead) *Adapter {
 	if baseURL == "" {
 		baseURL = defaultBaseURL
 	}
@@ -39,21 +45,29 @@ func NewAdapter(baseURL string, timeout time.Duration, cache domain.AirportCache
 	if breaker == nil {
 		breaker = resilience.NewBreaker(5, 30*time.Second)
 	}
+	if bulkhead == nil {
+		bulkhead = resilience.NewBulkhead(8)
+	}
 	return &Adapter{
 		baseURL: baseURL,
 		httpClient: &http.Client{
 			Timeout:   timeout,
 			Transport: otelhttp.NewTransport(http.DefaultTransport),
 		},
-		cache:   cache,
-		breaker: breaker,
-		retry:   resilience.DefaultRetry(),
-		listKey: "airports:list:v1",
+		cache:    cache,
+		breaker:  breaker,
+		bulkhead: bulkhead,
+		retry:    resilience.DefaultRetry(),
+		listKey:  "airports:list:v1",
 	}
 }
 
 func (a *Adapter) BreakerSnapshot() map[string]any {
 	return a.breaker.Snapshot()
+}
+
+func (a *Adapter) BulkheadSnapshot() map[string]any {
+	return a.bulkhead.Snapshot()
 }
 
 type externalAirport struct {
@@ -150,25 +164,32 @@ func (a *Adapter) ListAll(ctx context.Context) ([]domain.Airport, error) {
 }
 
 func (a *Adapter) withResilience(ctx context.Context, fn func(context.Context) error) error {
-	if err := a.breaker.Allow(); err != nil {
-		return fmt.Errorf("%w: %v", domain.ErrUpstreamUnavailable, err)
-	}
+	err := a.bulkhead.Execute(ctx, func(ctx context.Context) error {
+		if err := a.breaker.Allow(); err != nil {
+			return fmt.Errorf("%w: %v", domain.ErrUpstreamUnavailable, err)
+		}
 
-	err := resilience.Do(ctx, a.retry, func(ctx context.Context) error {
-		callErr := fn(ctx)
+		callErr := resilience.Do(ctx, a.retry, func(ctx context.Context) error {
+			inner := fn(ctx)
+			if inner == nil || errors.Is(inner, domain.ErrNotFound) || errors.Is(inner, domain.ErrInvalidID) {
+				return inner
+			}
+			return inner
+		})
+
 		if callErr == nil || errors.Is(callErr, domain.ErrNotFound) || errors.Is(callErr, domain.ErrInvalidID) {
+			a.breaker.Success()
 			return callErr
+		}
+		a.breaker.Failure()
+		if errors.Is(callErr, resilience.ErrOpen) {
+			return fmt.Errorf("%w: circuit open", domain.ErrUpstreamUnavailable)
 		}
 		return callErr
 	})
-
-	if err == nil || errors.Is(err, domain.ErrNotFound) || errors.Is(err, domain.ErrInvalidID) {
-		a.breaker.Success()
-		return err
-	}
-	a.breaker.Failure()
-	if errors.Is(err, resilience.ErrOpen) {
-		return fmt.Errorf("%w: circuit open", domain.ErrUpstreamUnavailable)
+	if errors.Is(err, resilience.ErrBulkheadFull) {
+		metrics.BulkheadRejected.Inc()
+		return fmt.Errorf("%w: bulkhead full", domain.ErrUpstreamUnavailable)
 	}
 	return err
 }
