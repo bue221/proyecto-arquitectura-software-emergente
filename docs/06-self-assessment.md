@@ -27,9 +27,9 @@ Update this table in PRs as criteria are met. Status: `pending` | `partial` | `d
 | Retry + backoff | done | exponential + full jitter in `resilience/retry.go` |
 | Redis cache | done | `adapters/out/rediscache` + Compose `redis`; memory fallback |
 | API Gateway + rate limit + JWT | done | `services/api-gateway` `:8080`; itineraries require Bearer |
-| Notification consumer | pending | |
-| Broker RabbitMQ | pending | |
-| AsyncAPI | pending | draft in `packages/contracts/asyncapi` |
+| Notification consumer | done | `services/notification-function` queue consumer + idempotent persist |
+| Broker RabbitMQ | done | Compose `rabbitmq` + exchange `itinerary.events` |
+| AsyncAPI | done | `packages/contracts/asyncapi/itinerary-events.yaml` v0.2.0 |
 | OTel + Jaeger | pending | |
 | JWT propagation | done | Gateway validates JWT and forwards `Authorization` + `X-User-*` |
 | E2E Testcontainers | pending | |
@@ -39,7 +39,7 @@ Update this table in PRs as criteria are met. Status: `pending` | `partial` | `d
 
 | Criterion | Status | Evidence |
 |-----------|--------|----------|
-| Transactional Outbox | partial | Create writes outbox row in same TX; relay/broker pending |
+| Transactional Outbox | done | Create + outbox same TX; relay publishes then marks `published_at` |
 | Double-write resolution documented | done (docs) | `docs/03-diagrams/outbox.md` |
 | gRPC Airport ↔ Itinerary | pending | |
 | S2S security (mTLS or OAuth2 CC) | pending | |

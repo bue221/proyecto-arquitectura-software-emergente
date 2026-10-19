@@ -1,10 +1,7 @@
-> **Fuente de verdad:** esta página se publica desde `wiki/` / `docs/` del monorepo.
-> Edita vía Pull Request en el código; no edites solo en la Wiki sin sincronizar.
-
 # Itinerary Service
 
-**Status:** implemented (Level 1) — `services/itinerary-service` on port `8082`, Postgres host port `5434`, Swagger at `/swagger`.  
-Outbox rows are written on create; RabbitMQ relay remains Level 2/3.
+**Status:** Level 1 + Level 2 outbox relay — `services/itinerary-service` on port `8082`, Postgres host port `5434`, Swagger at `/swagger`.  
+Create writes outbox in the same TX; an in-process **outbox relay** publishes `ItineraryCreated` to RabbitMQ (`itinerary.events` / `itinerary.created`).
 
 ## Packing checklist
 
@@ -36,6 +33,7 @@ Owns **Itinerary Planning**. Persists personal itineraries, validates airport re
 - Versioned migrations (golang-migrate or Atlas).
 - Validate airports via HTTP (L1/L2) or gRPC (L3).
 - Write outbox in the same transaction as create.
+- Relay unpublished outbox rows to RabbitMQ (poller; mark `published_at`).
 - Expose Swagger/OpenAPI.
 
 ## Non-responsibilities

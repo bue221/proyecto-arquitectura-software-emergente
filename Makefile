@@ -14,10 +14,12 @@ help:
 	@echo "  make wiki      Publish wiki/ to GitHub Wiki"
 	@echo ""
 	@echo "URLs after make up:"
-	@echo "  Web        http://localhost:3000"
-	@echo "  Gateway    http://localhost:8080/health"
-	@echo "  Airport    http://localhost:8081/swagger"
-	@echo "  Itinerary  http://localhost:8082/swagger"
+	@echo "  Web         http://localhost:3001"
+	@echo "  Gateway     http://localhost:8080/health"
+	@echo "  Airport     http://localhost:8081/swagger"
+	@echo "  Itinerary   http://localhost:8082/swagger"
+	@echo "  Notify FaaS http://localhost:8083/health"
+	@echo "  RabbitMQ UI http://localhost:15672 (guest/guest)"
 
 up:
 	@./scripts/dev-up.sh

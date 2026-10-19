@@ -1,18 +1,16 @@
-> **Fuente de verdad:** esta página se publica desde `wiki/` / `docs/` del monorepo.
-> Edita vía Pull Request en el código; no edites solo en la Wiki sin sincronizar.
-
 # Component diagram
 
 ```mermaid
 flowchart TB
-  WEB[apps/web Next.js + shadcn :3000]
+  WEB[apps/web Next.js :3001]
   GW[services/api-gateway :8080]
   AIR[services/airport-service :8081]
   ITI[services/itinerary-service :8082]
-  NF[services/notification-function planned]
+  NF[services/notification-function :8083]
   PG2[(Postgres Itinerary :5434)]
+  PG3[(Postgres Notify :5435)]
   REDIS[(Redis :6379)]
-  RMQ[[RabbitMQ planned]]
+  RMQ[[RabbitMQ :5672]]
   COL[API Colombia]
 
   WEB -->|JWT for itineraries| GW
@@ -22,8 +20,9 @@ flowchart TB
   AIR --> COL
   AIR --> REDIS
   ITI --> PG2
-  ITI -.-> RMQ
-  RMQ -.-> NF
+  ITI -->|outbox relay| RMQ
+  RMQ --> NF
+  NF --> PG3
 ```
 
 ## Current wiring
@@ -32,7 +31,7 @@ flowchart TB
 - Itinerary routes require Bearer JWT issued via `POST /auth/token`.
 - Itinerary → Airport remains direct service-to-service (not through the gateway).
 - Airport → Redis cache-aside; circuit breaker wraps Colombia HTTP.
-- RabbitMQ / FaaS still planned.
+- Itinerary outbox relay → RabbitMQ → notification-function (idempotent).
 
 ## Notes
 

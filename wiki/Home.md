@@ -22,18 +22,16 @@ Detalle: [`AGENTS.md`](https://github.com/bue221/proyecto-arquitectura-software-
 |------|--------|
 | Level 1 | Airport + Itinerary hexagonales, Compose, Swagger, migraciones |
 | Frontend | Studio Leaflet + tile Adapter, trips wizard, packing, SEO; map prefs en `/profile` |
-| Level 2 (parcial) | Gateway JWT + rate limit; Redis + circuit breaker + retry |
+| Level 2 | Gateway JWT + rate limit; Redis + CB + retry; **RabbitMQ + outbox relay + notification FaaS** |
 | Ops local | `make up` / `make down` / `make smoke` / `make wiki` |
 
 ### Siguiente (prioridad)
 
-1. RabbitMQ + AsyncAPI + notification FaaS
-2. OpenTelemetry + Jaeger (+ demo de fallo controlado)
-3. E2E Testcontainers
-4. Outbox relay → broker (completar transactional outbox)
-5. gRPC Airport ↔ Itinerary + S2S auth
-6. CI/CD GitHub Actions + Kubernetes probes
-7. Chaos / bulkhead / Prometheus / Pact (según rúbrica)
+1. OpenTelemetry + Jaeger (+ demo de fallo controlado)
+2. E2E Testcontainers
+3. gRPC Airport ↔ Itinerary + S2S auth
+4. CI/CD GitHub Actions + Kubernetes probes
+5. Chaos / bulkhead / Prometheus / Pact / OpenFaaS packaging (según rúbrica)
 
 Tabla detallada: [Self-assessment](Self-assessment)
 
@@ -59,7 +57,7 @@ Tabla detallada: [Self-assessment](Self-assessment)
 - [API-gateway](API-gateway) — Level 2 edge (`:8080`)
 - [Airport-service](Airport-service) — Level 1 done (`:8081`)
 - [Itinerary-service](Itinerary-service) — Level 1 done (`:8082`, Postgres `:5434`)
-- [Notification-function](Notification-function) — planned Level 2
+- [Notification-function](Notification-function) — Level 2 done (`:8083`)
 
 ## Diagrams
 
