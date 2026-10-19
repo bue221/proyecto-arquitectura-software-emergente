@@ -3,6 +3,12 @@
 **Status:** implemented (Level 1) — `services/itinerary-service` on port `8082`, Postgres host port `5434`, Swagger at `/swagger`.  
 Outbox rows are written on create; RabbitMQ relay remains Level 2/3.
 
+## Packing checklist
+
+Each itinerary stores `packingItems` (JSONB): `{ id, label, packed, category? }`.
+New itineraries seed a default domestic-trip list when the client sends none.
+Update via `PUT /api/v1/itineraries/{id}` including the full packing array.
+
 ## Why
 
 Owns **Itinerary Planning**. Persists personal itineraries, validates airport references against Airport Service, and emits integration events through the Transactional Outbox.

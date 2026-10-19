@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -27,17 +28,23 @@ func (r *Repository) Create(ctx context.Context, itinerary domain.Itinerary, out
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 
+	packingJSON, err := json.Marshal(itinerary.PackingItems)
+	if err != nil {
+		return domain.Itinerary{}, fmt.Errorf("%w: marshal packing: %v", domain.ErrPersistenceFailed, err)
+	}
+
 	_, err = tx.Exec(ctx, `
 		INSERT INTO itineraries (
 			id, user_name, origin_airport_id, destination_airport_id,
-			travel_date, duration_minutes, created_at, updated_at
-		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+			travel_date, duration_minutes, packing_items, created_at, updated_at
+		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
 		itinerary.ID,
 		itinerary.UserName,
 		itinerary.OriginAirportID,
 		itinerary.DestinationAirportID,
 		itinerary.TravelDate,
 		itinerary.DurationMinutes,
+		packingJSON,
 		itinerary.CreatedAt,
 		itinerary.UpdatedAt,
 	)
@@ -67,6 +74,10 @@ func (r *Repository) Create(ctx context.Context, itinerary domain.Itinerary, out
 }
 
 func (r *Repository) Update(ctx context.Context, itinerary domain.Itinerary) (domain.Itinerary, error) {
+	packingJSON, err := json.Marshal(itinerary.PackingItems)
+	if err != nil {
+		return domain.Itinerary{}, fmt.Errorf("%w: marshal packing: %v", domain.ErrPersistenceFailed, err)
+	}
 	ct, err := r.pool.Exec(ctx, `
 		UPDATE itineraries SET
 			user_name=$2,
@@ -74,7 +85,8 @@ func (r *Repository) Update(ctx context.Context, itinerary domain.Itinerary) (do
 			destination_airport_id=$4,
 			travel_date=$5,
 			duration_minutes=$6,
-			updated_at=$7
+			packing_items=$7,
+			updated_at=$8
 		WHERE id=$1`,
 		itinerary.ID,
 		itinerary.UserName,
@@ -82,6 +94,7 @@ func (r *Repository) Update(ctx context.Context, itinerary domain.Itinerary) (do
 		itinerary.DestinationAirportID,
 		itinerary.TravelDate,
 		itinerary.DurationMinutes,
+		packingJSON,
 		itinerary.UpdatedAt,
 	)
 	if err != nil {
@@ -107,7 +120,7 @@ func (r *Repository) Delete(ctx context.Context, id string) error {
 func (r *Repository) GetByID(ctx context.Context, id string) (domain.Itinerary, error) {
 	row := r.pool.QueryRow(ctx, `
 		SELECT id, user_name, origin_airport_id, destination_airport_id,
-		       travel_date, duration_minutes, created_at, updated_at
+		       travel_date, duration_minutes, packing_items, created_at, updated_at
 		FROM itineraries WHERE id=$1`, id)
 	item, err := scanItinerary(row)
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -119,7 +132,7 @@ func (r *Repository) GetByID(ctx context.Context, id string) (domain.Itinerary, 
 func (r *Repository) List(ctx context.Context) ([]domain.Itinerary, error) {
 	rows, err := r.pool.Query(ctx, `
 		SELECT id, user_name, origin_airport_id, destination_airport_id,
-		       travel_date, duration_minutes, created_at, updated_at
+		       travel_date, duration_minutes, packing_items, created_at, updated_at
 		FROM itineraries
 		ORDER BY created_at DESC`)
 	if err != nil {
@@ -145,6 +158,7 @@ type scannable interface {
 func scanItinerary(row scannable) (domain.Itinerary, error) {
 	var item domain.Itinerary
 	var travelDate time.Time
+	var packingRaw []byte
 	err := row.Scan(
 		&item.ID,
 		&item.UserName,
@@ -152,6 +166,7 @@ func scanItinerary(row scannable) (domain.Itinerary, error) {
 		&item.DestinationAirportID,
 		&travelDate,
 		&item.DurationMinutes,
+		&packingRaw,
 		&item.CreatedAt,
 		&item.UpdatedAt,
 	)
@@ -159,5 +174,13 @@ func scanItinerary(row scannable) (domain.Itinerary, error) {
 		return domain.Itinerary{}, err
 	}
 	item.TravelDate = travelDate
+	if len(packingRaw) > 0 {
+		if err := json.Unmarshal(packingRaw, &item.PackingItems); err != nil {
+			return domain.Itinerary{}, fmt.Errorf("%w: decode packing: %v", domain.ErrPersistenceFailed, err)
+		}
+	}
+	if item.PackingItems == nil {
+		item.PackingItems = []domain.PackingItem{}
+	}
 	return item, nil
 }
