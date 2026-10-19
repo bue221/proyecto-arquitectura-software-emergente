@@ -15,7 +15,8 @@
 
 - [ ] Branched from up-to-date `main` with correct prefix (`feat|fix|docs|chore|refactor|test`)
 - [ ] Follows hexagonal / Gateway / Adapter rules in `AGENTS.md`
-- [ ] Docs updated when behavior or architecture changed
+- [ ] `docs/` updated when behavior or architecture changed
+- [ ] Matching `wiki/` page(s) updated in **this PR** (mandatory for product/architecture/UI/ops changes)
 - [ ] Tests added/updated when code changed
 - [ ] No secrets committed
 
@@ -23,6 +24,10 @@
 
 <!-- commands, Compose notes, expected results -->
 
-## Diagrams / docs
+## Diagrams / docs / wiki
 
-<!-- links to docs/** files touched -->
+<!-- links to docs/** and wiki/** files touched -->
+
+## After merge
+
+- [ ] Run `make wiki` if `wiki/` changed

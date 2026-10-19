@@ -1,6 +1,3 @@
-> **Fuente de verdad:** esta página se publica desde `wiki/` / `docs/` del monorepo.
-> Edita vía Pull Request en el código; no edites solo en la Wiki sin sincronizar.
-
 # Branching & Pull Request policy
 
 ## Why
@@ -54,11 +51,13 @@ docs(adr): accept rabbitmq broker decision
 
 1. One work unit per PR (reviewable).
 2. Fill [PR template](../../.github/PULL_REQUEST_TEMPLATE.md).
-3. Update wiki/ADR in the **same** PR when architecture/behavior changes.
-4. Link backlog/Jira issue when available.
-5. Squash or merge as team prefers; keep history readable.
-6. Do not merge with failing required checks once CI exists.
+3. Update `docs/` **and** matching `wiki/` pages in the **same** PR when architecture/behavior/UI/ops change.
+4. After merge: publish wiki with `make wiki` (see `AGENTS.md` — mandatory wiki sync).
+5. Link backlog/Jira issue when available.
+6. Squash or merge as team prefers; keep history readable.
+7. Do not merge with failing required checks once CI exists.
 
 ## Agent rule
 
-Agents must **propose** branch name + PR summary; never assume direct commits to `main` are acceptable.
+Agents must **propose** branch name + PR summary; never assume direct commits to `main` are acceptable.  
+Agents must update `wiki/` in the PR and run `make wiki` after merge when wiki content changed.

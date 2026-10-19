@@ -29,11 +29,13 @@ flowchart TB
 ## Current wiring
 
 - Browser → **API Gateway only** (`:8080`).
-- Airport → Redis cache-aside + circuit breaker on Colombia HTTP.
-- Itinerary writes outbox rows; broker relay is still planned.
-- Local: `make up` from repo root.
+- Itinerary routes require Bearer JWT issued via `POST /auth/token`.
+- Itinerary → Airport remains direct service-to-service (not through the gateway).
+- Airport → Redis cache-aside; circuit breaker wraps Colombia HTTP.
+- RabbitMQ / FaaS still planned.
 
 ## Notes
 
 - Each service package is independently buildable/deployable.
-- Contracts live in `packages/contracts` and `packages/proto` (not shown as runtime boxes).
+- Contracts live in `packages/contracts` and `packages/proto`.
+- Local stack: `make up` from repo root.

@@ -15,7 +15,7 @@ Update this table in PRs as criteria are met. Status: `pending` | `partial` | `d
 | Swagger per service | done | Airport + Itinerary `/swagger` + OpenAPI contracts |
 | Proper HTTP errors | done | Problem JSON on both services |
 | Structured logs + correlation | done | JSON logs + `X-Trace-Id` on both services |
-| Frontend Plotly map | done | `apps/web` map + itinerary form |
+| Frontend interactive map | done | Leaflet Studio + trips wizard (`apps/web`) |
 | Docker Compose | done | airport + itinerary-db + itinerary + web |
 | README + diagrams | done (docs) | `docs/03-diagrams/*` |
 

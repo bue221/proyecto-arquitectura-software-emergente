@@ -2,6 +2,8 @@
 
 Source of truth for architecture, diagrams, DevOps, and demos. Prefer updating these files via PR (`docs/...` branches) over undocumented chat decisions.
 
+**Hard rule:** every PR that changes product behavior, architecture, UI, or ops must update matching pages under `docs/` **and** `wiki/` in the same PR; after merge run `make wiki`. See root [`AGENTS.md`](../AGENTS.md).
+
 ## Index
 
 ### Foundations
@@ -56,5 +58,7 @@ Source of truth for architecture, diagrams, DevOps, and demos. Prefer updating t
 ## How to contribute to the wiki
 
 - One conceptual change per PR when possible.
+- Mirror `docs/` changes into `wiki/` in the **same** PR; publish with `make wiki` after merge.
 - Keep Mermaid diagrams in sync with code and ADRs.
 - Link new ADRs from [`01-architecture/adr/README.md`](01-architecture/adr/README.md).
+- Track done vs remaining in [`06-self-assessment.md`](06-self-assessment.md) and [`wiki/Home.md`](../wiki/Home.md).
