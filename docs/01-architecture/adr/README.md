@@ -9,5 +9,6 @@
 | [ADR-0005](0005-transactional-outbox.md) | Transactional Outbox for integration events | Accepted |
 | [ADR-0006](0006-serverless-notifications.md) | Serverless notifications via local FaaS | Accepted |
 | [ADR-0007](0007-gateway-no-business-logic.md) | API Gateway without business logic | Accepted |
+| [ADR-0008](0008-api-versioning-pagination.md) | URI API versioning + list pagination | Accepted |
 
 New decisions: copy the style of existing ADRs, add a row here, open a `docs/` PR.

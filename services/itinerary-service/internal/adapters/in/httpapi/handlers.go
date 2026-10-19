@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"strconv"
 
 	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/application"
 	"github.com/bue221/personal-itineraries/services/itinerary-service/internal/domain"
@@ -98,17 +99,44 @@ func (h Handlers) Get(w http.ResponseWriter, r *http.Request) {
 
 func (h Handlers) List(w http.ResponseWriter, r *http.Request) {
 	traceID := logging.TraceIDFromContext(r.Context())
-	items, err := h.ListUC.Execute(r.Context())
+	q := domain.PageQuery{
+		Page:     queryInt(r, "page", 1),
+		PageSize: queryInt(r, "pageSize", 20),
+	}
+	page, err := h.ListUC.ExecutePage(r.Context(), q)
 	if err != nil {
 		h.writeDomainError(w, traceID, err)
 		return
 	}
-	out := make([]ItineraryResponse, 0, len(items))
-	for _, item := range items {
+	out := make([]ItineraryResponse, 0, len(page.Items))
+	for _, item := range page.Items {
 		out = append(out, toResponse(item))
 	}
-	h.Log.Info("itineraries_listed", "count", len(out), "trace_id", traceID)
-	writeJSON(w, http.StatusOK, map[string]any{"count": len(out), "items": out})
+	totalPages := 0
+	if page.PageSize > 0 {
+		totalPages = (page.Total + page.PageSize - 1) / page.PageSize
+	}
+	h.Log.Info("itineraries_listed", "count", len(out), "page", page.Page, "total", page.Total, "trace_id", traceID)
+	writeJSON(w, http.StatusOK, map[string]any{
+		"items":      out,
+		"count":      len(out),
+		"page":       page.Page,
+		"pageSize":   page.PageSize,
+		"total":      page.Total,
+		"totalPages": totalPages,
+	})
+}
+
+func queryInt(r *http.Request, key string, fallback int) int {
+	raw := r.URL.Query().Get(key)
+	if raw == "" {
+		return fallback
+	}
+	n, err := strconv.Atoi(raw)
+	if err != nil {
+		return fallback
+	}
+	return n
 }
 
 func (h Handlers) Delete(w http.ResponseWriter, r *http.Request) {

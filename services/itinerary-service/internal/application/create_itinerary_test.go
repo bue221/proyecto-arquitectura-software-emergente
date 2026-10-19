@@ -42,6 +42,9 @@ func (f *fakeRepo) GetByID(ctx context.Context, id string) (domain.Itinerary, er
 	return domain.Itinerary{}, domain.ErrNotFound
 }
 func (f *fakeRepo) List(ctx context.Context) ([]domain.Itinerary, error) { return nil, nil }
+func (f *fakeRepo) ListPage(ctx context.Context, q domain.PageQuery) (domain.PageResult, error) {
+	return domain.PageResult{Items: nil, Total: 0, Page: q.Normalize().Page, PageSize: q.Normalize().PageSize}, nil
+}
 
 func TestCreateItinerary_WritesOutbox(t *testing.T) {
 	repo := &fakeRepo{}

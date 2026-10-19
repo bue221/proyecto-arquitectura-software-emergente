@@ -35,6 +35,8 @@ Owns **Itinerary Planning**. Persists personal itineraries, validates airport re
 - Write outbox in the same transaction as create.
 - Relay unpublished outbox rows to RabbitMQ (poller; mark `published_at`).
 - Expose Swagger/OpenAPI.
+- URI versioning under `/api/v1` with response header `API-Version: 1` (ADR-0008).
+- Paginated list: `GET /api/v1/itineraries?page=&pageSize=` → `items`, `page`, `pageSize`, `total`, `totalPages`.
 
 ## Non-responsibilities
 

@@ -23,6 +23,7 @@ func TraceMiddleware(next http.Handler) http.Handler {
 		}
 		ctx := logging.WithTraceID(r.Context(), traceID)
 		w.Header().Set("X-Trace-Id", traceID)
+		w.Header().Set("API-Version", "1")
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
