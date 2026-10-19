@@ -1,21 +1,27 @@
 # apps/web
 
-Next.js (App Router) + Plotly.js frontend for Personal Itineraries.
+Next.js App Router frontend with **shadcn/ui** design system, Sonner toasts, and feature-based folders.
 
-## Run locally
+## Architecture
+
+See [`../../docs/07-frontend/architecture.md`](../../docs/07-frontend/architecture.md).
+
+```text
+src/
+  components/ui/        # shadcn primitives
+  components/layout/    # AppShell, PageHeader
+  features/airports/    # map
+  features/itineraries/ # CRUD panel
+  lib/api/              # shared HTTP helpers
+```
+
+## Run
 
 ```bash
 # Prefer Compose for full Level 1:
-# docker compose -f ../../infra/docker/docker-compose.yml up --build
+docker compose -f ../../infra/docker/docker-compose.yml up --build
 
-# Or native:
-# terminal 1 — Airport Service
-cd ../../services/airport-service && go run ./cmd/server
-
-# terminal 2 — Itinerary Service (+ Postgres on 5434)
-cd ../../services/itinerary-service && go run ./cmd/server
-
-# terminal 3 — Web
+# Or native web only (APIs already running):
 cp .env.local.example .env.local
 npm install
 npm run dev
@@ -23,9 +29,12 @@ npm run dev
 
 Open http://localhost:3000
 
-The browser calls **only** Airport (`:8081`) and Itinerary (`:8082`) APIs. It never calls API Colombia.
+## Design system
 
-## Docs
+```bash
+npx shadcn@latest add <component>
+```
 
-- [`../../docs/02-services/airport-service.md`](../../docs/02-services/airport-service.md)
-- [`../../AGENTS.md`](../../AGENTS.md)
+Toasts: `import { toast } from "sonner"` (Toaster mounted in `app/layout.tsx`).
+
+The browser calls **only** Airport (`:8081`) and Itinerary (`:8082`). Never API Colombia.

@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import { Fraunces, Manrope } from "next/font/google";
+
+import { Toaster } from "@/components/ui/sonner";
+import { cn } from "@/lib/utils";
+
 import "./globals.css";
 
 const display = Fraunces({
@@ -23,8 +27,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${display.variable} ${sans.variable} antialiased`}>{children}</body>
+    <html lang="en" className={cn("font-sans", sans.variable, display.variable)}>
+      <body className="min-h-screen antialiased">
+        {children}
+        <Toaster richColors closeButton position="top-right" />
+      </body>
     </html>
   );
 }

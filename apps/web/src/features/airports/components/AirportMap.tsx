@@ -4,12 +4,21 @@ import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import type { Data, Layout } from "plotly.js";
 
-import { fetchAirportsForMap, type PlotlyPoint } from "@/lib/airports";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { fetchAirportsForMap, type PlotlyPoint } from "@/features/airports/api";
 
 const Plot = dynamic(() => import("react-plotly.js"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-[min(70vh,560px)] items-center justify-center rounded-lg border border-[#d7e0ea] bg-[#f3f7fb] text-sm text-[#4a5d73]">
+    <div className="flex h-[min(70vh,560px)] items-center justify-center rounded-lg border bg-muted/40 text-sm text-muted-foreground">
       Loading map…
     </div>
   ),
@@ -92,37 +101,35 @@ export function AirportMap() {
   );
 
   return (
-    <section className="space-y-3">
-      <div className="flex flex-wrap items-end justify-between gap-2">
-        <div>
-          <h2 className="font-display text-2xl text-[#16324f]">Colombian airports</h2>
-          <p className="text-sm text-[#4a5d73]">
+    <Card>
+      <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3 space-y-0">
+        <div className="space-y-1.5">
+          <CardTitle className="font-display text-2xl">Colombian airports</CardTitle>
+          <CardDescription>
             Data adapted by Airport Service — never called from API Colombia in the browser.
-          </p>
+          </CardDescription>
         </div>
-        <p className="rounded-md bg-[#e7f3ef] px-3 py-1 text-sm font-medium text-[#0f6a5d]">
-          {loading ? "Loading…" : `${points.length} points`}
-        </p>
-      </div>
-
-      {error ? (
-        <div
-          role="alert"
-          className="rounded-lg border border-[#f0c2c2] bg-[#fff5f5] px-4 py-3 text-sm text-[#8a2f2f]"
-        >
-          {error}. Start the Airport Service on port 8081 and refresh.
+        <Badge variant="secondary">{loading ? "Loading…" : `${points.length} points`}</Badge>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {error ? (
+          <Alert variant="destructive">
+            <AlertTitle>Could not load airports</AlertTitle>
+            <AlertDescription>
+              {error}. Start the Airport Service on port 8081 and refresh.
+            </AlertDescription>
+          </Alert>
+        ) : null}
+        <div className="overflow-hidden rounded-xl border bg-card">
+          <Plot
+            data={data}
+            layout={layout}
+            config={{ displayModeBar: false, responsive: true }}
+            style={{ width: "100%", height: "560px" }}
+            useResizeHandler
+          />
         </div>
-      ) : null}
-
-      <div className="overflow-hidden rounded-xl border border-[#d7e0ea] bg-white/80 shadow-[0_12px_40px_rgba(22,50,79,0.08)]">
-        <Plot
-          data={data}
-          layout={layout}
-          config={{ displayModeBar: false, responsive: true }}
-          style={{ width: "100%", height: "560px" }}
-          useResizeHandler
-        />
-      </div>
-    </section>
+      </CardContent>
+    </Card>
   );
 }

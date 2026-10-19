@@ -11,7 +11,8 @@ Read `AGENTS.md` and `docs/README.md` before large changes.
 ## Hard rules
 
 - Domain: personal itineraries + Colombian airports. Not Parche.
-- Stack: Next.js frontend, Go backends, RabbitMQ, Redis, Postgres per service.
+- Stack: Next.js frontend (shadcn/ui + Sonner, feature folders), Go backends, RabbitMQ, Redis, Postgres per service.
+- Frontend: put primitives in `components/ui`, screens in `features/*/`, shared HTTP in `lib/api`. Never call API Colombia from the browser.
 - Hexagonal per Go service; Adapter for API Colombia; Gateway has no business logic.
 - Transactional Outbox for integration events (no unsafe dual write).
 - HARD RULE: every change → branch from `main` → Pull Request → merge into `main`. Never commit/push directly to `main` (includes docs and agent edits). See `AGENTS.md`.

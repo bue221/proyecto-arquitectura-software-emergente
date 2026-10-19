@@ -42,6 +42,10 @@ Source of truth for architecture, diagrams, DevOps, and demos. Prefer updating t
 22. [Demo script (rubric evidence)](05-runbooks/demo-script.md)
 23. [Self-assessment Levels 1–3](06-self-assessment.md)
 
+### Frontend
+
+24. [Frontend architecture (shadcn)](07-frontend/architecture.md)
+
 ## How to contribute to the wiki
 
 - One conceptual change per PR when possible.
