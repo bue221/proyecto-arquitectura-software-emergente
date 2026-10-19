@@ -15,7 +15,11 @@ export type AirportsMapResponse = {
 };
 
 function apiBase(): string {
-  return process.env.NEXT_PUBLIC_AIRPORT_API_URL?.replace(/\/$/, "") || "http://localhost:8081";
+  return (
+    process.env.NEXT_PUBLIC_API_GATEWAY_URL?.replace(/\/$/, "") ||
+    process.env.NEXT_PUBLIC_AIRPORT_API_URL?.replace(/\/$/, "") ||
+    "http://localhost:8080"
+  );
 }
 
 export async function fetchAirportsForMap(): Promise<AirportsMapResponse> {

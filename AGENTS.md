@@ -142,6 +142,7 @@ Full rules: [`docs/04-devops/branching.md`](docs/04-devops/branching.md).
 - Phase 0 wiki/ADRs: done
 - Level 1 Airport + Itinerary + Compose + Next.js map/CRUD: done
 - Frontend design system (shadcn + Sonner + feature folders): done
-- Level 2+ (Gateway, Redis CB, RabbitMQ notify, Jaeger): next
+- Level 2 API Gateway (JWT + rate limit): done / in this PR
+- Remaining Level 2+ (Redis CB, RabbitMQ notify, Jaeger): next
 
 Remaining work continues **only** through branch → PR → merge.
