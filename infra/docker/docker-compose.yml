@@ -1,4 +1,14 @@
 services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   airport-service:
     build:
       context: ../../services/airport-service
@@ -9,6 +19,12 @@ services:
       COLOMBIA_API_BASE_URL: "https://api-colombia.com"
       UPSTREAM_TIMEOUT_MS: "8000"
       CACHE_TTL_MS: "300000"
+      REDIS_ADDR: "redis:6379"
+      CB_FAILURE_THRESHOLD: "5"
+      CB_COOLDOWN_MS: "30000"
+    depends_on:
+      redis:
+        condition: service_healthy
 
   itinerary-db:
     image: postgres:16-alpine

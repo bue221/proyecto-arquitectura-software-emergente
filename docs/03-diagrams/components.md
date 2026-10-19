@@ -8,7 +8,7 @@ flowchart TB
   ITI[services/itinerary-service :8082]
   NF[services/notification-function planned]
   PG2[(Postgres Itinerary :5434)]
-  REDIS[(Redis planned)]
+  REDIS[(Redis :6379)]
   RMQ[[RabbitMQ planned]]
   COL[API Colombia]
 
@@ -17,7 +17,7 @@ flowchart TB
   GW -->|protected itineraries| ITI
   ITI -->|S2S validate airports| AIR
   AIR --> COL
-  AIR -.-> REDIS
+  AIR --> REDIS
   ITI --> PG2
   ITI -.-> RMQ
   RMQ -.-> NF
@@ -28,9 +28,11 @@ flowchart TB
 - Browser → **API Gateway only** (`:8080`).
 - Itinerary routes require Bearer JWT issued via `POST /auth/token`.
 - Itinerary → Airport remains direct service-to-service (not through the gateway).
-- Redis / RabbitMQ / FaaS still planned.
+- Airport → Redis cache-aside; circuit breaker wraps Colombia HTTP.
+- RabbitMQ / FaaS still planned.
 
 ## Notes
 
 - Each service package is independently buildable/deployable.
 - Contracts live in `packages/contracts` and `packages/proto`.
+- Local stack: `make up` from repo root.
