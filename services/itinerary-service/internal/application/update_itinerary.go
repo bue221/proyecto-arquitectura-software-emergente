@@ -38,11 +38,17 @@ func (uc UpdateItinerary) Execute(ctx context.Context, cmd domain.UpdateItinerar
 		now = uc.Now().UTC()
 	}
 
+	packing, err := normalizePacking(cmd.PackingItems)
+	if err != nil {
+		return domain.Itinerary{}, err
+	}
+
 	existing.UserName = cmd.UserName
 	existing.OriginAirportID = cmd.OriginAirportID
 	existing.DestinationAirportID = cmd.DestinationAirportID
 	existing.TravelDate = cmd.TravelDate.UTC().Truncate(24 * time.Hour)
 	existing.DurationMinutes = cmd.DurationMinutes
+	existing.PackingItems = packing
 	existing.UpdatedAt = now
 
 	return uc.Repo.Update(ctx, existing)

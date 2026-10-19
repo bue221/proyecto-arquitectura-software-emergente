@@ -25,7 +25,7 @@ Centralize UI through a design system so features stay thin, consistent, and eas
 | `/login` | Traveler login (name + email → JWT) |
 | `/profile` | Edit display name, city, bio |
 | `/trips` | Create/list itineraries (requires session) |
-| `/trips/[id]` | Trip detail + packing checklist (checklist wired in follow-up PR) |
+| `/trips/[id]` | Trip detail + packing checklist (persisted on itinerary) |
 
 Brand in UI: **RutaCO**.
 

@@ -1,6 +1,13 @@
 import { ensureAccessToken } from "@/lib/api/auth";
 import { getJson, sendJson } from "@/lib/api/http";
 
+export type PackingItem = {
+  id: string;
+  label: string;
+  packed: boolean;
+  category?: string;
+};
+
 export type Itinerary = {
   id: string;
   userName: string;
@@ -8,6 +15,7 @@ export type Itinerary = {
   destinationAirportId: string;
   travelDate: string;
   durationMinutes: number;
+  packingItems: PackingItem[];
   createdAt: string;
   updatedAt: string;
 };
@@ -18,6 +26,7 @@ export type ItineraryInput = {
   destinationAirportId: string;
   travelDate: string;
   durationMinutes: number;
+  packingItems?: PackingItem[];
 };
 
 function apiBase(): string {
@@ -47,12 +56,19 @@ export async function getItinerary(id: string, subjectHint?: string): Promise<It
 }
 
 export async function createItinerary(input: ItineraryInput): Promise<Itinerary> {
-  return (await sendJson<Itinerary>(
-    `${apiBase()}/api/v1/itineraries`,
-    "POST",
-    input,
-    { headers: await authHeaders(input.userName || "demo-traveler") },
-  )) as Itinerary;
+  return (await sendJson<Itinerary>(`${apiBase()}/api/v1/itineraries`, "POST", input, {
+    headers: await authHeaders(input.userName || "demo-traveler"),
+  })) as Itinerary;
+}
+
+export async function updateItinerary(
+  id: string,
+  input: ItineraryInput,
+  subjectHint?: string,
+): Promise<Itinerary> {
+  return (await sendJson<Itinerary>(`${apiBase()}/api/v1/itineraries/${id}`, "PUT", input, {
+    headers: await authHeaders(subjectHint || input.userName || "demo-traveler"),
+  })) as Itinerary;
 }
 
 export async function deleteItinerary(id: string): Promise<void> {

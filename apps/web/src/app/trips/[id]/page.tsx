@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Luggage } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import { AppShell } from "@/components/layout/AppShell";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { buttonVariants } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { getItinerary, type Itinerary } from "@/features/itineraries/api";
+import { PackingChecklist } from "@/features/itineraries/components/PackingChecklist";
 import { cn } from "@/lib/utils";
 
 export default function TripDetailPage() {
@@ -66,18 +67,11 @@ export default function TripDetailPage() {
             </div>
           </div>
 
-          <section className="rounded-3xl border border-dashed border-border bg-card p-6 shadow-card sm:p-8">
-            <div className="flex items-start gap-3">
-              <Luggage className="mt-1 size-6 text-primary" />
-              <div>
-                <h2 className="text-xl font-semibold">Checklist de maleta</h2>
-                <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-                  Próximo PR: ítems persistidos en el Itinerary Service (documentos, ropa,
-                  electronics…). Esta pantalla ya está lista para enchufar el checklist.
-                </p>
-              </div>
-            </div>
-          </section>
+          <PackingChecklist
+            itinerary={item}
+            subjectHint={profile?.subject}
+            onUpdated={setItem}
+          />
         </div>
       )}
     </AppShell>
