@@ -67,19 +67,37 @@ docs/                          # Project wiki (source of truth)
 | Demo script (rubric evidence) | [`docs/05-runbooks/demo-script.md`](docs/05-runbooks/demo-script.md) |
 | Self-assessment Levels 1–3 | [`docs/06-self-assessment.md`](docs/06-self-assessment.md) |
 
-## Mandatory Git workflow
+## Mandatory Git workflow (HARD RULE — no exceptions)
 
-1. Never push business changes directly to `main`.
-2. Create a branch from an up-to-date `main`:
+**Every change must follow this loop. No direct commits or pushes to `main`.**
+
+```text
+update main → create branch → commit on branch → open PR → review → merge PR into main
+```
+
+This applies to **everything**: features, fixes, docs (`AGENTS.md` included), chores, refactors, CI, and agent-driven edits.
+
+1. Sync `main` (`git checkout main && git pull`).
+2. Create a branch from up-to-date `main`:
    - `feat/<scope>-<short-slug>`
    - `fix/<scope>-<short-slug>`
    - `docs/<short-slug>`
    - `chore/<short-slug>`
    - `refactor/<scope>-<short-slug>`
-3. Open a **Pull Request** that closes the work unit.
-4. PR must link related docs / ADR / issue when architecture changes.
-5. Commits: [Conventional Commits](https://www.conventionalcommits.org/) in **English**  
+   - `test/<scope>-<short-slug>`
+3. Commit only on that branch (Conventional Commits in **English**).  
    Example: `feat(airport): add Colombia API adapter port`
+4. Push the branch and open a **Pull Request** targeting `main`.
+5. The work is done only when the **PR is merged** into `main` (not when the branch exists locally).
+6. PR must link related docs / ADR / issue when architecture or public behavior changes.
+7. After merge, delete the feature branch when appropriate and continue from `main`.
+
+**Forbidden**
+
+- Committing straight to `main`
+- Pushing to `main` without a PR
+- Opening a branch and leaving changes unmerged without a PR
+- Squashing unrelated work into `main` outside a PR
 
 Full rules: [`docs/04-devops/branching.md`](docs/04-devops/branching.md).
 
@@ -110,9 +128,11 @@ Full rules: [`docs/04-devops/branching.md`](docs/04-devops/branching.md).
 ## How to work as an agent (default loop)
 
 1. Read the relevant `docs/` page + ADR for the area you touch.
-2. Branch → implement → tests → update docs if needed → PR-ready summary.
-3. Prefer completing one service vertical slice over scattering incomplete stubs.
+2. **Always** create a branch from `main` before editing files.
+3. Implement → tests → update docs if needed.
+4. Push branch → open PR → **merge into `main`** (or leave the PR ready if the user must approve).
+5. Prefer completing one service vertical slice over scattering incomplete stubs.
 
-## What is intentionally not implemented yet (Phase 0)
+## Delivery status
 
-Phase 0 delivers **architecture + wiki + workflow only**. Application code, Compose stacks, and CI jobs land in later PRs following this documentation.
+Phase 0 docs and Level 1 Airport Service + Next.js map are on `main` via merged PRs. Remaining Level 1–3 work continues **only** through branch → PR → merge.

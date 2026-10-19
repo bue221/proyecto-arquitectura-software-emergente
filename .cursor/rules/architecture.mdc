@@ -14,7 +14,7 @@ Read `AGENTS.md` and `docs/README.md` before large changes.
 - Stack: Next.js frontend, Go backends, RabbitMQ, Redis, Postgres per service.
 - Hexagonal per Go service; Adapter for API Colombia; Gateway has no business logic.
 - Transactional Outbox for integration events (no unsafe dual write).
-- All changes via feature branches + Pull Requests to `main`.
+- HARD RULE: every change → branch from `main` → Pull Request → merge into `main`. Never commit/push directly to `main` (includes docs and agent edits). See `AGENTS.md`.
 - Update `docs/` in the same PR when architecture or behavior changes.
 - Conventional Commits in English.
 

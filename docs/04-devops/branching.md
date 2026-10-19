@@ -4,6 +4,14 @@
 
 The course rubric requires standard branches, Pull Requests, and a visible DevOps cycle (planning → code → review → integrate). This also keeps AI agents from committing straight to `main`.
 
+## Hard rule (also in `AGENTS.md`)
+
+```text
+every change → branch → PR → merge into main
+```
+
+No exceptions for docs, chores, or agent work. Local commits on `main` are not acceptable delivery.
+
 ## Default branch
 
 - `main` — always releasable documentation/code; **protected**; merge **only via PR**.
