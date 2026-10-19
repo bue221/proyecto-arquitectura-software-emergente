@@ -14,8 +14,10 @@ Monorepo for a distributed **personal travel itineraries** system (academic arch
 
 | Resource | Link |
 |----------|------|
+| **GitHub Wiki** | https://github.com/bue221/proyecto-arquitectura-software-emergente/wiki |
 | Agent / contributor guide | [`AGENTS.md`](AGENTS.md) |
-| Project wiki | [`docs/README.md`](docs/README.md) |
+| Docs in repo (PR source of truth) | [`docs/README.md`](docs/README.md) |
+| Wiki seed pages | [`wiki/`](wiki/) |
 | Architecture overview | [`docs/01-architecture/overview.md`](docs/01-architecture/overview.md) |
 | Branching & PRs | [`docs/04-devops/branching.md`](docs/04-devops/branching.md) |
 | Self-assessment | [`docs/06-self-assessment.md`](docs/06-self-assessment.md) |
