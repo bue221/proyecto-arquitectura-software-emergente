@@ -28,6 +28,7 @@ Premium itinerary **studio** + trip management: interactive Colombia map, glassm
 - **Map routes / selection chrome:** `indigo-600`.
 - **Trip cards:** deterministic style variants (`emerald`, `indigo`, `sunset`, `ocean`, `forest`, `slate`) hashed from itinerary id — not identical clones.
 - **Studio layout:** full-bleed map + floating glass panel (desktop); bottom sheet panel (mobile).
+- **AppShell:** `min-h-dvh` flex column — `main` grows (`flex-1`) so the footer stays at the bottom of the viewport on short pages (`/trips`, `/login`, …).
 
 ## Map tile adapters
 
