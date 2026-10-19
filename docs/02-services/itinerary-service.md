@@ -31,7 +31,7 @@ Owns **Itinerary Planning**. Persists personal itineraries, validates airport re
 
 - CRUD against dedicated Postgres.
 - Versioned migrations (golang-migrate or Atlas).
-- Validate airports via HTTP (L1/L2) or gRPC (L3).
+- Validate airports via gRPC when `AIRPORT_GRPC_ADDR` is set (Compose default); HTTP fallback otherwise.
 - Write outbox in the same transaction as create.
 - Relay unpublished outbox rows to RabbitMQ (poller; mark `published_at`).
 - Expose Swagger/OpenAPI.

@@ -41,13 +41,13 @@ Update this table in PRs as criteria are met. Status: `pending` | `partial` | `d
 |-----------|--------|----------|
 | Transactional Outbox | done | Create + outbox same TX; relay publishes then marks `published_at` |
 | Double-write resolution documented | done (docs) | `docs/03-diagrams/outbox.md` |
-| gRPC Airport ↔ Itinerary | pending | |
-| S2S security (mTLS or OAuth2 CC) | pending | |
+| gRPC Airport ↔ Itinerary | done | `EnsureExists` RPC; Itinerary prefers `AIRPORT_GRPC_ADDR` |
+| S2S security (mTLS or OAuth2 CC) | partial | local insecure gRPC; mTLS later |
 | Vault / config server | pending | |
 | Chaos (Toxiproxy/Chaos Mesh) | pending | |
 | Bulkhead | pending | |
 | Prometheus alerting | pending | |
-| CI/CD GitHub Actions | pending | |
+| CI/CD GitHub Actions | partial | `.github/workflows/ci.yml` — Go unit tests only, ≤3 min |
 | Kubernetes + probes | pending | |
 | Contract testing (Pact) | pending | |
 | API versioning + pagination | pending | |

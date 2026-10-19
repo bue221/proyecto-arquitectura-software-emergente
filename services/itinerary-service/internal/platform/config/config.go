@@ -10,6 +10,7 @@ type Config struct {
 	HTTPAddr             string
 	DatabaseURL          string
 	AirportServiceURL    string
+	AirportGRPCAddr      string
 	AirportHTTPTimeout   time.Duration
 	RabbitMQURL          string
 	OutboxRelayEnabled   bool
@@ -23,6 +24,7 @@ func Load() Config {
 		HTTPAddr:           getEnv("HTTP_ADDR", ":8082"),
 		DatabaseURL:        getEnv("DATABASE_URL", "postgres://itinerary:itinerary@localhost:5434/itinerary?sslmode=disable"),
 		AirportServiceURL:  getEnv("AIRPORT_SERVICE_URL", "http://localhost:8081"),
+		AirportGRPCAddr:    getEnv("AIRPORT_GRPC_ADDR", ""),
 		AirportHTTPTimeout: getDurationMS("AIRPORT_HTTP_TIMEOUT_MS", 5000),
 		RabbitMQURL:        getEnv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/"),
 		OutboxRelayEnabled: getBool("OUTBOX_RELAY_ENABLED", true),

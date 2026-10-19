@@ -188,13 +188,15 @@ Agents closing a PR must not mark work “done” until wiki pages are updated i
 - Level 2 API Gateway (JWT + rate limit) + Redis cache + CB + retry on Airport
 - Level 2 RabbitMQ + AsyncAPI + outbox relay + notification FaaS consumer
 - Level 2 OpenTelemetry + Jaeger + controlled failure demo (`/api/v1/demo/fail`)
+- Level 3 gRPC Airport `EnsureExists` + Itinerary client (`AIRPORT_GRPC_ADDR`)
+- Level 3 CI: GitHub Actions Go unit tests only (`timeout-minutes: 3`)
 - Local stack: `make up` / `make down` / `make smoke` / `make wiki`
 
 **Next (priority order)**
 
-1. Level 2 — E2E Testcontainers
-2. Level 3 — gRPC Airport ↔ Itinerary + S2S auth
-3. Level 3 — CI/CD (GitHub Actions) + Kubernetes probes
+1. Level 2 — E2E Testcontainers (optional / nightly; keep PR CI fast)
+2. Level 3 — S2S auth (mTLS) for gRPC
+3. Level 3 — Kubernetes probes + expand CI/CD (images / Sonar)
 4. Level 3 — Chaos / bulkhead / Prometheus alerts / Pact / OpenFaaS packaging (as needed for rubric)
 
 Remaining work continues **only** through branch → PR → merge → wiki publish.

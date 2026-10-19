@@ -8,6 +8,7 @@ import (
 
 type Config struct {
 	HTTPAddr           string
+	GRPCAddr           string
 	ColombiaAPIBaseURL string
 	UpstreamTimeout    time.Duration
 	CacheTTL           time.Duration
@@ -20,6 +21,7 @@ type Config struct {
 func Load() Config {
 	return Config{
 		HTTPAddr:           getEnv("HTTP_ADDR", ":8081"),
+		GRPCAddr:           getEnv("GRPC_ADDR", ":9091"),
 		ColombiaAPIBaseURL: getEnv("COLOMBIA_API_BASE_URL", "https://api-colombia.com"),
 		UpstreamTimeout:    getDurationMS("UPSTREAM_TIMEOUT_MS", 8000),
 		CacheTTL:           getDurationMS("CACHE_TTL_MS", 300000),

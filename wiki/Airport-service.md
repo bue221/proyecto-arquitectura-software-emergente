@@ -1,9 +1,6 @@
-> **Fuente de verdad:** esta página se publica desde `wiki/` / `docs/` del monorepo.
-> Edita vía Pull Request en el código; no edites solo en la Wiki sin sincronizar.
-
 # Airport Service
 
-**Status:** implemented (Level 1 + Redis/CB) — `services/airport-service` on port `8081`, Swagger at `/swagger`.
+**Status:** Level 1 + Redis/CB + **gRPC L3** — HTTP `:8081` (Swagger), gRPC `:9091` (`EnsureExists`).
 
 ## Why
 
@@ -14,7 +11,7 @@ Owns the **Airport Catalog** bounded context. Isolates API Colombia behind an Ad
 - Fetch airports from API Colombia.
 - Map external DTO → domain `Airport` → API/Plotly DTO.
 - Cache adapted responses in Redis.
-- Expose REST (later gRPC) for get-by-id / list-for-map.
+- Expose REST for get-by-id / list-for-map and gRPC `EnsureExists` for Itinerary S2S.
 - Resilience: timeout, retry+backoff+jitter, circuit breaker.
 
 ## Non-responsibilities
