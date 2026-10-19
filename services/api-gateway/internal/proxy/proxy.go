@@ -33,5 +33,16 @@ func New(target string, timeout time.Duration) (*httputil.ReverseProxy, error) {
 		ResponseHeaderTimeout: timeout,
 		IdleConnTimeout:       90 * time.Second,
 	}
+	// Browser CORS is owned by the gateway middleware. Upstream services also emit
+	// Access-Control-* headers; duplicated ACAO values make fetch() fail in browsers.
+	proxy.ModifyResponse = func(res *http.Response) error {
+		res.Header.Del("Access-Control-Allow-Origin")
+		res.Header.Del("Access-Control-Allow-Headers")
+		res.Header.Del("Access-Control-Allow-Methods")
+		res.Header.Del("Access-Control-Allow-Credentials")
+		res.Header.Del("Access-Control-Expose-Headers")
+		res.Header.Del("Access-Control-Max-Age")
+		return nil
+	}
 	return proxy, nil
 }
