@@ -1,0 +1,23 @@
+---
+description: Enforce Phase 0 architecture and Git workflow for the itineraries monorepo
+globs:
+  - "**/*"
+---
+
+# Personal Itineraries Platform
+
+Read `AGENTS.md` and `docs/README.md` before large changes.
+
+## Hard rules
+
+- Domain: personal itineraries + Colombian airports. Not Parche.
+- Stack: Next.js frontend, Go backends, RabbitMQ, Redis, Postgres per service.
+- Hexagonal per Go service; Adapter for API Colombia; Gateway has no business logic.
+- Transactional Outbox for integration events (no unsafe dual write).
+- All changes via feature branches + Pull Requests to `main`.
+- Update `docs/` in the same PR when architecture or behavior changes.
+- Conventional Commits in English.
+
+## Phase awareness
+
+If application code is still absent, prefer docs/ADR PRs over inventing undeclared services.

@@ -1,0 +1,41 @@
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+*.pem
+
+# Node
+node_modules/
+apps/web/.next/
+apps/web/out/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Go
+**/bin/
+**/dist/
+**/coverage.out
+**/coverage.html
+vendor/
+
+# Python venv accidentals
+.venv/
+pdfvenv/
+
+# Test / tooling
+**/test-results/
+**/playwright-report/
+.sonar/
+.scannerwork/
+
+# Terraform / local overrides
+**/*.tfstate*
+**/override.compose*.yml
+.atl/

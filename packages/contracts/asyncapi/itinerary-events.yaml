@@ -1,0 +1,52 @@
+asyncapi: 3.0.0
+info:
+  title: Itinerary Integration Events
+  version: 0.1.0
+  description: >
+    Draft contract for itinerary integration events.
+    Payload fields will be finalized when Itinerary Service lands.
+defaultContentType: application/json
+channels:
+  itinerary.created:
+    address: itinerary.created
+    messages:
+      ItineraryCreated:
+        $ref: '#/components/messages/ItineraryCreated'
+operations:
+  publishItineraryCreated:
+    action: send
+    channel:
+      $ref: '#/channels/itinerary.created'
+  consumeItineraryCreated:
+    action: receive
+    channel:
+      $ref: '#/channels/itinerary.created'
+components:
+  messages:
+    ItineraryCreated:
+      name: ItineraryCreated
+      payload:
+        type: object
+        required: [eventId, itineraryId, occurredAt]
+        properties:
+          eventId:
+            type: string
+            format: uuid
+          itineraryId:
+            type: string
+            format: uuid
+          userName:
+            type: string
+          originAirportId:
+            type: string
+          destinationAirportId:
+            type: string
+          travelDate:
+            type: string
+            format: date
+          durationMinutes:
+            type: integer
+            minimum: 1
+          occurredAt:
+            type: string
+            format: date-time

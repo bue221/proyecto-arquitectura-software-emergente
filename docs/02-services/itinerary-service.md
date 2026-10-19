@@ -1,0 +1,48 @@
+# Itinerary Service
+
+## Why
+
+Owns **Itinerary Planning**. Persists personal itineraries, validates airport references against Airport Service, and emits integration events through the Transactional Outbox.
+
+## Minimum itinerary fields
+
+- User name
+- Origin airport ID
+- Destination airport ID
+- Travel date
+- Duration (minutes)
+
+## Responsibilities
+
+- CRUD against dedicated Postgres.
+- Versioned migrations (golang-migrate or Atlas).
+- Validate airports via HTTP (L1/L2) or gRPC (L3).
+- Write outbox in the same transaction as create.
+- Expose Swagger/OpenAPI.
+
+## Non-responsibilities
+
+- Calling API Colombia directly
+- Rendering maps
+- Owning notification delivery
+
+## Error strategy
+
+| Condition | HTTP | Notes |
+|-----------|------|-------|
+| Invalid payload | 400 | Field-level validation messages |
+| Airport missing | 422 or 400 | `airport_invalid` after downstream 404 |
+| Not found | 404 | `itinerary_not_found` |
+| Conflict / invariant | 409 | Reserved for future uniqueness rules |
+| Downstream Airport down | 503 | Propagate failure with correlation id |
+
+## Domain vs integration events
+
+- Domain (optional, in-process): used only inside this service if needed.
+- Integration: `ItineraryCreated` → AsyncAPI → RabbitMQ via outbox relay.
+
+## Related diagrams
+
+- [`../03-diagrams/outbox.md`](../03-diagrams/outbox.md)
+- [`../03-diagrams/relational.md`](../03-diagrams/relational.md)
+- [`../03-diagrams/sequences.md`](../03-diagrams/sequences.md)
