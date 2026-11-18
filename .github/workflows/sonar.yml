@@ -1,0 +1,61 @@
+name: sonar
+
+# Quality gate (SonarCloud). Separate from ci.yml so unit tests stay under 3 minutes.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: sonar-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23.x"
+          cache: true
+          cache-dependency-path: |
+            packages/proto/go.sum
+            services/airport-service/go.sum
+            services/itinerary-service/go.sum
+            services/api-gateway/go.sum
+            services/notification-function/go.sum
+
+      - name: Coverage packages/proto
+        working-directory: packages/proto
+        run: go test ./... -count=1 -coverprofile=coverage.out -timeout 45s
+
+      - name: Coverage airport-service
+        working-directory: services/airport-service
+        run: go test ./... -count=1 -coverprofile=coverage.out -timeout 45s
+
+      - name: Coverage itinerary-service
+        working-directory: services/itinerary-service
+        run: go test ./... -count=1 -short -coverprofile=coverage.out -timeout 45s
+
+      - name: Coverage api-gateway
+        working-directory: services/api-gateway
+        run: go test ./... -count=1 -coverprofile=coverage.out -timeout 45s
+
+      - name: Coverage notification-function
+        working-directory: services/notification-function
+        run: go test ./... -count=1 -coverprofile=coverage.out -timeout 45s
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.qualitygate.wait=true

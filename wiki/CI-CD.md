@@ -2,46 +2,45 @@
 
 ## Por qué
 
-El Nivel 3 y la rúbrica de DevOps piden integración continua, un ejemplo de despliegue continuo y compuertas de calidad (tests, SonarQube).
+El Nivel 3 y la rúbrica de DevOps piden integración continua, un ejemplo de entrega continua y compuertas de calidad (tests, SonarCloud).
 
-## Actual (este estado)
+## Actual
 
 | Workflow | Disparador | Propósito | Presupuesto |
 |----------|------------|-----------|-------------|
-| [`.github/workflows/ci.yml`](https://github.com/bue221/proyecto-arquitectura-software-emergente/blob/main/.github/workflows/ci.yml) | PR + push a `main` | **Solo tests unitarios Go** (airport, itinerary, gateway, notify, proto) | `timeout-minutes: 3` |
-
-Todavía no hay publicación de imágenes, Sonar ni Deploy: el CI se mantiene rápido hasta que eso llegue en PRs dedicados.
-
-## Pipeline objetivo (después)
+| [`ci.yml`](https://github.com/bue221/proyecto-arquitectura-software-emergente/blob/main/.github/workflows/ci.yml) | PR + push a `main` | Tests unitarios Go | `timeout-minutes: 3` |
+| [`e2e-nightly.yml`](https://github.com/bue221/proyecto-arquitectura-software-emergente/blob/main/.github/workflows/e2e-nightly.yml) | nightly / rutas en `main` | E2E Testcontainers | 10 min |
+| [`sonar.yml`](https://github.com/bue221/proyecto-arquitectura-software-emergente/blob/main/.github/workflows/sonar.yml) | PR + `main` | Cobertura + **SonarCloud** | 15 min |
+| [`cd-example.yml`](https://github.com/bue221/proyecto-arquitectura-software-emergente/blob/main/.github/workflows/cd-example.yml) | `main` / tags `v*` | Build y push a **GHCR** + artefacto de tags | ~20 min |
 
 ```mermaid
 flowchart LR
-  PR[Pull Request] --> B[Build módulos Go + Next.js]
-  B --> U[Tests unitarios]
-  U --> L[Lint / análisis estático]
-  L --> S[Escaneo SonarQube]
-  S --> I[E2E Testcontainers en main]
-  I --> IMG[Build de imágenes]
-  IMG --> DEP[Ejemplo de deploy - Compose o K8s staging]
+  PR[Pull Request] --> U[Tests ci.yml]
+  U --> S[SonarCloud sonar.yml]
+  main[Push main] --> U
+  main --> S
+  main --> E2E[e2e-nightly]
+  main --> CD[cd-example GHCR]
+  CD --> ART[Artefacto cd-example-images.env]
+  ART --> K8S[Opcional kubectl apply infra/k8s]
 ```
 
-## Jobs (planeados)
+## CD mínimo
 
-| Workflow | Disparador | Propósito |
-|----------|------------|-----------|
-| `ci.yml` | PR + push a `main` | Tests unitarios (hecho) |
-| `sonar.yml` | PR + main | SonarQube / SonarCloud |
-| `e2e.yml` | main / nightly | Flujo Testcontainers |
-| `cd-example.yml` | tags / main | Push de imágenes + deploy de muestra |
+**Hace:** publica imágenes `ghcr.io/<owner>/rutaco-<servicio>` y deja un artefacto con tags `sha-…` para aplicar `infra/k8s/` en local/staging.
 
-## Entornos
+**No hace:** exigir un cluster Kubernetes vivo dentro de Actions (sin kubeconfig por defecto).
 
-| Entorno | Propósito |
-|---------|-----------|
-| Compose local | Desarrollo + demo |
-| CI efímero | Verificación del PR |
-| K8s staging (opcional) | Ejemplo de CD con probes |
+## SonarCloud (una vez)
+
+1. Crear el proyecto en [sonarcloud.io](https://sonarcloud.io) ligado a este repo.
+2. Añadir el secret de Actions **`SONAR_TOKEN`**.
+3. Verificar `sonar.projectKey` y `sonar.organization` en `sonar-project.properties`.
+4. Reejecutar el workflow `sonar`.
 
 ## Secretos
 
-Viven en los secrets de GitHub Actions — nunca en git. Documentar los nombres requeridos cuando exista CD.
+| Nombre | Workflow | Notas |
+|--------|----------|-------|
+| `SONAR_TOKEN` | `sonar.yml` | Obligatorio para el escaneo |
+| `GITHUB_TOKEN` | `cd-example.yml` | Incluido; el workflow pide `packages: write` |

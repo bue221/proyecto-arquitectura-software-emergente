@@ -1,17 +1,18 @@
 COMPOSE := docker compose -f infra/docker/docker-compose.yml
 
-.PHONY: help up down restart logs ps smoke wiki build
+.PHONY: help up down restart logs ps smoke wiki build demo-evidence
 
 help:
 	@echo "Personal Itineraries — local commands"
 	@echo ""
-	@echo "  make up        Build and start the full Docker stack"
-	@echo "  make down      Stop and remove containers"
-	@echo "  make restart   down + up"
-	@echo "  make logs      Tail logs"
-	@echo "  make ps        Show container status"
-	@echo "  make smoke     Hit health/gateway smoke checks"
-	@echo "  make wiki      Publish wiki/ to GitHub Wiki"
+	@echo "  make up             Build and start the full Docker stack"
+	@echo "  make down           Stop and remove containers"
+	@echo "  make restart        down + up"
+	@echo "  make logs           Tail logs"
+	@echo "  make ps             Show container status"
+	@echo "  make smoke          Hit health/gateway smoke checks"
+	@echo "  make demo-evidence  Capture demo-script HTTP evidence under docs/05-runbooks/evidence/"
+	@echo "  make wiki           Publish wiki/ to GitHub Wiki"
 	@echo ""
 	@echo "URLs after make up:"
 	@echo "  Web         http://localhost:3001"
@@ -21,6 +22,7 @@ help:
 	@echo "  Notify FaaS http://localhost:8083/health"
 	@echo "  RabbitMQ UI http://localhost:15672 (guest/guest)"
 	@echo "  Jaeger UI   http://localhost:16686"
+	@echo "  Prometheus  http://localhost:9090"
 
 up:
 	@./scripts/dev-up.sh
@@ -38,6 +40,10 @@ ps:
 
 smoke:
 	@./scripts/dev-smoke.sh
+
+demo-evidence:
+	@chmod +x ./scripts/demo-evidence.sh
+	@./scripts/demo-evidence.sh
 
 wiki:
 	@./scripts/publish-wiki.sh

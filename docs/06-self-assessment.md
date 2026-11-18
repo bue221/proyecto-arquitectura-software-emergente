@@ -47,11 +47,13 @@ Update this table in PRs as criteria are met. Status: `pending` | `partial` | `d
 | Chaos (Toxiproxy/Chaos Mesh) | done | Compose `toxiproxy` + `infra/toxiproxy/` latency demo |
 | Bulkhead | done | `resilience.Bulkhead` on Colombia adapter; `BULKHEAD_MAX_CONCURRENT` |
 | Prometheus alerting | done | `/metrics` + `infra/prometheus/alerts.yml` (CB open, bulkhead) |
-| CI/CD GitHub Actions | done | `ci.yml` (≤3 min) + `e2e-nightly.yml` Testcontainers |
+| CI/CD GitHub Actions | done | `ci.yml` (≤3 min) + `e2e-nightly.yml` + `sonar.yml` + `cd-example.yml` (GHCR) |
 | Kubernetes + probes | done | `infra/k8s/*` Deployments with `/ready` `/live` probes |
 | Contract testing (Pact) | done | `packages/contracts/pact/Airport-Itinerary.json` + consumer/provider tests |
 | API versioning + pagination | done | `/api/v1` + `API-Version` header; itinerary list `page`/`pageSize` (ADR-0008) |
 
-## Planning backlog (Jira)
+## Planning backlog (GitHub Issues)
 
-Track epics: Phase 0 docs (this), L1 services, L2 resilience/events, L3 hardening. Export or screenshot the board into `docs/05-runbooks/` when available for the delivery pack.
+Primary board: GitHub Issues with label `delivery` — see [`05-runbooks/delivery-board.md`](05-runbooks/delivery-board.md).
+
+Epics covered historically: Phase 0 docs, L1 services, L2 resilience/events, L3 hardening. Optional polish: OpenFaaS packaging, k6 load scripts, screenshot pack after `make demo-evidence`.

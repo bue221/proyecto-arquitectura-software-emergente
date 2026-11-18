@@ -47,11 +47,13 @@ Actualiza esta tabla en los PRs a medida que se cumplen criterios. Estado: `pend
 | Caos (Toxiproxy/Chaos Mesh) | hecho | Compose `toxiproxy` + demo de latencia en `infra/toxiproxy/` |
 | Bulkhead | hecho | `resilience.Bulkhead` en el adapter Colombia; `BULKHEAD_MAX_CONCURRENT` |
 | Alertas Prometheus | hecho | `/metrics` + `infra/prometheus/alerts.yml` (CB abierto, bulkhead) |
-| CI/CD GitHub Actions | hecho | `ci.yml` (≤3 min) + `e2e-nightly.yml` Testcontainers |
+| CI/CD GitHub Actions | hecho | `ci.yml` (≤3 min) + `e2e-nightly.yml` + `sonar.yml` + `cd-example.yml` (GHCR) |
 | Kubernetes + probes | hecho | `infra/k8s/*` Deployments con probes `/ready` y `/live` |
 | Pruebas de contrato (Pact) | hecho | `packages/contracts/pact/Airport-Itinerary.json` + tests consumer/provider |
 | Versionado de API + paginación | hecho | `/api/v1` + header `API-Version`; listado `page` / `pageSize` (ADR-0008) |
 
-## Backlog de planificación (Jira)
+## Backlog de planificación (GitHub Issues)
 
-Épicas: docs de Fase 0 (esto), servicios N1, resiliencia/eventos N2, endurecimiento N3. Exporta o captura el tablero en `docs/05-runbooks/` cuando exista, para el paquete de entrega.
+Tablero principal: Issues con etiqueta `delivery` — ver [Delivery-board](Delivery-board).
+
+Épicas históricas: docs Fase 0, servicios N1, resiliencia/eventos N2, endurecimiento N3. Pulido opcional: OpenFaaS, k6, capturas tras `make demo-evidence`.
