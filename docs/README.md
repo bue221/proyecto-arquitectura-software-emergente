@@ -11,6 +11,7 @@ Source of truth for architecture, diagrams, DevOps, and demos. Prefer updating t
 1. [Vision & scope](00-vision.md)
 2. [Architecture overview](01-architecture/overview.md)
 3. [Formal architecture document](01-architecture/document.md) (course template, shortened)
+3b. [**Delivery PDF** — full course architecture doc](entregables/documento-arquitectura/Documento-Arquitectura-RutaCO.pdf) ([folder](entregables/documento-arquitectura/), [wiki summary](https://github.com/bue221/proyecto-arquitectura-software-emergente/wiki/Architecture-PDF))
 4. [Bounded contexts & ubiquitous language](01-architecture/bounded-contexts.md)
 5. [Architecture Decision Records](01-architecture/adr/README.md)
 
