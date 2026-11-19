@@ -52,8 +52,8 @@ Actualiza esta tabla en los PRs a medida que se cumplen criterios. Estado: `pend
 | Pruebas de contrato (Pact) | hecho | `packages/contracts/pact/Airport-Itinerary.json` + tests consumer/provider |
 | Versionado de API + paginación | hecho | `/api/v1` + header `API-Version`; listado `page` / `pageSize` (ADR-0008) |
 
-## Backlog de planificación (GitHub Issues)
+## Backlog de planificación (GitHub Project)
 
-Tablero principal: Issues con etiqueta `delivery` — ver [Delivery-board](Delivery-board).
+Tablero principal: [RutaCO — Delivery (P0→L3)](https://github.com/users/bue221/projects/3) — ver [Delivery-board](Delivery-board).
 
-Épicas históricas: docs Fase 0, servicios N1, resiliencia/eventos N2, endurecimiento N3. Pulido opcional: OpenFaaS, k6, capturas tras `make demo-evidence`.
+Épicas históricas cerradas en ese Project (P0 `#38`–`#44`, L1 `#45`–`#52`, L2 `#53`–`#58`, L3 `#59`–`#69`). Abierto: Sonar, evidencia de demo, GHCR, wiki; opcional OpenFaaS/k6.

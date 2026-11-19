@@ -52,8 +52,8 @@ Update this table in PRs as criteria are met. Status: `pending` | `partial` | `d
 | Contract testing (Pact) | done | `packages/contracts/pact/Airport-Itinerary.json` + consumer/provider tests |
 | API versioning + pagination | done | `/api/v1` + `API-Version` header; itinerary list `page`/`pageSize` (ADR-0008) |
 
-## Planning backlog (GitHub Issues)
+## Planning backlog (GitHub Project)
 
-Primary board: GitHub Issues with label `delivery` — see [`05-runbooks/delivery-board.md`](05-runbooks/delivery-board.md).
+Primary board: [RutaCO — Delivery (P0→L3)](https://github.com/users/bue221/projects/3) — see [`05-runbooks/delivery-board.md`](05-runbooks/delivery-board.md).
 
-Epics covered historically: Phase 0 docs, L1 services, L2 resilience/events, L3 hardening. Optional polish: OpenFaaS packaging, k6 load scripts, screenshot pack after `make demo-evidence`.
+Historical epics are closed Issues on that Project (P0 `#38`–`#44`, L1 `#45`–`#52`, L2 `#53`–`#58`, L3 `#59`–`#69`). Open delivery polish: Sonar token, demo evidence, GHCR verify, wiki publish; optional OpenFaaS/k6.

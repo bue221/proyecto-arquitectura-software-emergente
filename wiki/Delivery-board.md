@@ -1,50 +1,63 @@
-# Tablero de entrega (GitHub Issues)
+# Tablero de entrega (GitHub Project)
 
-Trello / Jira son opcionales. Este repo lleva el trabajo de entrega con **Issues de GitHub** y etiquetas, sin depender de un MCP de Trello.
+Tablero oficial: **GitHub Project** (no Trello/Jira).
 
-## URL del tablero
+## URL del proyecto
 
-https://github.com/bue221/proyecto-arquitectura-software-emergente/issues
+https://github.com/users/bue221/projects/3
 
-Filtros útiles:
+Título: **RutaCO — Delivery (P0→L3)**
 
-- Abierto: `is:issue is:open label:delivery`
-- Cerrado: `is:issue is:closed label:delivery`
-- Nivel 3: `is:issue is:open label:level-3`
+Columnas (Status):
+
+| Status | Significado |
+|--------|-------------|
+| Done | Entregado en `main` (Fase 0 → Nivel 3) |
+| In Progress | Cierre de entrega en curso (Sonar, demo, CD, wiki) |
+| Todo | Extras opcionales (OpenFaaS, k6) |
+
+Vista de Issues: https://github.com/bue221/proyecto-arquitectura-software-emergente/issues?q=label%3Adelivery
 
 ## Etiquetas
 
 | Etiqueta | Significado |
 |----------|-------------|
 | `delivery` | Paquete de entrega del curso |
+| `phase-0` | Docs / ADRs / wiki |
 | `level-1` / `level-2` / `level-3` | Banda de rúbrica |
 | `devops` | CI/CD, Sonar, imágenes |
 | `demo` | Guion de demo / evidencia |
-| `done-in-main` | Ya fusionado en `main` (histórico cerrado) |
+| `status-done` / `status-todo` | Filtro grueso |
+| `done-in-main` | Trabajo histórico ya en `main` |
 
 ## Instantánea
 
-| Ítem | Estado | Notas |
-|------|--------|-------|
-| Checklist arquitectura N1–N3 | Hecho | [Self-assessment](Self-assessment) |
-| Guion de demo + evidencia HTTP | En curso | `make demo-evidence` + capturas manuales |
-| SonarCloud en CI | En curso | Requiere secret `SONAR_TOKEN` |
-| CD mínimo (GHCR) | En curso | Workflow `cd-example.yml` |
-| Empaquetado OpenFaaS | Opcional | Solo si el curso lo exige |
-| Load tests (k6) | Opcional | Ver [Quality](Quality) |
+### Hecho (cerrado + Project Done)
 
-## Nota para agentes
+- **P0** `#38`–`#44` — visión, arquitectura, BCs, ADRs, diagramas, ramas/wiki, autoevaluación
+- **L1** `#45`–`#52` — Adapter, hexagonal, CRUD, Postgres, Swagger, logs, Studio Leaflet, Compose
+- **L2** `#53`–`#58` — CB/retry, Redis, Gateway JWT, RabbitMQ/notify, OTel/Jaeger, Testcontainers
+- **L3** `#59`–`#69` — Outbox, gRPC, mTLS, Vault, Toxiproxy, bulkhead, Prometheus, K8s, Pact, versionado, CI
+- `#31` — checklist agregada Niveles 1–3
 
-No hay MCP de Trello en este workspace de Cursor. Preferir Issues aquí (o Linear si el equipo añade ese MCP). No inventar un segundo tablero de verdad.
-
-## Issues enlazados
+### En progreso
 
 | Issue | Tema |
 |-------|------|
-| [#31](https://github.com/bue221/proyecto-arquitectura-software-emergente/issues/31) | Checklist N1–N3 (cerrado / hecho) |
 | [#32](https://github.com/bue221/proyecto-arquitectura-software-emergente/issues/32) | SonarCloud + `SONAR_TOKEN` |
 | [#33](https://github.com/bue221/proyecto-arquitectura-software-emergente/issues/33) | Pack de evidencia de demo |
 | [#34](https://github.com/bue221/proyecto-arquitectura-software-emergente/issues/34) | Verificar CD en GHCR |
-| [#35](https://github.com/bue221/proyecto-arquitectura-software-emergente/issues/35) | OpenFaaS opcional |
-| [#36](https://github.com/bue221/proyecto-arquitectura-software-emergente/issues/36) | Load tests opcionales |
+| [#70](https://github.com/bue221/proyecto-arquitectura-software-emergente/issues/70) | Fusionar workflow Sonar (PR #37) |
+| [#71](https://github.com/bue221/proyecto-arquitectura-software-emergente/issues/71) | Fusionar workflow CD (PR #37) |
+| [#72](https://github.com/bue221/proyecto-arquitectura-software-emergente/issues/72) | `make wiki` tras el PR de devops |
 
+### Todo (opcional)
+
+| Issue | Tema |
+|-------|------|
+| [#35](https://github.com/bue221/proyecto-arquitectura-software-emergente/issues/35) | Empaquetado OpenFaaS |
+| [#36](https://github.com/bue221/proyecto-arquitectura-software-emergente/issues/36) | Load tests k6/vegeta |
+
+## Nota para agentes
+
+Preferir este Project + Issues. No inventar un segundo tablero de verdad.

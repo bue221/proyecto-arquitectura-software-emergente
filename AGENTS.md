@@ -210,7 +210,7 @@ When a PR changes `docs/`, update the matching `wiki/` page in Spanish in the sa
 - Level 3 Kubernetes probes + Pact contracts + Vault/config overlays
 - Level 3 CI: GitHub Actions unit tests (`timeout-minutes: 3`) + e2e-nightly + SonarCloud + GHCR CD example
 - Local stack: `make up` / `make down` / `make smoke` / `make demo-evidence` / `make wiki`
-- Delivery board: GitHub Issues (`docs/05-runbooks/delivery-board.md`) — no Trello MCP in this workspace
+- Delivery board: GitHub Project https://github.com/users/bue221/projects/3 (`docs/05-runbooks/delivery-board.md`)
 
 **Next**
 
