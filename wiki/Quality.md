@@ -7,10 +7,15 @@
   - Itinerary: create + outbox relay, normalización de packing/planes, paginación, consumidor Pact.
   - Gateway: JWT issue/parse + middleware (rate limit, RequireJWT, CORS, trace).
   - Notification FaaS: caso de uso de envío.
-- Next.js (`apps/web`): Vitest para puerto/registry/preferencias de tiles, geo de ruta curva, recomendaciones/estilos de tarjetas y parseo de errores en `lib/api/http` — sin browser flaky en la capa unitaria.
+- Next.js (`apps/web`): Vitest (Node) para:
+  - puerto/registry/preferencias de tiles y adaptador Mapbox
+  - geo de ruta curva + merge/duración de aeropuertos del Studio
+  - recomendaciones/estilos de tarjetas
+  - parseo de errores en `lib/api/http`
+  - sesión JWT, cliente de auth demo, APIs de itinerarios/aeropuertos (401 → sesión expirada)
   - Local: `cd apps/web && npm test`
   - Job CI: `web-tests` en `.github/workflows/ci.yml`
-- CI de PR: `.github/workflows/ci.yml` (≤3 minutos; `-short` omite Testcontainers).
+- CI de PR: `.github/workflows/ci.yml` (jobs unitarios ≤3 minutos; `-short` omite Testcontainers; `docker-build` en paralelo).
 
 ## Integración / E2E
 
@@ -19,9 +24,10 @@
 
 ## SonarCloud
 
-- Workflow: `.github/workflows/sonar.yml`
+- Workflow: `.github/workflows/sonar.yml` (`sonarqube-scan-action@v6`)
 - Config: `sonar-project.properties` en la raíz
-- Genera `coverage.out` por módulo Go y espera la quality gate
+- Genera `coverage.out` por módulo Go y espera la quality gate cuando existe `SONAR_TOKEN`
+- Si falta el secret, la cobertura corre y el scan se omite (solo aviso)
 - Secret: `SONAR_TOKEN` (ver [CI-CD](CI-CD))
 
 ## Pruebas de carga

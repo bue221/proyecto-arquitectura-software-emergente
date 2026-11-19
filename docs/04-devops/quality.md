@@ -7,10 +7,15 @@
   - Itinerary: create + outbox relay, packing/plan normalization, pagination, Pact consumer.
   - Gateway: JWT issue/parse + middleware (rate limit, RequireJWT, CORS, trace).
   - Notification FaaS: send notification use case.
-- Next.js (`apps/web`): Vitest for map tile port/registry/preferences, curved route geo, trip recommendations/card styles, and `lib/api/http` error parsing — no flaky browser tests in the unit layer.
+- Next.js (`apps/web`): Vitest (Node) for:
+  - map tile port / registry / preferences / Mapbox adapter
+  - curved route geo + studio airport merge/duration
+  - trip recommendations / card styles
+  - `lib/api/http` error parsing
+  - session JWT usability, demo auth client, itineraries/airports API clients (401 → session expired)
   - Local: `cd apps/web && npm test`
   - CI job: `web-tests` in `.github/workflows/ci.yml`
-- PR CI: `.github/workflows/ci.yml` (≤3 minutes, `-short` skips Testcontainers).
+- PR CI: `.github/workflows/ci.yml` (unit jobs ≤3 minutes, `-short` skips Testcontainers; `docker-build` in parallel).
 
 ## Integration / E2E
 
@@ -19,9 +24,10 @@
 
 ## SonarCloud
 
-- Workflow: `.github/workflows/sonar.yml`
+- Workflow: `.github/workflows/sonar.yml` (`sonarqube-scan-action@v6`)
 - Config: `sonar-project.properties` at repo root
-- Generates Go `coverage.out` per module, then runs SonarCloud with quality gate wait
+- Generates Go `coverage.out` per module, then runs SonarCloud with quality gate wait when `SONAR_TOKEN` is set
+- If the secret is missing, coverage still runs and the scan is skipped (notice only)
 - Secret: `SONAR_TOKEN` (see [`ci-cd.md`](ci-cd.md))
 
 ## Load tests

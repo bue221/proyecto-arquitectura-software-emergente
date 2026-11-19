@@ -3,8 +3,8 @@
 ## Prerequisites
 
 - Go 1.22+
-- Node.js 20+
-- Docker + Docker Compose
+- Node.js 20+ (22 recommended; matches CI)
+- Docker + Docker Compose (BuildKit on — default on recent Docker Desktop; or `export DOCKER_BUILDKIT=1`)
 - Make
 
 ## Recommended — Makefile
@@ -13,6 +13,7 @@ From the repo root:
 
 ```bash
 make up      # build + start Compose stack
+make build   # rebuild images only (faster after Dockerfile/cache improvements)
 make smoke   # health checks via Gateway
 make down    # stop stack
 make wiki    # publish wiki/ → GitHub Wiki (after merge)
