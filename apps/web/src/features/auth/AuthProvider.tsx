@@ -12,8 +12,11 @@ import {
 
 import { loginTraveler, logoutTraveler } from "@/lib/api/auth";
 import {
+  clearSession,
   getAccessToken,
   getStoredProfile,
+  isAccessTokenUsable,
+  SESSION_EXPIRED_EVENT,
   setStoredProfile,
   type TravelerProfile,
 } from "@/lib/auth/session";
@@ -36,10 +39,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const token = getAccessToken();
     const stored = getStoredProfile();
-    if (token && stored) {
+    if (!isAccessTokenUsable(token)) {
+      clearSession();
+      setProfile(null);
+    } else if (stored) {
       setProfile(stored);
     }
     setReady(true);
+  }, []);
+
+  useEffect(() => {
+    function onSessionExpired() {
+      setProfile(null);
+    }
+    window.addEventListener(SESSION_EXPIRED_EVENT, onSessionExpired);
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, onSessionExpired);
   }, []);
 
   const login = useCallback(async (displayName: string, email: string) => {
@@ -64,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = useMemo<AuthContextValue>(
     () => ({
       ready,
-      isAuthenticated: Boolean(profile),
+      isAuthenticated: Boolean(profile) && isAccessTokenUsable(getAccessToken()),
       profile,
       login,
       logout,

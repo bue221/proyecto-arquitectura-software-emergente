@@ -2,6 +2,10 @@ import { getJson, sendJson } from "@/lib/api/http";
 import {
   clearSession,
   getAccessToken,
+  getStoredProfile,
+  isAccessTokenUsable,
+  notifySessionExpired,
+  SessionExpiredError,
   setAccessToken,
   setStoredProfile,
   type TravelerProfile,
@@ -69,10 +73,19 @@ export function logoutTraveler(): void {
   clearSession();
 }
 
-/** Prefer an existing session token; otherwise issue a demo token for guest map browsing. */
+/**
+ * Return a stored usable JWT.
+ * A profile with an unusable token ends the session instead of minting a demo token.
+ * Without a profile, issue a demo token for guest calls.
+ */
 export async function ensureAccessToken(subject = "demo-traveler"): Promise<string> {
   const existing = getAccessToken();
-  if (existing) return existing;
+  if (isAccessTokenUsable(existing)) return existing;
+  if (getStoredProfile()) {
+    clearSession();
+    notifySessionExpired();
+    throw new SessionExpiredError();
+  }
   return issueAccessToken(subject);
 }
 

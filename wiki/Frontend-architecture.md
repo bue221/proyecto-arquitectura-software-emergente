@@ -17,7 +17,7 @@
 | Movimiento | Framer Motion | panel, tarjetas, progreso |
 | Tipografía | Inter | códigos IATA ExtraBold, ciudades Medium |
 | Toasts | Sonner | feedback de mutaciones |
-| Auth UX | Login demo → JWT del Gateway | perfil en `localStorage` |
+| Auth UX | Login demo → JWT del Gateway | perfil + token usable en `localStorage`; un JWT vencido cierra la sesión |
 | Preferencias de mapa | Configuración en `/profile` | proveedor + API key opcional; con key vacía → OSM |
 | SEO / marca | `icon.svg`, apple-icon, imágenes OG/Twitter, `manifest.ts`, JSON-LD | marca esmeralda RutaCO |
 | Rutas SEO | `sitemap.ts`, `robots.ts` | `NEXT_PUBLIC_SITE_URL` |
@@ -66,6 +66,16 @@ Resolución: si `requiresApiKey` y la key guardada está vacía → el estilo ef
 2. **Planes** — recomendaciones opcionales del destino (comida, cultura, naturaleza, específicas de la ciudad) + planes propios; se puede omitir.
 
 Se persisten como `planItems` en el agregado Itinerary (JSONB de Itinerary Service).
+
+## Sesión de autenticación
+
+El login demo (`POST /auth/token`) guarda el JWT del Gateway en `localStorage` (`pi_access_token`) y el perfil del viajero (`pi_traveler_profile`). La UI queda autenticada solo cuando hay **perfil y access token usable**.
+
+Usable significa que el cliente puede decodificar el payload del JWT (sin verificar la firma) y que `exp` es un número finito todavía en el futuro. Un `exp` ausente, malformado o vencido invalida el token. Al cargar, `AuthProvider` llama a `clearSession()` y deja la sesión cerrada si el token guardado no es usable.
+
+`ensureAccessToken` devuelve el token guardado si sigue usable. Si hay perfil pero el token no es usable, limpia la sesión y lanza `SessionExpiredError` en lugar de emitir un token demo en silencio. Sin perfil, sigue emitiendo un token demo para llamadas de invitado.
+
+Las llamadas de itinerarios que reciben HTTP 401 limpian la sesión y disparan el evento de `window` `pi:session-expired`. `AuthProvider` suelta el perfil en memoria para que el header y las rutas protegidas (`/profile`, `/trips/[id]`) vuelvan al login de inmediato. El Gateway sigue siendo quien verifica la firma del Bearer; el chequeo del cliente solo evita permanecer con la sesión abierta con un token que el Gateway va a rechazar.
 
 ## Carpetas
 
