@@ -3,8 +3,19 @@
 ## Tests unitarios
 
 - Go: casos de uso con puertos falsos.
-- Next.js: tests de mapeo de datos del mapa (sin browser flaky en la capa unitaria).
+  - Airport: application, adaptador Colombia, resiliencia (CB/bulkhead), cache en memoria, gRPC/TLS, proveedor Pact.
+  - Itinerary: create + outbox relay, normalización de packing/planes, paginación, consumidor Pact.
+  - Gateway: JWT issue/parse + middleware (rate limit, RequireJWT, CORS, trace).
+  - Notification FaaS: caso de uso de envío.
+- Next.js (`apps/web`): Vitest para puerto/registry/preferencias de tiles, geo de ruta curva, recomendaciones/estilos de tarjetas y parseo de errores en `lib/api/http` — sin browser flaky en la capa unitaria.
+  - Local: `cd apps/web && npm test`
+  - Job CI: `web-tests` en `.github/workflows/ci.yml`
 - CI de PR: `.github/workflows/ci.yml` (≤3 minutos; `-short` omite Testcontainers).
+
+## Integración / E2E
+
+- Postgres de Itinerary vía Testcontainers: `services/itinerary-service/internal/adapters/out/postgres/repository_integration_test.go`.
+- Se omite en CI de PR con `go test -short`; corrida completa en `.github/workflows/e2e-nightly.yml`.
 
 ## SonarCloud
 
