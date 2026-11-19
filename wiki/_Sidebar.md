@@ -5,6 +5,7 @@
 - [Visión](Vision)
 - [Resumen](Architecture-overview)
 - [Documento](Architecture-document)
+- [PDF de entrega](Architecture-PDF)
 - [Contextos delimitados](Bounded-contexts)
 - [ADRs](ADRs)
 

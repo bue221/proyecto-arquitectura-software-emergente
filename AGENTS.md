@@ -77,6 +77,7 @@ docs/                          # Project wiki (source of truth)
 | Vision & scope | [`docs/00-vision.md`](docs/00-vision.md) |
 | Architecture overview | [`docs/01-architecture/overview.md`](docs/01-architecture/overview.md) |
 | Formal architecture doc | [`docs/01-architecture/document.md`](docs/01-architecture/document.md) |
+| Architecture PDF (course delivery) | [`docs/entregables/documento-arquitectura/`](docs/entregables/documento-arquitectura/) · wiki [Architecture-PDF](https://github.com/bue221/proyecto-arquitectura-software-emergente/wiki/Architecture-PDF) |
 | DDD bounded contexts | [`docs/01-architecture/bounded-contexts.md`](docs/01-architecture/bounded-contexts.md) |
 | ADRs | [`docs/01-architecture/adr/`](docs/01-architecture/adr/) |
 | Airport service | [`docs/02-services/airport-service.md`](docs/02-services/airport-service.md) |

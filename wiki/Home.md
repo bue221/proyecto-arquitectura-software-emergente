@@ -44,6 +44,7 @@ Tabla detallada: [Self-assessment](Self-assessment) · [Kubernetes](Kubernetes)
 - [Vision](Vision)
 - [Architecture-overview](Architecture-overview)
 - [Architecture-document](Architecture-document)
+- [Architecture-PDF](Architecture-PDF) — **descarga del PDF de entrega** + resumen visual
 - [Bounded-contexts](Bounded-contexts)
 - [ADRs](ADRs)
 
