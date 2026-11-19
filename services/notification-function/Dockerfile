@@ -1,9 +1,17 @@
-FROM golang:1.22-alpine AS build
+# syntax=docker/dockerfile:1.7
+FROM golang:1.23-alpine AS build
 WORKDIR /src
+
+RUN apk add --no-cache git ca-certificates
+
 COPY go.mod go.sum ./
-RUN go mod download
+RUN --mount=type=cache,target=/go/pkg/mod \
+    go mod download
+
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -o /out/notification-function ./cmd/consumer
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /out/notification-function ./cmd/consumer
 
 FROM gcr.io/distroless/static-debian12:nonroot
 WORKDIR /

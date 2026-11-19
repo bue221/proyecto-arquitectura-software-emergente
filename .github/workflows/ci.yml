@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
 
-# Level 3: tests only for now — keep wall clock under 3 minutes.
+# Unit tests stay under ~3 minutes; docker-build runs in parallel with GHA layer cache.
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -71,3 +71,42 @@ jobs:
 
       - name: Unit tests (Vitest)
         run: npm test
+
+  docker-build:
+    name: Docker build ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: airport-service
+            context: .
+            file: services/airport-service/Dockerfile
+          - name: itinerary-service
+            context: .
+            file: services/itinerary-service/Dockerfile
+          - name: api-gateway
+            context: services/api-gateway
+            file: services/api-gateway/Dockerfile
+          - name: notification-function
+            context: services/notification-function
+            file: services/notification-function/Dockerfile
+          - name: web
+            context: apps/web
+            file: apps/web/Dockerfile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build (no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.file }}
+          push: false
+          load: false
+          tags: rutaco-${{ matrix.name }}:ci
+          cache-from: type=gha,scope=ci-${{ matrix.name }}
+          cache-to: type=gha,mode=max,scope=ci-${{ matrix.name }}

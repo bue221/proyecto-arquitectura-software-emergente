@@ -1,6 +1,6 @@
 name: cd-example
 
-# Minimal continuous delivery: build Go service images and push to GHCR.
+# Minimal continuous delivery: build service images (incl. web) and push to GHCR.
 # Academic evidence for RNF-D2 — not a production cluster deploy.
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
   publish:
     name: Build & push ${{ matrix.name }}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 12
     strategy:
       fail-fast: false
       matrix:
@@ -40,6 +40,9 @@ jobs:
           - name: notification-function
             context: services/notification-function
             file: services/notification-function/Dockerfile
+          - name: web
+            context: apps/web
+            file: apps/web/Dockerfile
     steps:
       - uses: actions/checkout@v4
 
@@ -95,6 +98,7 @@ jobs:
             echo "ITINERARY_IMAGE=ghcr.io/${OWNER}/rutaco-itinerary-service:sha-${SHA_SHORT}"
             echo "GATEWAY_IMAGE=ghcr.io/${OWNER}/rutaco-api-gateway:sha-${SHA_SHORT}"
             echo "NOTIFY_IMAGE=ghcr.io/${OWNER}/rutaco-notification-function:sha-${SHA_SHORT}"
+            echo "WEB_IMAGE=ghcr.io/${OWNER}/rutaco-web:sha-${SHA_SHORT}"
             echo "K8S_DIR=infra/k8s"
             echo "# Apply locally after docker login ghcr.io:"
             echo "#   kubectl apply -f infra/k8s/"
