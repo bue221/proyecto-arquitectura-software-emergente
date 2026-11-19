@@ -17,7 +17,7 @@ Premium itinerary **studio** + trip management: interactive Colombia map, glassm
 | Motion | Framer Motion | panel, cards, progress |
 | Typography | Inter | ExtraBold IATA codes, Medium city names |
 | Toasts | Sonner | mutations feedback |
-| Auth UX | Demo login → Gateway JWT | profile in `localStorage` |
+| Auth UX | Demo login → Gateway JWT | profile + usable token in `localStorage`; expired JWT logs out |
 | Map prefs | `/profile` config | provider + optional API key; keyed without key → OSM |
 | SEO / brand | `icon.svg`, apple-icon, OG/Twitter images, `manifest.ts`, JSON-LD | emerald RutaCO mark |
 | SEO routes | `sitemap.ts`, `robots.ts` | `NEXT_PUBLIC_SITE_URL` |
@@ -66,6 +66,16 @@ Resolution: if `requiresApiKey` and the stored key is empty → effective style 
 2. **Planes** — optional destination recommendations (food, culture, nature, city-specific) + custom plans; user may skip.
 
 Persisted as `planItems` on the Itinerary aggregate (Itinerary Service JSONB).
+
+## Auth session
+
+Demo login (`POST /auth/token`) stores the Gateway JWT in `localStorage` (`pi_access_token`) and the traveler profile (`pi_traveler_profile`). The UI is authenticated only when **both** a profile and a usable access token are present.
+
+Usable means the client can decode the JWT payload (no signature check) and `exp` is a finite number still in the future. Missing, malformed, or expired `exp` is invalid. On load, `AuthProvider` calls `clearSession()` and stays logged out when the stored token is unusable.
+
+`ensureAccessToken` returns a stored usable token. If a profile exists but the token is unusable, it clears the session and throws `SessionExpiredError` instead of silently issuing a demo token. With no profile, it still issues a demo token for guest calls.
+
+Itinerary calls that receive HTTP 401 clear the session and dispatch the `window` event `pi:session-expired`. `AuthProvider` drops the in-memory profile so the header and gated routes (`/profile`, `/trips/[id]`) return to login immediately. The Gateway remains the verifier of the Bearer signature; the client check only avoids staying signed-in with a token the Gateway will reject.
 
 ## Folder layout
 

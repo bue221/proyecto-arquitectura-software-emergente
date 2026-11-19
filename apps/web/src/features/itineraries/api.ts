@@ -1,5 +1,6 @@
 import { ensureAccessToken } from "@/lib/api/auth";
-import { getJson, sendJson } from "@/lib/api/http";
+import { ApiError, getJson, sendJson } from "@/lib/api/http";
+import { clearSession, notifySessionExpired, SessionExpiredError } from "@/lib/auth/session";
 
 export type PackingItem = {
   id: string;
@@ -53,25 +54,44 @@ async function authHeaders(subjectHint?: string): Promise<HeadersInit> {
   return { Authorization: `Bearer ${token}` };
 }
 
+async function withAuth<T>(run: () => Promise<T>): Promise<T> {
+  try {
+    return await run();
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      clearSession();
+      notifySessionExpired();
+      throw new SessionExpiredError();
+    }
+    throw err;
+  }
+}
+
 export async function listItineraries(subjectHint?: string): Promise<Itinerary[]> {
-  const data = await getJson<{ items: Itinerary[] }>(`${apiBase()}/api/v1/itineraries`, {
-    headers: await authHeaders(subjectHint),
+  return withAuth(async () => {
+    const data = await getJson<{ items: Itinerary[] }>(`${apiBase()}/api/v1/itineraries`, {
+      headers: await authHeaders(subjectHint),
+    });
+    return (data.items || []).map(normalizeItinerary);
   });
-  return (data.items || []).map(normalizeItinerary);
 }
 
 export async function getItinerary(id: string, subjectHint?: string): Promise<Itinerary> {
-  const item = await getJson<Itinerary>(`${apiBase()}/api/v1/itineraries/${id}`, {
-    headers: await authHeaders(subjectHint),
+  return withAuth(async () => {
+    const item = await getJson<Itinerary>(`${apiBase()}/api/v1/itineraries/${id}`, {
+      headers: await authHeaders(subjectHint),
+    });
+    return normalizeItinerary(item);
   });
-  return normalizeItinerary(item);
 }
 
 export async function createItinerary(input: ItineraryInput): Promise<Itinerary> {
-  return normalizeItinerary(
-    (await sendJson<Itinerary>(`${apiBase()}/api/v1/itineraries`, "POST", input, {
-      headers: await authHeaders(input.userName || "demo-traveler"),
-    })) as Itinerary,
+  return withAuth(async () =>
+    normalizeItinerary(
+      (await sendJson<Itinerary>(`${apiBase()}/api/v1/itineraries`, "POST", input, {
+        headers: await authHeaders(input.userName || "demo-traveler"),
+      })) as Itinerary,
+    ),
   );
 }
 
@@ -80,16 +100,20 @@ export async function updateItinerary(
   input: ItineraryInput,
   subjectHint?: string,
 ): Promise<Itinerary> {
-  return normalizeItinerary(
-    (await sendJson<Itinerary>(`${apiBase()}/api/v1/itineraries/${id}`, "PUT", input, {
-      headers: await authHeaders(subjectHint || input.userName || "demo-traveler"),
-    })) as Itinerary,
+  return withAuth(async () =>
+    normalizeItinerary(
+      (await sendJson<Itinerary>(`${apiBase()}/api/v1/itineraries/${id}`, "PUT", input, {
+        headers: await authHeaders(subjectHint || input.userName || "demo-traveler"),
+      })) as Itinerary,
+    ),
   );
 }
 
 export async function deleteItinerary(id: string): Promise<void> {
-  await sendJson(`${apiBase()}/api/v1/itineraries/${id}`, "DELETE", undefined, {
-    headers: await authHeaders(),
+  await withAuth(async () => {
+    await sendJson(`${apiBase()}/api/v1/itineraries/${id}`, "DELETE", undefined, {
+      headers: await authHeaders(),
+    });
   });
 }
 
