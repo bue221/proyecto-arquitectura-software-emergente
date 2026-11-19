@@ -3,17 +3,24 @@
 
 # Documento de arquitectura de software
 
-**Sistema:** Personal Itineraries Platform  
-**Versión del documento:** 0.1.0  
-**Fecha:** 2026-10-19  
-**Autores:** Equipo del monorepo  
-**Estado:** Fase 0 — definición (sin implementación de negocio)
+**Sistema:** Personal Itineraries Platform (RutaCO)  
+**Versión del documento:** 1.0.0 (resumen wiki)  
+**Fecha:** 2026-11-18  
+**Autores:** Camilo Plaza / equipo del monorepo  
+**Estado:** Niveles 1 + 2 + 3 implementados
+
+> **PDF de entrega (formato completo del curso)**  
+> → Resumen + descarga: **[Architecture-PDF](Architecture-PDF)**  
+> → Archivo en el repo: [Documento-Arquitectura-RutaCO.pdf](https://github.com/bue221/proyecto-arquitectura-software-emergente/blob/main/docs/entregables/documento-arquitectura/Documento-Arquitectura-RutaCO.pdf)
+
+Esta página es el **resumen** en español. El PDF (~32 págs.) incluye todas las vistas, RNF priorizados, tácticas y diagramas exportados.
 
 ## Versionamiento
 
 | Fecha | Versión | Autor | Cambio |
 |-------|---------|-------|--------|
 | 2026-10-19 | 0.1.0 | Equipo | Borrador inicial alineado al reto (Niveles 1–3) |
+| 2026-11-18 | 1.0.0 | Camilo Plaza | Enlace a PDF de entrega; estado L1–L3 |
 
 ## 1. Abreviaturas y definiciones
 
