@@ -91,6 +91,12 @@ apps/web/src/
   lib/
 ```
 
+## Testing
+
+- Runner unitario: Vitest (`npm test` en `apps/web`).
+- Módulos puros cubiertos: adapters/registry/preferencias de tiles, `curvedRoute`, recomendaciones, estilos de tarjetas, `lib/api/http`.
+- CI: job `web-tests` en `.github/workflows/ci.yml` (mantiene el wall clock bajo 3 minutos junto con los jobs Go).
+
 ## Entorno
 
 - `NEXT_PUBLIC_API_GATEWAY_URL`

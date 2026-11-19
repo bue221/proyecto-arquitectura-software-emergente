@@ -91,6 +91,12 @@ apps/web/src/
   lib/
 ```
 
+## Testing
+
+- Unit runner: Vitest (`npm test` in `apps/web`).
+- Covered pure modules: map tile adapters/registry/preferences, `curvedRoute`, recommendations, card styles, `lib/api/http`.
+- CI: `web-tests` job in `.github/workflows/ci.yml` (keeps wall clock under 3 minutes with Go jobs).
+
 ## Env
 
 - `NEXT_PUBLIC_API_GATEWAY_URL`
