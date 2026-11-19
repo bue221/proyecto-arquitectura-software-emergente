@@ -28,7 +28,10 @@
 ### DevOps
 - [Ramas](Branching)
 - [Checklist de PR](PR-checklist)
+- [CI/CD](CI-CD)
+- [Calidad](Quality)
 - [Setup local](Local-setup)
 - [Observabilidad](Observability)
 - [Autoevaluación](Self-assessment)
 - [Guion de demo](Demo-script)
+- [Tablero de entrega](Delivery-board)

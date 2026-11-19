@@ -34,6 +34,8 @@ pdfvenv/
 **/playwright-report/
 .sonar/
 .scannerwork/
+docs/05-runbooks/evidence/*/
+!docs/05-runbooks/evidence/.gitkeep
 
 # Terraform / local overrides
 **/*.tfstate*

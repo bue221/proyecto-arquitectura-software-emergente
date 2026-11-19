@@ -28,7 +28,7 @@ This is **not** related to the Parche product. Domain = Colombian airports + per
 | Broker | RabbitMQ | Async notifications; AsyncAPI contract |
 | Observability | OpenTelemetry + Jaeger, Prometheus + Grafana | Traces, metrics, alerts |
 | Orchestration | Docker Compose (local); Kubernetes (Level 3) | Full-stack demos |
-| CI/CD | GitHub Actions | Build, test, SonarQube, deploy example |
+| CI/CD | GitHub Actions | Unit tests, SonarCloud, GHCR CD example (`cd-example.yml`) |
 
 See ADRs under [`docs/01-architecture/adr/`](docs/01-architecture/adr/).  
 Frontend UI details: [`docs/07-frontend/architecture.md`](docs/07-frontend/architecture.md).
@@ -209,9 +209,10 @@ When a PR changes `docs/`, update the matching `wiki/` page in Spanish in the sa
 - Level 3 gRPC `EnsureExists` + mTLS S2S + pagination/versioning
 - Level 3 bulkhead + Prometheus alerts + Toxiproxy chaos
 - Level 3 Kubernetes probes + Pact contracts + Vault/config overlays
-- Level 3 CI: GitHub Actions unit tests (`timeout-minutes: 3`) + e2e-nightly
-- Local stack: `make up` / `make down` / `make smoke` / `make wiki`
+- Level 3 CI: GitHub Actions unit tests (`timeout-minutes: 3`) + e2e-nightly + SonarCloud + GHCR CD example
+- Local stack: `make up` / `make down` / `make smoke` / `make demo-evidence` / `make wiki`
+- Delivery board: GitHub Project https://github.com/users/bue221/projects/3 (`docs/05-runbooks/delivery-board.md`)
 
 **Next**
 
-Levels 1–3 rubric criteria are marked **done** in `docs/06-self-assessment.md`. Further work is polish, Sonar baselines, or OpenFaaS packaging only if the course asks — still via branch → PR → merge → wiki publish.
+Levels 1–3 rubric criteria are marked **done** in `docs/06-self-assessment.md`. Remaining delivery polish: set `SONAR_TOKEN`, run `make demo-evidence` + manual screenshots, optional OpenFaaS/k6 — still via branch → PR → merge → wiki publish.

@@ -4,11 +4,19 @@
 
 - Go: table-driven tests for use cases with fake ports.
 - Next.js: component/hooks tests for map data mapping (not flaky browser tests in unit layer).
+- PR CI: `.github/workflows/ci.yml` (≤3 minutes, `-short` skips Testcontainers).
+
+## SonarCloud
+
+- Workflow: `.github/workflows/sonar.yml`
+- Config: `sonar-project.properties` at repo root
+- Generates Go `coverage.out` per module, then runs SonarCloud with quality gate wait
+- Secret: `SONAR_TOKEN` (see [`ci-cd.md`](ci-cd.md))
 
 ## Load tests
 
 - Tooling candidate: `k6` or `vegeta` against Gateway create/list paths.
-- Goal: evidence for rubric (not production SLOs yet). Record scripts under `infra/` or `tests/load/` in a later PR.
+- Goal: evidence for rubric (not production SLOs yet). Record scripts under `infra/` or `tests/load/` in a later PR if the course requires it.
 
 ## Contract tests (Level 3)
 
@@ -20,10 +28,6 @@
 
 - Each Go service serves OpenAPI UI.
 - Source-of-truth copies also in `packages/contracts/openapi/`.
-
-## SonarQube
-
-- CI scan on PRs; quality gate must not regress coverage/duplications once baseline is set.
 
 ## Chaos / Toxiproxy (Level 3 sample)
 

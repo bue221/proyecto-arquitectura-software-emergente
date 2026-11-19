@@ -45,6 +45,7 @@ Source of truth for architecture, diagrams, DevOps, and demos. Prefer updating t
 21. [Local setup](05-runbooks/local-setup.md)
 22. [Demo script (rubric evidence)](05-runbooks/demo-script.md)
 22b. [Observability — OTel + Jaeger](05-runbooks/observability.md)
+22c. [Delivery board (GitHub Issues)](05-runbooks/delivery-board.md)
 23. [Self-assessment Levels 1–3](06-self-assessment.md)
 
 ### Frontend
