@@ -33,6 +33,8 @@ make wiki    # publish wiki/ → GitHub Wiki (after merge)
 | Notification FaaS | http://localhost:8083/health |
 | Notification Postgres | localhost:5435 |
 | Jaeger UI | http://localhost:16686 |
+| Prometheus | http://localhost:9090 |
+| Grafana | http://localhost:3002 (anonymous viewer; admin/admin) |
 | Airport gRPC | localhost:9091 |
 
 The browser should call **only the Gateway** (`:8080`).

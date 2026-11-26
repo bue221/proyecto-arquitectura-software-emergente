@@ -46,7 +46,7 @@ Update this table in PRs as criteria are met. Status: `pending` | `partial` | `d
 | Vault / config server | done | `CONFIG_FILE` + optional Vault KV (`infra/vault/README.md`) |
 | Chaos (Toxiproxy/Chaos Mesh) | done | Compose `toxiproxy` + `infra/toxiproxy/` latency demo |
 | Bulkhead | done | `resilience.Bulkhead` on Colombia adapter; `BULKHEAD_MAX_CONCURRENT` |
-| Prometheus alerting | done | `/metrics` + `infra/prometheus/alerts.yml` (CB open, bulkhead) |
+| Prometheus alerting | done | `/metrics` (Airport + Gateway RED) + `infra/prometheus/alerts.yml` (CB open, bulkhead) + Grafana dashboard `:3002` |
 | CI/CD GitHub Actions | done | `ci.yml` (≤3 min) + `e2e-nightly.yml` + `sonar.yml` + `cd-example.yml` (GHCR) |
 | Kubernetes + probes | done | `infra/k8s/*` Deployments with `/ready` `/live` probes |
 | Contract testing (Pact) | done | `packages/contracts/pact/Airport-Itinerary.json` + consumer/provider tests |

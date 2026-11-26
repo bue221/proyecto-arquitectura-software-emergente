@@ -13,6 +13,7 @@ import (
 	"github.com/bue221/personal-itineraries/services/api-gateway/internal/httpapi"
 	"github.com/bue221/personal-itineraries/services/api-gateway/internal/platform/config"
 	"github.com/bue221/personal-itineraries/services/api-gateway/internal/platform/logging"
+	"github.com/bue221/personal-itineraries/services/api-gateway/internal/platform/metrics"
 	"github.com/bue221/personal-itineraries/services/api-gateway/internal/platform/otelx"
 	"github.com/bue221/personal-itineraries/services/api-gateway/internal/proxy"
 )
@@ -48,7 +49,7 @@ func main() {
 	router := httpapi.NewRouter(handlers, tokens, httpapi.Upstream{
 		Airport:   airportProxy,
 		Itinerary: itineraryProxy,
-	}, cfg.RateLimitRPS, cfg.RateLimitBurst)
+	}, cfg.RateLimitRPS, cfg.RateLimitBurst, metrics.New())
 
 	server := &http.Server{
 		Addr:              cfg.HTTPAddr,

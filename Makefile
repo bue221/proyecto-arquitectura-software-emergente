@@ -24,6 +24,7 @@ help:
 	@echo "  RabbitMQ UI http://localhost:15672 (guest/guest)"
 	@echo "  Jaeger UI   http://localhost:16686"
 	@echo "  Prometheus  http://localhost:9090"
+	@echo "  Grafana     http://localhost:3002 (anonymous viewer; admin/admin)"
 
 up:
 	@./scripts/dev-up.sh

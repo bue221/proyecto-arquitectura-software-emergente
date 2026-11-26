@@ -10,3 +10,10 @@ scrape_configs:
     static_configs:
       - targets: ["airport-service:8081"]
     metrics_path: /metrics
+
+  - job_name: api-gateway
+    # 5s so live demos (k6 / make load) show up in Grafana almost immediately.
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["api-gateway:8080"]
+    metrics_path: /metrics
