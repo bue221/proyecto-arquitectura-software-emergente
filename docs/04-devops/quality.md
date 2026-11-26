@@ -62,4 +62,4 @@
 
 - Config: `infra/prometheus/prometheus.yml` + `alerts.yml`.
 - Rules: `AirportCircuitBreakerOpen`, `AirportBulkheadSaturated`.
-- Scrape Airport `/metrics` from Compose service `prometheus` (`:9090`).
+- Scrape Airport and Gateway `/metrics` from Compose service `prometheus` (`:9090`); Grafana dashboard on `:3002` ([`observability.md`](../05-runbooks/observability.md)).

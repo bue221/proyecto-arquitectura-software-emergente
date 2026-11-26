@@ -41,6 +41,7 @@ Makefile: `make demo-evidence`.
 3. GitHub Actions green: **ci** + **sonar** (SonarCloud gate) + **cd-example** (GHCR images).
 4. K8s manifests with readiness/liveness (`infra/k8s/`, probes `/ready` `/live`).
 5. Alert example (Prometheus `:9090`) and/or Toxiproxy latency (`infra/toxiproxy/README.md`).
+   - Grafana `:3002` dashboard **RutaCO — Gateway & Resiliencia** while running `make load` (RED metrics + 429 % + CB state). See [`observability.md`](observability.md).
 6. Pact contract test output.
 7. Load test: `make load` — show p95 latency and the Gateway returning `429` under burst (see [`../04-devops/quality.md`](../04-devops/quality.md#load-tests)).
 8. Self-assessment table filled in [`../06-self-assessment.md`](../06-self-assessment.md).

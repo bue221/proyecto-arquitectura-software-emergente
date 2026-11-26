@@ -57,4 +57,4 @@
 ## Alertas Prometheus
 
 - `infra/prometheus/alerts.yml` — `AirportCircuitBreakerOpen`, `AirportBulkheadSaturated`.
-- UI local `:9090`.
+- UI local `:9090`; Prometheus scrapea `/metrics` de Airport y del Gateway. Dashboard de Grafana en `:3002` (ver [Observability](Observability)).

@@ -46,7 +46,7 @@ Actualiza esta tabla en los PRs a medida que se cumplen criterios. Estado: `pend
 | Vault / config server | hecho | `CONFIG_FILE` + Vault KV opcional (`infra/vault/README.md`) |
 | Caos (Toxiproxy/Chaos Mesh) | hecho | Compose `toxiproxy` + demo de latencia en `infra/toxiproxy/` |
 | Bulkhead | hecho | `resilience.Bulkhead` en el adapter Colombia; `BULKHEAD_MAX_CONCURRENT` |
-| Alertas Prometheus | hecho | `/metrics` + `infra/prometheus/alerts.yml` (CB abierto, bulkhead) |
+| Alertas Prometheus | hecho | `/metrics` (Airport + Gateway RED) + `infra/prometheus/alerts.yml` (CB abierto, bulkhead) + dashboard de Grafana `:3002` |
 | CI/CD GitHub Actions | hecho | `ci.yml` (≤3 min) + `e2e-nightly.yml` + `sonar.yml` + `cd-example.yml` (GHCR) |
 | Kubernetes + probes | hecho | `infra/k8s/*` Deployments con probes `/ready` y `/live` |
 | Pruebas de contrato (Pact) | hecho | `packages/contracts/pact/Airport-Itinerary.json` + tests consumer/provider |

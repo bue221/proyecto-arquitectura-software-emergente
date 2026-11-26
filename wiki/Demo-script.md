@@ -38,6 +38,7 @@ Escribe capturas bajo `docs/05-runbooks/evidence/<timestamp>/` (las carpetas de 
 3. GitHub Actions en verde: **ci** + **sonar** + **cd-example**.
 4. Manifiestos K8s con probes `/ready` y `/live`.
 5. Alerta Prometheus y/o Toxiproxy.
+   - Dashboard de Grafana `:3002` **RutaCO — Gateway & Resiliencia** mientras corre `make load` (métricas RED + % 429 + estado del CB). Ver [Observability](Observability).
 6. Salida Pact.
 7. Prueba de carga: `make load` — mostrar latencia p95 y el Gateway respondiendo `429` ante ráfagas (ver [Quality](Quality)).
 8. Autoevaluación completa en [Self-assessment](Self-assessment).
