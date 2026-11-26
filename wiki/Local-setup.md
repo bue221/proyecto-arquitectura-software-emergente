@@ -15,6 +15,7 @@ Desde la raíz del repo:
 make up      # build + levantar el stack de Compose
 make build   # solo rebuild de imágenes (más rápido con las capas/caché nuevas)
 make smoke   # health checks vía Gateway
+make load    # prueba de carga k6 contra el Gateway (Docker, ~80 s)
 make down    # detener el stack
 make wiki    # publicar wiki/ → GitHub Wiki (después del merge)
 ```
@@ -45,6 +46,11 @@ curl -s -X POST http://localhost:8080/auth/token \
 ```
 
 Usa el Bearer devuelto en las rutas de itinerario.
+
+
+### Orden de arranque
+
+El healthcheck de RabbitMQ usa `rabbitmq-diagnostics check_port_connectivity` (no `ping`, que responde OK antes de que AMQP `:5672` acepte conexiones). `itinerary-service` y `notification-function` además tienen `restart: on-failure`, así que si el broker todavía está arrancando ya no quedan detenidos (síntoma anterior: `rabbitmq_connect_failed` + `502` en `make smoke`).
 
 ## Opción B — Compose directo
 

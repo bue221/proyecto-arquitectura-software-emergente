@@ -32,8 +32,14 @@
 
 ## Pruebas de carga
 
-- Candidatos: `k6` o `vegeta` contra crear/listar del Gateway.
-- Objetivo: evidencia de rúbrica (no SLOs de producción). Scripts en un PR posterior si el curso lo exige.
+- Herramienta: **k6** ejecutado con Docker (`grafana/k6:0.54.0`), sin instalación local. Script: `tests/load/gateway-load.js`.
+- Con el stack arriba: `make load` (~80 s). Para otro destino: `make load LOAD_BASE=http://host:8080`.
+- Escenarios:
+  - `airports_read` — rampa de 0 a 30 VUs sobre `GET /api/v1/airports` (camino con caché Redis).
+  - `itineraries_write` — 5 VUs sobre `POST /api/v1/itineraries` con JWT de demo (validación gRPC + Outbox).
+- Umbrales: `p(95) < 500ms` en lecturas de aeropuertos, `checks > 80%`.
+- **Cómo leer el resultado:** `http_req_failed` sale alto a propósito — k6 dispara desde una sola IP, así que la mayoría de las peticiones extra reciben **429** del rate limiter del Gateway (`RATE_LIMIT_RPS=20`, `RATE_LIMIT_BURST=40`). Los checks aceptan `429` como comportamiento correcto. Corrida de referencia (local, Docker Desktop): ~76 req/s, p95 ≈ 5 ms.
+- Objetivo: evidencia para la rúbrica, no SLOs de producción.
 
 ## Contratos (Nivel 3)
 

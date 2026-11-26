@@ -75,7 +75,8 @@ services:
       - "5672:5672"
       - "15672:15672"
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      # `ping` passes before the AMQP listener accepts connections; check the port instead.
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
       interval: 5s
       timeout: 5s
       retries: 15
@@ -125,6 +126,7 @@ services:
     build:
       context: ../..
       dockerfile: services/itinerary-service/Dockerfile
+    restart: on-failure
     ports:
       - "8082:8082"
     environment:
@@ -157,6 +159,7 @@ services:
   notification-function:
     build:
       context: ../../services/notification-function
+    restart: on-failure
     ports:
       - "8083:8083"
     environment:

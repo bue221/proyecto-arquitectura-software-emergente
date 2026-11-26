@@ -15,6 +15,7 @@ From the repo root:
 make up      # build + start Compose stack
 make build   # rebuild images only (faster after Dockerfile/cache improvements)
 make smoke   # health checks via Gateway
+make load    # k6 load test against the Gateway (Docker, ~80s)
 make down    # stop stack
 make wiki    # publish wiki/ → GitHub Wiki (after merge)
 ```
@@ -45,6 +46,10 @@ curl -s -X POST http://localhost:8080/auth/token \
 ```
 
 Use the returned Bearer token for itinerary routes.
+
+### Startup ordering
+
+RabbitMQ's healthcheck uses `rabbitmq-diagnostics check_port_connectivity` (not `ping`, which passes before AMQP `:5672` accepts connections). `itinerary-service` and `notification-function` also have `restart: on-failure`, so a broker that is still booting no longer leaves them exited (previous symptom: `rabbitmq_connect_failed` + `502` on `make smoke`).
 
 ## Option B — Compose directly
 
