@@ -32,8 +32,14 @@
 
 ## Load tests
 
-- Tooling candidate: `k6` or `vegeta` against Gateway create/list paths.
-- Goal: evidence for rubric (not production SLOs yet). Record scripts under `infra/` or `tests/load/` in a later PR if the course requires it.
+- Tool: **k6** run through Docker (`grafana/k6:0.54.0`), no local install. Script: `tests/load/gateway-load.js`.
+- Run with the stack up: `make load` (~80 s). Override target with `make load LOAD_BASE=http://host:8080`.
+- Scenarios:
+  - `airports_read` — ramping 0→30 VUs on `GET /api/v1/airports` (Redis cache path).
+  - `itineraries_write` — 5 VUs on `POST /api/v1/itineraries` with a demo JWT (gRPC validation + Outbox).
+- Thresholds: `p(95) < 500ms` on airport reads, `checks > 80%`.
+- **Reading the result:** `http_req_failed` is high on purpose — k6 hits from one IP, so most extra requests get **429** from the Gateway rate limiter (`RATE_LIMIT_RPS=20`, `RATE_LIMIT_BURST=40`). Checks accept `429` as correct behavior. Reference run (local, Docker Desktop): ~76 req/s, p95 ≈ 5 ms.
+- Goal: rubric evidence, not production SLOs.
 
 ## Contract tests (Level 3)
 

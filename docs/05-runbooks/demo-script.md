@@ -42,7 +42,8 @@ Makefile: `make demo-evidence`.
 4. K8s manifests with readiness/liveness (`infra/k8s/`, probes `/ready` `/live`).
 5. Alert example (Prometheus `:9090`) and/or Toxiproxy latency (`infra/toxiproxy/README.md`).
 6. Pact contract test output.
-7. Self-assessment table filled in [`../06-self-assessment.md`](../06-self-assessment.md).
+7. Load test: `make load` — show p95 latency and the Gateway returning `429` under burst (see [`../04-devops/quality.md`](../04-devops/quality.md#load-tests)).
+8. Self-assessment table filled in [`../06-self-assessment.md`](../06-self-assessment.md).
 
 ## Delivery board
 

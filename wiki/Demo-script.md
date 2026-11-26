@@ -39,7 +39,8 @@ Escribe capturas bajo `docs/05-runbooks/evidence/<timestamp>/` (las carpetas de 
 4. Manifiestos K8s con probes `/ready` y `/live`.
 5. Alerta Prometheus y/o Toxiproxy.
 6. Salida Pact.
-7. Autoevaluación completa en [Self-assessment](Self-assessment).
+7. Prueba de carga: `make load` — mostrar latencia p95 y el Gateway respondiendo `429` ante ráfagas (ver [Quality](Quality)).
+8. Autoevaluación completa en [Self-assessment](Self-assessment).
 
 ## Tablero de entrega
 

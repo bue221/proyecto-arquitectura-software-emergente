@@ -1,6 +1,6 @@
 COMPOSE := docker compose -f infra/docker/docker-compose.yml
 
-.PHONY: help up down restart logs ps smoke wiki build demo-evidence
+.PHONY: help up down restart logs ps smoke load wiki build demo-evidence
 
 help:
 	@echo "Personal Itineraries — local commands"
@@ -11,6 +11,7 @@ help:
 	@echo "  make logs           Tail logs"
 	@echo "  make ps             Show container status"
 	@echo "  make smoke          Hit health/gateway smoke checks"
+	@echo "  make load           k6 load test against the Gateway (Docker, ~80s)"
 	@echo "  make demo-evidence  Capture demo-script HTTP evidence under docs/05-runbooks/evidence/"
 	@echo "  make wiki           Publish wiki/ to GitHub Wiki"
 	@echo ""
@@ -40,6 +41,12 @@ ps:
 
 smoke:
 	@./scripts/dev-smoke.sh
+
+K6_IMAGE ?= grafana/k6:0.54.0
+LOAD_BASE ?= http://host.docker.internal:8080
+
+load:
+	docker run --rm -i -e BASE=$(LOAD_BASE) $(K6_IMAGE) run - < tests/load/gateway-load.js
 
 demo-evidence:
 	@chmod +x ./scripts/demo-evidence.sh
